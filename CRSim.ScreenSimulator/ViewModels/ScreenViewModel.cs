@@ -142,7 +142,14 @@ namespace CRSim.ScreenSimulator.ViewModels
 
                 }
             }
-            TrainInfo = [.. TrainInfo.OrderBy(x => x.DepartureTime??x.ArrivalTime)];
+            if(StationType == StationType.Arrival)
+            {
+                TrainInfo = [.. TrainInfo.OrderBy(x => x.ArrivalTime??x.DepartureTime)];
+            }
+            else
+            {
+                TrainInfo = [.. TrainInfo.OrderBy(x => x.DepartureTime??x.ArrivalTime)];
+            }
             RefreshData(null, null);
             DataLoaded.SetResult(true);
         }

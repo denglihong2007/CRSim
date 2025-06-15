@@ -152,6 +152,7 @@
     <Resource Include="Assets\Zibo\PrimaryScreen.png" />
     <Resource Include="Assets\Zibo\SecondaryScreen.png" />
     <Resource Include="Assets\Zibo\TicketCheckScreen.png" />
+    <Resource Include="Assets\Zibo\ExitScreen.png" />
   </ItemGroup>
 
 </Project>

@@ -243,6 +243,17 @@
     ]
   },
   {
+    "UniqueId": "Zibo.ExitScreen",
+    "Title": "淄博站出站口看板",
+    "Region": "淄博",
+    "Author": "wxl0430",
+    "Type": "出站口屏",
+    "Parameters": [
+      "Station",
+      "Text"
+    ]
+  },
+  {
     "UniqueId": "Jinanxi.SmallScreen",
     "Title": "济南西站小屏看板",
     "Region": "济南",

@@ -16,9 +16,12 @@ namespace CRSim.ScreenSimulator.Converters
         /*
         Normal: 标准显示。
         Alternating_Row_Colors: 候车状态隔行异色显示（第4个参数控制行号）。
+        Arrive: 到达屏显示
         */
 
         public List<SolidColorBrush> WaitingColorList { get; set; } = [];
+        public SolidColorBrush ArrivedText { get; set; } = new(Colors.LightGreen);
+        public SolidColorBrush ArrivingText { get; set; } = new(Colors.White);
         public SolidColorBrush WaitingColor { get; set; } = new(Colors.White);
         public SolidColorBrush CheckInColor { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush StopCheckInColor { get; set; } = new(Colors.Red);
@@ -27,6 +30,14 @@ namespace CRSim.ScreenSimulator.Converters
             var serviceProvider = (IServiceProvider)Application.Current.Resources["ServiceProvider"];
             _timeService = serviceProvider.GetRequiredService<ITimeService>();
             _settings = serviceProvider.GetRequiredService<ISettingsService>().GetSettings();
+            if (DisplayMode == "Arrive" || ( values.Length > 1 && values[1] == null))
+            {
+                if (values[0] is DateTime arriveTime)
+                {
+                    return _timeService.GetDateTimeNow() >= arriveTime ? ArrivedText : ArrivingText;
+                }
+                return string.Empty;
+            }
             if (values[0] != null && values[1] == null)
             {
                 return WaitingColor;

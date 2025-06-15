@@ -26,7 +26,7 @@ namespace CRSim.ScreenSimulator.Converters
             {
                 if (values[0] is DateTime arriveTime)
                 {
-                    return _timeService.GetDateTimeNow() > arriveTime ? ArrivedText : ArrivingText;
+                    return _timeService.GetDateTimeNow() >= arriveTime ? ArrivedText : ArrivingText;
                 }
                 return string.Empty;
             }
