@@ -12,7 +12,7 @@ namespace CRSim.Views
             public string TicketCheck { get; set; }
             public bool Checked { get; set; } = false;
         }
-    
+
         public ObservableCollection<string> Landmarks { get; set; } = ["无", "红色", "绿色", "褐色", "蓝色", "紫色", "黄色", "橙色"];
 
         public TrainStop GeneratedTrainStop;
@@ -124,7 +124,7 @@ namespace CRSim.Views
                 Origin = DepartureTextBox.Text,
                 ArrivalTime = StartHour.IsEnabled ? TimeSpan.Parse($"{StartHour.Text}:{StartMinute.Text}") : null,
                 DepartureTime = EndHour.IsEnabled ? TimeSpan.Parse($"{EndHour.Text}:{EndMinute.Text}") : null,
-                WaitingArea = TicketChecksList.Where(x => x.Checked).FirstOrDefault()?.TicketCheck.Split(" - ")[0] ?? string.Empty,
+                WaitingArea = TicketChecksList.Where(x => x.Checked).FirstOrDefault().TicketCheck.Split(" - ")[0],
                 TicketChecks = [.. TicketChecksList.Where(x => x.Checked).Select(x => x.TicketCheck.Split(" - ")[1])],
                 Platform = (string)PlatformComboBox.SelectedItem,
                 Length = int.Parse(LengthTextBox.Text),
