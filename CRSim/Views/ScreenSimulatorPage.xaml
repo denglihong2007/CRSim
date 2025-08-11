@@ -130,7 +130,7 @@
                     </controls:SettingsCard>
                     <controls:SettingsCard Header="检票口" Description="仅加载某个检票口的数据" HeaderIcon="{winui:FontIcon Glyph=&#xF161;}"
                                        Visibility="{x:Bind ViewModel.TicketCheckNeeded,Converter={StaticResource BoolToVisibilityConverter},Mode=OneWay}">
-                        <ComboBox ItemsSource="{x:Bind ViewModel.TicketChecks}" x:Name="TicketChecksList">
+                        <ComboBox ItemsSource="{x:Bind ViewModel.TicketChecks}" x:Name="TicketChecksList" DisplayMemberPath="Name">
                             <interactivity:Interaction.Behaviors>
                                 <interactivity:EventTriggerBehavior EventName="SelectionChanged">
                                     <interactivity:InvokeCommandAction Command="{x:Bind ViewModel.SelectTicketCheckCommand}" CommandParameter="{x:Bind TicketChecksList.SelectedItem,Mode=OneWay}" />

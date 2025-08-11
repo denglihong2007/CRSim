@@ -6,12 +6,25 @@
     xmlns:local="using:CRSim.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:CRSim.Models"
+    xmlns:coremodels="using:CRSim.Core.Models"
+    xmlns:selectors="using:CRSim.Selectors"
     mc:Ignorable="d">
+    <Page.Resources>
+        <DataTemplate x:Key="WaitingAreaTemplate" x:DataType="coremodels:WaitingArea">
+            <TreeViewItem Content="{x:Bind Name}" ItemsSource="{x:Bind TicketChecks}" />
+        </DataTemplate>
+        <DataTemplate x:Key="TicketCheckTemplate" x:DataType="coremodels:TicketCheck">
+            <TextBlock Text="{x:Bind Name}" />
+        </DataTemplate>
+        <selectors:TreeViewTemplateSelector
+            x:Key="TreeViewTemplateSelector"
+            WaitingAreaTemplate="{StaticResource WaitingAreaTemplate}"
+            TicketCheckTemplate="{StaticResource TicketCheckTemplate}" />
+    </Page.Resources>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical">
             <Grid ColumnSpacing="24" RowSpacing="16">
@@ -57,13 +70,8 @@
             <TextBlock Text="检票口" Margin="0,0,0,12"/>
             <Border Style="{StaticResource ListViewBorder}">
                 <ScrollViewer VerticalScrollBarVisibility="Visible" MaxHeight="300">
-                    <ListView x:Name="TicketChecksCheckList" ItemsSource="{x:Bind TicketChecksList}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="models:CheckListItem">
-                                <CheckBox Content="{x:Bind Name}" IsChecked="{x:Bind IsSelected, Mode=TwoWay}"/>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                    <TreeView SelectionMode="Multiple" Name="WaitingAreasList" Width="120" SelectionChanged="Validate"
+                              ItemsSource="{x:Bind WaitingAreas, Mode=OneWay}" ItemTemplateSelector="{StaticResource TreeViewTemplateSelector}" />
                 </ScrollViewer>
             </Border>
         </StackPanel>

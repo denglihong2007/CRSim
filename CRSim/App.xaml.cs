@@ -1,4 +1,6 @@
-﻿namespace CRSim
+﻿using System.Diagnostics;
+
+namespace CRSim
 {
     public partial class App : Application
     {
@@ -7,12 +9,11 @@
         public string[] commandLineArgs;
         public CommandLineOptions parsedOptions;
         public static string AppVersion { get; set; } = Assembly.GetAssembly(typeof(App)).GetName().Version.ToString();
-        private Mutex mutex;
+        private readonly Mutex mutex;
 
         public App()
         {
-            bool isNewInstance;
-            mutex = new Mutex(true,"CRSim",out isNewInstance);
+            mutex = new Mutex(true, "CRSim", out bool isNewInstance);
             if (!isNewInstance)
             {
                 Environment.Exit(0);
@@ -52,49 +53,34 @@
             InitializeComponent();
         }
 
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
-            ShowSplashScreen();
-        }
-
-        private void ShowSplashScreen()
-        {            
-            var splashScreenWindow = AppHost.Services.GetService<StartWindow>();
-            splashScreenWindow.SplashScreenClosed += OnSplashScreenClosed;
+            var splashScreenWindow = AppHost.Services.GetRequiredService<StartWindow>();
             splashScreenWindow.Activate();
-            _ = PerformInitializationAsync(splashScreenWindow);
+            await PerformInitializationAsync(splashScreenWindow);
+            MainWindow = AppHost.Services.GetRequiredService<MainWindow>();
+            MainWindow.Activate();
+            splashScreenWindow.Close();
         }
 
-        private static async Task PerformInitializationAsync(StartWindow splashScreen)
+        private static async Task PerformInitializationAsync(StartWindow startWindow)
         { 
             try
             {
-                var startWindow = AppHost.Services.GetService<StartWindow>();
-                await Task.Delay(2000);
+                if(!Debugger.IsAttached) await Task.Delay(2000);
                 startWindow.Status = "正在加载设置...";
                 AppHost.Services.GetService<ISettingsService>().LoadSettings();
-                await Task.Delay(500);
+                if (!Debugger.IsAttached) await Task.Delay(500);
                 startWindow.Status = "正在加载数据库...";
                 AppHost.Services.GetService<IDatabaseService>().ImportData(AppPaths.ConfigFilePath);
-                await Task.Delay(500);
+                if (!Debugger.IsAttached) await Task.Delay(500);
                 startWindow.Status = new[] { "正在控票…", "正在关闭垃圾桶盖…", "正在刷绿车底…", "正在准备降弓用刑…" }[new Random().Next(4)];
-                await Task.Delay(500);
+                if (!Debugger.IsAttached) await Task.Delay(500);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"初始化错误: {ex.Message}");
             }
-            finally
-            {
-                splashScreen.CompleteInitialization();
-            }
-        }
-
-        private void OnSplashScreenClosed(object sender, EventArgs e)
-        {
-            var mainWindow = AppHost.Services.GetService<MainWindow>();
-            mainWindow.Activate();
-            MainWindow = mainWindow;
         }
 
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]

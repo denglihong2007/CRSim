@@ -1,53 +1,38 @@
-using Microsoft.UI.Xaml.Controls.Primitives;
+using CRSim.Core.Models;
 
 namespace CRSim.Views;
 public sealed partial class TrainStopDialog : Page
 {
     public TrainStop GeneratedTrainStop;
+
     public List<string> Landmarks { get; set; } = ["无", "红色", "绿色", "褐色", "蓝色", "紫色", "黄色", "橙色"];
+
     public List<string> Platforms { get; set; } = [];
-    public ObservableCollection<CheckListItem> TicketChecksList { get; set; } = [];
+
+    public List<WaitingArea> WaitingAreas { get; set; }
+
     private readonly Action<bool> _onValidityChanged;
-    public TrainStopDialog(List<string> ticketChecks, List<string> platforms, Action<bool> onValidityChanged)
+
+    public TrainStopDialog(List<WaitingArea> waitingAreas, List<string> platforms, Action<bool> onValidityChanged)
     {
-        InitializeComponent();
-        _onValidityChanged = onValidityChanged;
-        TicketChecksList.Clear();
-        foreach (string s in ticketChecks)
-        {
-            var checkItem = new CheckListItem()
-            {
-                Name = s,
-                IsSelected = false,
-            };
-            checkItem.PropertyChanged += Validate;
-            TicketChecksList.Add(checkItem);
-        }
+        WaitingAreas = waitingAreas;
         foreach (string s in platforms)
         {
             Platforms.Add(s);
         }
+        InitializeComponent();
+        _onValidityChanged = onValidityChanged;
         Validate(null, null);
     }
-    public TrainStopDialog(List<string> ticketChecks, List<string> platforms,TrainStop trainStop, Action<bool> onValidityChanged)
+    public TrainStopDialog(List<WaitingArea> waitingAreas, List<string> platforms, TrainStop trainStop, Action<bool> onValidityChanged)
     {
-        InitializeComponent();
-        _onValidityChanged = onValidityChanged;
-        TicketChecksList.Clear();
-        foreach (string s in ticketChecks)
-        {
-            var checkItem = new CheckListItem()
-            {
-                Name = s,
-                IsSelected = false,
-            };
-            checkItem.PropertyChanged += Validate;
-            TicketChecksList.Add(checkItem);
-        }
+        WaitingAreas = waitingAreas;
         foreach (string s in platforms)
         {
             Platforms.Add(s);
         }
+        InitializeComponent();
+        _onValidityChanged = onValidityChanged;
         NumberTextBox.Text = trainStop.Number;
         LengthTextBox.Text = trainStop.Length.ToString();
         ArrivalTextBox.Text = trainStop.Terminal;
@@ -76,13 +61,14 @@ public sealed partial class TrainStopDialog : Page
             EndMinute.IsEnabled = false;
             StationKindPanelRadioButtons.SelectedIndex = 2;
         }
-        if(trainStop.TicketChecks != null && trainStop.TicketChecks.Count > 0)
+        if (trainStop.TicketCheckIds != null)
         {
-            foreach (string s in trainStop.TicketChecks)
+            foreach (var id in trainStop.TicketCheckIds)
             {
-                TicketChecksList.FirstOrDefault(x => x.Name == trainStop.WaitingArea + " - " + s)!.IsSelected = true;
+                //WaitingAreasList.SelectedItems.Add(waitingAreas.SelectMany(x => x.TicketChecks).FirstOrDefault(x => x.Id == id));
             }
         }
+
         Validate(null, null);
     }
     private static bool ValidateTime(string input, int maxValue)
@@ -101,8 +87,8 @@ public sealed partial class TrainStopDialog : Page
             (!EndHour.IsEnabled || ValidateTime(EndHour.Text, 24)) &&
             (!EndMinute.IsEnabled || ValidateTime(EndMinute.Text, 60));
         bool isValid =
-            (!TicketChecksCheckList.IsEnabled ||
-            (TicketChecksList.Any(x => x.IsSelected) && TicketChecksList.Where(x => x.IsSelected).Select(x => x.Name.Split(" - ")[0]).Distinct().Count() <= 1)) &&
+            (!WaitingAreasList.IsEnabled ||
+            WaitingAreasList.SelectedItems?.Count != 0) &&
             areTextBoxesFilled &&
             !string.IsNullOrWhiteSpace(NumberTextBox.Text) &&
             !string.IsNullOrWhiteSpace(ArrivalTextBox.Text) &&
@@ -138,8 +124,9 @@ public sealed partial class TrainStopDialog : Page
             Origin = DepartureTextBox.Text,
             ArrivalTime = StartHour.IsEnabled ? TimeSpan.Parse($"{StartHour.Text}:{StartMinute.Text}") : null,
             DepartureTime = EndHour.IsEnabled ? TimeSpan.Parse($"{EndHour.Text}:{EndMinute.Text}") : null,
-            WaitingArea = EndHour.IsEnabled ? TicketChecksList.Where(x => x.IsSelected).FirstOrDefault().Name.Split(" - ")[0] : null,
-            TicketChecks = EndHour.IsEnabled ? [.. TicketChecksList.Where(x => x.IsSelected).Select(x => x.Name.Split(" - ")[1])] : null,
+            TicketCheckIds = EndHour.IsEnabled ? [.. WaitingAreasList.SelectedItems
+                .OfType<TicketCheck>()
+                .Select(x => x.Id)] : null,
             Platform = (string)PlatformComboBox.SelectedItem,
             Length = int.Parse(LengthTextBox.Text),
             Landmark = (string)LandmarkComboBox.SelectedItem == "无" ? null : (string)LandmarkComboBox.SelectedItem,
@@ -159,21 +146,21 @@ public sealed partial class TrainStopDialog : Page
                     StartMinute.IsEnabled = false;
                     EndHour.IsEnabled = true;
                     EndMinute.IsEnabled = true;
-                    TicketChecksCheckList.IsEnabled = true;
+                    WaitingAreasList.IsEnabled = true;
                     break;
                 case "中间站":
                     StartHour.IsEnabled = true;
                     StartMinute.IsEnabled = true;
                     EndHour.IsEnabled = true;
                     EndMinute.IsEnabled = true;
-                    TicketChecksCheckList.IsEnabled = true;
+                    WaitingAreasList.IsEnabled = true;
                     break;
                 case "终到站":
                     StartHour.IsEnabled = true;
                     StartMinute.IsEnabled = true;
                     EndHour.IsEnabled = false;
                     EndMinute.IsEnabled = false;
-                    TicketChecksCheckList.IsEnabled = false;
+                    WaitingAreasList.IsEnabled = false;
                     break;
             }
             Validate(null, null);

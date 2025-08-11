@@ -1,4 +1,5 @@
-﻿using Windows.Storage;
+﻿using Microsoft.Win32;
+using Windows.Storage;
 using Windows.Storage.Pickers;
 
 namespace CRSim.Services
@@ -6,7 +7,7 @@ namespace CRSim.Services
     public class DialogService : IDialogService
     {
         public XamlRoot? XamlRoot { get; set; }
-        public async Task<string?> GetInputAsync(string title)
+        public async Task<string?> GetInputAsync(string title,string placeholder)
         {
             ContentDialog dialog = new()
             {
@@ -16,7 +17,7 @@ namespace CRSim.Services
                 PrimaryButtonText = "确定",
                 CloseButtonText = "取消",
                 DefaultButton = ContentDialogButton.Primary,
-                Content = new InputDialog()
+                Content = new InputDialog(placeholder)
             };
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
@@ -72,50 +73,25 @@ namespace CRSim.Services
             };
             await dialog.ShowAsync();
         }
-        public async Task<(string, List<string>)> GetInputTicketCheckAsync(List<string> waitingAreaNames)
-        {
-            bool isButtonEnabled = false;
-            ContentDialog dialog = new()
-            {
-                XamlRoot = XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "新增检票口",
-                PrimaryButtonText = "确定",
-                CloseButtonText = "取消",
-                DefaultButton = ContentDialogButton.Primary,
-                IsPrimaryButtonEnabled = false
-            };
-            var ticketCheckDialog = new TicketCheckDialog(waitingAreaNames, isValid => dialog.IsPrimaryButtonEnabled = isValid);
-            dialog.Content = ticketCheckDialog;
-            dialog.PrimaryButtonClick += (s, e) =>
-            {
-                ticketCheckDialog.GenerateTicketChecks();
-            };
-            var result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
-            {
-                var inputDialog = dialog.Content as TicketCheckDialog;
-                return (inputDialog.SelectedWaitingArea, inputDialog.GeneratedTicketChecks);
-            }
-            return (null, null);
-        }
 
-        public async Task<string?> GetFileAsync(string[] filter)
+        public string? GetFile(string[] extensions)
         {
-            var openPicker = new FileOpenPicker();
-            var window = App.MainWindow;
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
-            openPicker.ViewMode = PickerViewMode.Thumbnail;
-            openPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-            foreach (var f in filter)
+            var dlg = new OpenFileDialog();
+            dlg.Multiselect = false;
+
+            var filters = extensions
+                .Select(ext =>
+                {
+                    var extNoDot = ext.TrimStart('.').ToUpperInvariant();
+                    return $"{extNoDot} 文件 (*{ext})|*{ext}";
+                });
+
+            dlg.Filter = string.Join("|", filters);
+
+            bool? result = dlg.ShowDialog();
+            if (result == true)
             {
-                openPicker.FileTypeFilter.Add(f);
-            }
-            var file = await openPicker.PickSingleFileAsync();
-            if (file != null)
-            {
-                return file.Path;
+                return dlg.FileName;
             }
             return null;
         }
@@ -134,7 +110,7 @@ namespace CRSim.Services
             return null;
         }
 
-        public async Task<TrainStop?> GetInputTrainStopAsync(List<string> ticketChecks, List<string> platforms)
+        public async Task<TrainStop?> GetInputTrainStopAsync(List<WaitingArea> waitingAreas, List<string> platforms)
         {
             bool isButtonEnabled = false;
             ContentDialog dialog = new()
@@ -147,7 +123,7 @@ namespace CRSim.Services
                 DefaultButton = ContentDialogButton.Primary,
                 IsPrimaryButtonEnabled = false
             };
-            var platformDialog = new TrainStopDialog(ticketChecks,platforms,isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            var platformDialog = new TrainStopDialog(waitingAreas, platforms,isValid => dialog.IsPrimaryButtonEnabled = isValid);
             dialog.Content = platformDialog;
             dialog.PrimaryButtonClick += (s, e) =>
             {
@@ -162,7 +138,7 @@ namespace CRSim.Services
             return null;
         }
 
-        public async Task<TrainStop?> EditInputTrainStopAsync(List<string> ticketChecks, List<string> platforms, TrainStop trainStop)
+        public async Task<TrainStop?> EditInputTrainStopAsync(List<WaitingArea> waitingAreas, List<string> platforms, TrainStop trainStop)
         {
             bool isButtonEnabled = false;
             ContentDialog dialog = new()
@@ -175,7 +151,7 @@ namespace CRSim.Services
                 DefaultButton = ContentDialogButton.Primary,
                 IsPrimaryButtonEnabled = false
             };
-            var platformDialog = new TrainStopDialog(ticketChecks, platforms, trainStop, isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            var platformDialog = new TrainStopDialog(waitingAreas, platforms, trainStop, isValid => dialog.IsPrimaryButtonEnabled = isValid);
             dialog.Content = platformDialog;
             dialog.PrimaryButtonClick += (s, e) =>
             {
@@ -190,17 +166,21 @@ namespace CRSim.Services
             return null;
         }
 
-        public async Task<string?> SaveFileAsync(string filter, string f)
+        public string? SaveFile(string extension, string suggestedFileName)
         {
-            FileSavePicker savePicker = new();
-            var window = App.MainWindow;
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hWnd);
-            savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            savePicker.SuggestedFileName = f;
-            savePicker.FileTypeChoices.Add("File", [filter]);
-            StorageFile file = await savePicker.PickSaveFileAsync();
-            return file?.Path;
+            var dlg = new SaveFileDialog
+            {
+                FileName = suggestedFileName
+            };
+            var extNoDot = extension.TrimStart('.').ToUpperInvariant();
+            var filter = $"{extNoDot} Files (*{extension})|*{extension}";
+            dlg.Filter = filter;
+            bool? result = dlg.ShowDialog();
+            if (result == true)
+            {
+                return dlg.FileName;
+            }
+            return null;
         }
 
         public async Task<List<Platform>?> GetInputPlatformAsync()

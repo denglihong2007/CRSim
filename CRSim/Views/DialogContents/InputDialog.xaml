@@ -8,6 +8,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <TextBox Text="{x:Bind InputText, Mode=TwoWay}" />
+        <TextBox PlaceholderText="{x:Bind Placeholder}" Text="{x:Bind InputText, Mode=TwoWay}" />
     </StackPanel>
 </Page>

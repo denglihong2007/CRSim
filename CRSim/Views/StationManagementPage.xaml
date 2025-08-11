@@ -13,12 +13,23 @@
     xmlns:viewmodels="using:CRSim.ViewModels"   
     xmlns:models="using:CRSim.Models"     
     xmlns:coremodels="using:CRSim.Core.Models"
+    xmlns:selectors="using:CRSim.Selectors"
     mc:Ignorable="d"
     Loaded="Page_Loaded"
     d:DataContext="{d:DesignInstance Type=viewmodels:StationManagementPageViewModel}">
     <Page.Resources>
         <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
-        <converters:ListToStringConverter x:Key="ListToStringConverter" Separator=", " />
+        <converters:TicketChecksToStringConverter x:Key="TicketChecksToStringConverter" Separator=" " WaitingAreas="{x:Bind ViewModel.WaitingAreas}"/>
+        <DataTemplate x:Key="WaitingAreaTemplate" x:DataType="coremodels:WaitingArea">
+            <TreeViewItem Content="{x:Bind Name}" ItemsSource="{x:Bind TicketChecks}" />
+        </DataTemplate>
+        <DataTemplate x:Key="TicketCheckTemplate" x:DataType="coremodels:TicketCheck">
+            <TextBlock Text="{x:Bind Name}" />
+        </DataTemplate>
+        <selectors:TreeViewTemplateSelector
+            x:Key="TreeViewTemplateSelector"
+            WaitingAreaTemplate="{StaticResource WaitingAreaTemplate}"
+            TicketCheckTemplate="{StaticResource TicketCheckTemplate}" />
     </Page.Resources>
     <Grid x:Name="ContentPagePane" Margin="36,40,0,36">
         <Grid.RowDefinitions>
@@ -81,52 +92,6 @@
                                 <controls:WrapLayout Orientation="Horizontal" VerticalSpacing="8" HorizontalSpacing="24"/>
                             </ItemsRepeater.Layout>      
                         </ItemsRepeater>
-                        <TextBlock Text="候车室" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,24,0,0"/>
-                        <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Right" Margin="0,12,0,0">
-                            <AppBarButton Icon="Add" Label="添加" Command="{x:Bind ViewModel.AddWaitingAreaCommand}" />
-                            <AppBarButton Icon="Clear" Label="删除" Command="{x:Bind ViewModel.DeleteWaitingAreaCommand}" CommandParameter="{x:Bind WaitingAreaList.SelectedItem, Mode=OneWay}"/>
-                            <AppBarButton Icon="Delete" Label="清空" Command="{x:Bind ViewModel.DeleteAllWaitingAreaCommand}" />
-                        </CommandBar>
-                        <Border Style="{StaticResource ListViewBorder}" Margin="0,8,0,0">
-                            <ListView x:Name="WaitingAreaList" ItemsSource="{x:Bind ViewModel.WaitingAreaNames}" MaxHeight="300"/>
-                        </Border>
-                        <TextBlock Text="检票口" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,24,0,0"/>
-                        <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Right" Margin="0,12,0,0">
-                            <AppBarButton Icon="Add" Label="添加" Command="{x:Bind ViewModel.AddTicketCheckCommand}" />
-                            <AppBarButton Icon="Clear" Label="删除" Command="{x:Bind ViewModel.DeleteTicketCheckCommand}" CommandParameter="{x:Bind TicketChecksList.SelectedItem, Mode=OneWay}" />
-                            <AppBarButton Icon="Delete" Label="清空" Command="{x:Bind ViewModel.DeleteAllTicketCheckCommand}" />
-                        </CommandBar>
-                        <Border Style="{StaticResource ListViewBorder}" Margin="0,8,0,0">
-                            <ListView x:Name="TicketChecksList" ItemsSource="{x:Bind ViewModel.TicketChecks}" MaxHeight="300">
-                                <ListView.Header>
-                                    <Grid Padding="16,12" ColumnSpacing="16">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="80" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="编号" />
-                                        <TextBlock Grid.Column="1" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="候车室" />
-                                    </Grid>
-                                </ListView.Header>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="coremodels:TicketCheck">
-                                        <Grid ColumnSpacing="16">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="80" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Text="{x:Bind Name}" />
-                                            <TextBlock Grid.Column="1" Text="{x:Bind WaitingAreaName}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                                <ListView.ItemContainerStyle>
-                                    <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                    </Style>
-                                </ListView.ItemContainerStyle>
-                            </ListView>
-                        </Border>
                         <TextBlock Text="站台" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,24,0,0"/>
                         <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Right" Margin="0,12,0,0">
                             <AppBarButton Icon="Add" Label="添加" Command="{x:Bind ViewModel.AddPlatformCommand}" />
@@ -164,6 +129,17 @@
                                 </ListView.ItemContainerStyle>
                             </ListView>
                         </Border>
+                        <TextBlock Text="检票口" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,24,0,0"/>
+                        <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Right" Margin="0,12,0,0">
+                            <AppBarButton Icon="Add" Label="添加候车区" Command="{x:Bind ViewModel.AddWaitingAreaCommand}" />
+                            <AppBarButton Icon="Add" Label="添加检票口" Command="{x:Bind ViewModel.AddTicketCheckCommand}" CommandParameter="{x:Bind WaitingAreasList.SelectedItem, Mode=OneWay}"/>
+                            <AppBarButton Icon="Clear" Label="删除" Command="{x:Bind ViewModel.DeleteItemCommand}" CommandParameter="{x:Bind WaitingAreasList.SelectedItem, Mode=OneWay}" />
+                            <AppBarButton Icon="Delete" Label="清空" Command="{x:Bind ViewModel.DeleteAllTicketChecksCommand}" />
+                        </CommandBar>
+                        <Border Style="{StaticResource ListViewBorder}" Margin="0,8,0,0">
+                            <TreeView MaxHeight="300" Name="WaitingAreasList"
+                                      ItemsSource="{x:Bind ViewModel.WaitingAreas, Mode=OneWay}" ItemTemplateSelector="{StaticResource TreeViewTemplateSelector}" />
+                        </Border>
                         <TextBlock Text="车次" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,24,0,0"/>
                         <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Right" Margin="0,12,0,0">
                             <AppBarButton Icon="Add" Label="添加" Command="{x:Bind ViewModel.AddTrainStopCommand}" />
@@ -195,18 +171,16 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="车次" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
                                         <TextBlock Grid.Column="1" Text="长度" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
                                         <TextBlock Grid.Column="2" Text="到时" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
                                         <TextBlock Grid.Column="3" Text="发时" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
-                                        <TextBlock Grid.Column="4" Text="候车区" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
-                                        <TextBlock Grid.Column="5" Text="检票口" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
-                                        <TextBlock Grid.Column="6" Text="站台" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
-                                        <TextBlock Grid.Column="7" Text="地标" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
-                                        <TextBlock Grid.Column="8" Text="始发站" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
-                                        <TextBlock Grid.Column="9" Text="终到站" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="4" Text="检票口" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                                        <TextBlock Grid.Column="5" Text="站台" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="6" Text="地标" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="7" Text="始发站" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="8" Text="终到站" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
                                     </Grid>
                                 </ListView.Header>
                                 <ListView.ItemTemplate>
@@ -222,18 +196,16 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Text="{x:Bind Number}" />
                                             <TextBlock Grid.Column="1" Text="{x:Bind Length}" />
                                             <TextBlock Grid.Column="2" Text="{x:Bind ArrivalTime, Converter={StaticResource TimeSpanToStringConverter}}" />
                                             <TextBlock Grid.Column="3" Text="{x:Bind DepartureTime, Converter={StaticResource TimeSpanToStringConverter}}" />
-                                            <TextBlock Grid.Column="4" Text="{x:Bind WaitingArea}" />
-                                            <TextBlock Grid.Column="5" Text="{x:Bind TicketChecks, Converter={StaticResource ListToStringConverter}}" />
-                                            <TextBlock Grid.Column="6" Text="{x:Bind Platform}" />
-                                            <TextBlock Grid.Column="7" Text="{x:Bind Landmark}" />
-                                            <TextBlock Grid.Column="8" Text="{x:Bind Origin}" />
-                                            <TextBlock Grid.Column="9" Text="{x:Bind Terminal}" />
+                                            <TextBlock Grid.Column="4" Text="{x:Bind TicketCheckIds, Converter={StaticResource TicketChecksToStringConverter}}"/>
+                                            <TextBlock Grid.Column="5" Text="{x:Bind Platform}" />
+                                            <TextBlock Grid.Column="6" Text="{x:Bind Landmark}" />
+                                            <TextBlock Grid.Column="7" Text="{x:Bind Origin}" />
+                                            <TextBlock Grid.Column="8" Text="{x:Bind Terminal}" />
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>

@@ -10,7 +10,7 @@ namespace CRSim.ScreenSimulator.Models
         public string? Text { get; set; }
         public Uri? Video { get; set; }
         public Station? Station { get; set; }
-        public string? TicketCheck { get; set; }
+        public TicketCheck? TicketCheck { get; set; }
         public string? PlatformName { get; set; }
         public int? Loaction { get; set; }
     }

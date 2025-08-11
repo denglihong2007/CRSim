@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CRSim.Core.Models;
-using CRSim.ScreenSimulator.Models;
-using System.Windows;
-using System.Collections.ObjectModel;
 using CRSim.Core.Abstractions;
+using CRSim.Core.Models;
 using CRSim.ScreenSimulator.Abstractions;
+using CRSim.ScreenSimulator.Models;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
 
 namespace CRSim.ScreenSimulator.ViewModels
 {
@@ -104,11 +105,11 @@ namespace CRSim.ScreenSimulator.ViewModels
             OnPropertyChanged(nameof(ScreenB));
         }
 
-        public void LoadData(Station station, string ticketCheck, string platform)
+        public void LoadData(Station station, TicketCheck? ticketCheck, string platform)
         {
             ThisStation = station;
             ThisPlatform = platform;
-            if (ticketCheck != string.Empty) ThisTicketCheck = ticketCheck.Split(" - ")[1];//重复检票口名称的临时解决方案
+            ThisTicketCheck = ticketCheck?.Name;
             var trains = station.TrainStops;
             foreach (var trainNumber in trains)
             {
@@ -117,7 +118,7 @@ namespace CRSim.ScreenSimulator.ViewModels
                     (StationType == StationType.Both ||
                     trainNumber.StationType == StationType.Both ||
                     StationType == trainNumber.StationType) &&
-                    (ticketCheck == string.Empty || (trainNumber.WaitingArea==ticketCheck.Split(" - ")[0] && trainNumber.TicketChecks.Contains(ticketCheck.Split(" - ")[1]))) &&//重复检票口名称的临时解决方案
+                    (ticketCheck == null || trainNumber.TicketCheckIds.Contains(ticketCheck.Id)) &&
                     (platform == string.Empty || trainNumber.Platform == platform))
                 {
                     var now = TimeService.GetDateTimeNow();
@@ -138,8 +139,11 @@ namespace CRSim.ScreenSimulator.ViewModels
                         Origin = trainNumber.Origin,
                         ArrivalTime = AdjustTime(trainNumber.ArrivalTime),
                         DepartureTime = AdjustTime(trainNumber.DepartureTime),
-                        TicketChecks = trainNumber.TicketChecks,
-                        WaitingArea = trainNumber.StationType == StationType.Arrival ? string.Empty : trainNumber.WaitingArea,
+                        TicketChecks = [.. station.WaitingAreas
+                            .SelectMany(w => w.TicketChecks)
+                            .Where(tc => trainNumber.TicketCheckIds.Contains(tc.Id))
+                            .Select(tc => tc.Name)],
+                        WaitingArea = trainNumber.StationType == StationType.Arrival ? string.Empty : string.Join(" ", station.WaitingAreas.Where(x => x.TicketChecks.Any(y => trainNumber.TicketCheckIds.Contains(y.Id))).Select(x=>x.Name)),
                         Platform = trainNumber.Platform,
                         Length = trainNumber.Length,
                         Landmark = trainNumber.Landmark,

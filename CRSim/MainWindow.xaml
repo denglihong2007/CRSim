@@ -26,7 +26,7 @@
         <NavigationView Grid.Row="1" x:Name="nvSample" SelectionChanged="nvSample_SelectionChanged"
                         IsBackButtonVisible="Collapsed" IsBackEnabled="False">
             <NavigationView.MenuItems>
-                <NavigationViewItem Icon="Home" Content="主页" Tag="DashboardPage" />
+                <NavigationViewItem Icon="Home" Content="主页" Tag="DashboardPage" IsSelected="True"/>
                 <NavigationViewItem Content="插件" Tag="PluginManagementPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xEA86;" />

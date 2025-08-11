@@ -56,7 +56,7 @@ public partial class PluginManagementPageViewModel : ObservableObject
     [RelayCommand]
     public async Task InstallPluginLocal()
     {
-        if (await _dialogService.GetFileAsync([".crsp"]) is string filePath)
+        if (_dialogService.GetFile([".crsp"]) is string filePath)
         {
             try
             {
@@ -85,7 +85,7 @@ public partial class PluginManagementPageViewModel : ObservableObject
     public async Task PackPlugin()
     {
         if (SelectedPlugin == null) return;
-        string? filePath = await _dialogService.SaveFileAsync(".crsp", $"{SelectedPlugin.Manifest.Id}");
+        string? filePath = _dialogService.SaveFile(".crsp", $"{SelectedPlugin.Manifest.Id}");
         if (filePath == null) return;
         try
         {

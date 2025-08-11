@@ -20,21 +20,10 @@ namespace CRSim.Core.Services
         {
             try
             {
-                var json =  File.ReadAllText(jsonFilePath).Replace("StationStop", "TrainStop");// 修复旧版本的数据
+                var json =  File.ReadAllText(jsonFilePath).Replace("StationStop", "TrainStop");
                 var data = JsonSerializer.Deserialize<Json>(json,JsonContext.Default.Json);
                 _stations = data.Stations;
                 _trainNumbers = data.TrainNumbers;
-
-                foreach (var station in _stations)
-                {
-                    foreach(var trainStop in station.TrainStops)
-                    {
-                        if (trainStop.WaitingArea == null && trainStop.DepartureTime.HasValue)
-                        {
-                            trainStop.WaitingArea = station.WaitingAreas.Where(x => x.TicketChecks.Contains(trainStop.TicketChecks[0])).FirstOrDefault().Name;
-                        }
-                    }
-                }// 修复旧版本的数据
             }
             catch
             {
@@ -157,9 +146,9 @@ namespace CRSim.Core.Services
 
                 foreach (var ticketCheckName in ticketCheck.Split('|'))
                 {
-                    if (!string.IsNullOrWhiteSpace(ticketCheckName) && !waitingArea.TicketChecks.Contains(ticketCheckName))
+                    if (!string.IsNullOrWhiteSpace(ticketCheckName) && !waitingArea.TicketChecks.Any(x => x.Name == ticketCheckName))
                     {
-                        waitingArea.TicketChecks.Add(ticketCheckName);
+                        waitingArea.TicketChecks.Add(new TicketCheck { Name = ticketCheckName });
                     }
                 }
 
@@ -187,10 +176,9 @@ namespace CRSim.Core.Services
                         Number = data[0],
                         Terminal = data[3],
                         Origin = data[2],
-                        TicketChecks = [.. ticketCheck.Split('|')],
+                        TicketCheckIds = [.. waitingArea.TicketChecks.Select(x=>x.Id)],
                         ArrivalTime = arrivalTime,
                         DepartureTime = departureTime,
-                        WaitingArea = waitingAreaName,
                         Platform = platform,
                         Length = data[0].StartsWith('G') || data[0].StartsWith('D') || data[0].StartsWith('C') ? Math.Abs(data[0].GetHashCode()) % 3 == 0 ? 8 : 16 : 18,
                         Landmark = data[8] + "色" ?? null,

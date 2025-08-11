@@ -8,7 +8,7 @@ namespace CRSim.ScreenSimulator.Abstractions
     {
         ITimeService TimeService { get; }
         Dispatcher UIDispatcher { get; set; }
-        void LoadData(Station station, string ticketCheck, string platform);
+        void LoadData(Station station, TicketCheck? ticketCheck, string platform);
         string? Text { get; set; }
         Uri Video { get; set; }
         int Location { get; set; }

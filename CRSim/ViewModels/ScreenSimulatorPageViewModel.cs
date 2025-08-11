@@ -29,7 +29,7 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
     [ObservableProperty]
     public partial bool LocationNeeded { get; set; }
     public List<string> StationNames => [.. databaseService.GetAllStations().Select(x => x.Name)];
-    public ObservableCollection<string> TicketChecks { get; private set; } = [];
+    public ObservableCollection<TicketCheck> TicketChecks { get; private set; } = [];
     public ObservableCollection<Platform> Platforms { get; private set; } = [];
     public ObservableCollection<int> Locations { get; private set; } = [];
 
@@ -41,7 +41,7 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
 
     public string SelectedStationName = "";
 
-    public string SelectedTicketCheck = "";
+    public TicketCheck? SelectedTicketCheck;
 
     public string SelectedPlatformName = "";
 
@@ -79,14 +79,18 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
             var station = databaseService.GetStationByName(v);
             SelectedStationName = station.Name;
             SelectedPlatformName = "";
-            SelectedTicketCheck = "";
+            SelectedTicketCheck = null;
             SelectedLoaction = 0;
             TicketChecks.Clear();
             foreach (var waitingArea in station.WaitingAreas)
             {
-                foreach (string ticketCheck in waitingArea.TicketChecks)
+                foreach (var ticketCheck in waitingArea.TicketChecks)
                 {
-                    TicketChecks.Add($"{waitingArea.Name} - {ticketCheck}");//重复检票口名称的临时解决方案
+                    TicketChecks.Add(new TicketCheck()
+                    {
+                        Id = ticketCheck.Id,
+                        Name = waitingArea.Name + " - " + ticketCheck.Name,
+                    });
                 }
             }
             Platforms.Clear();
@@ -101,7 +105,7 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
     [RelayCommand]
     public void SelectTicketCheck(object s)
     {
-        if (s is string ticketCheck)
+        if (s is TicketCheck ticketCheck)
         {
             SelectedTicketCheck = ticketCheck;
         }
@@ -134,7 +138,7 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
     [RelayCommand]
     public async Task SelectVideo()
     {
-        string? Path = await dialogService.GetFileAsync([".wmv",".asf",".mp4",".m4v",".mov",".mpg",".mpeg"]);
+        string? Path = dialogService.GetFile([".wmv",".asf",".mp4",".m4v",".mov",".mpg",".mpeg"]);
         if (Path == null) return;
         Video = Path;
     }
@@ -150,7 +154,7 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
             Text = (TextNeeded && !string.IsNullOrWhiteSpace(Text)) ? Text : null,
             Video = (VideoNeeded && !string.IsNullOrWhiteSpace(Video)) ? new Uri(Video) : null,
             Station = StationNeeded ? databaseService.GetStationByName(SelectedStationName) : null,
-            TicketCheck = TicketCheckNeeded ? SelectedTicketCheck : string.Empty,
+            TicketCheck = TicketCheckNeeded ? SelectedTicketCheck : null,
             PlatformName = PlatformNeeded ? SelectedPlatformName : string.Empty,
             Loaction = (LocationNeeded && SelectedLoaction != 0) ? SelectedLoaction : 0
         };
@@ -161,7 +165,7 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
     {
         IsStartSimulationAvailable = SelectedStyle != null &&
             (!StationNeeded || !string.IsNullOrWhiteSpace(SelectedStationName)) &&
-            (!TicketCheckNeeded || !string.IsNullOrWhiteSpace(SelectedTicketCheck)) &&
+            (!TicketCheckNeeded || SelectedTicketCheck is not null) &&
             (!LocationNeeded || SelectedLoaction != 0) &&
             (!PlatformNeeded || !string.IsNullOrWhiteSpace(SelectedPlatformName));
     }

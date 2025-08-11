@@ -113,14 +113,14 @@ namespace CRSim.ViewModels
         [RelayCommand]
         public async Task ExportData()
         {
-            string? path = await _dialogService.SaveFileAsync(".json", "data");
+            string? path = _dialogService.SaveFile(".json", "data");
             if (string.IsNullOrWhiteSpace(path)) return;
             await _databaseService.ExportData(path);
         }
         [RelayCommand]
         public async Task ImportData()
         {
-            string? path = await _dialogService.GetFileAsync([".json"]);
+            string? path = _dialogService.GetFile([".json"]);
             if (string.IsNullOrWhiteSpace(path)) return;
             _databaseService.ImportData(path);
             await _databaseService.SaveData();

@@ -2,13 +2,9 @@ using System.ComponentModel;
 
 namespace CRSim.Views
 {
-    // 定义事件委托类型
-    public delegate void SplashScreenClosedEventHandler(object sender, EventArgs e);
-
     public sealed partial class StartWindow : Window, INotifyPropertyChanged
     {
         // 声明事件
-        public event SplashScreenClosedEventHandler SplashScreenClosed;
         public string AppVersion { get; set; } = App.AppVersion;
 
         private string _status = "正在启动...";
@@ -24,7 +20,6 @@ namespace CRSim.Views
                 }
             }
         }
-
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
 
         private void OnPropertyChanged(string propertyName)
@@ -59,13 +54,6 @@ namespace CRSim.Views
             Logo.MediaPlayer.Play();
             
 
-        }
-
-        // 完成初始化，结束进度条并关闭
-        public void CompleteInitialization()
-        {
-            SplashScreenClosed?.Invoke(this, EventArgs.Empty);
-            this.Close();
         }
     }
 }

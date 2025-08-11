@@ -44,7 +44,7 @@ namespace CRSim.ScreenSimulator.ViewModels
             OnPropertyChanged(nameof(FirstTrain));
             OnPropertyChanged(nameof(SecondTrain));
         }
-        public void LoadData(Station station, string _ticketCheck, string platform)
+        public void LoadData(Station station, TicketCheck? _ticketCheck, string platform)
         {
             var trains = station.TrainStops;
             foreach (var trainNumber in trains)
