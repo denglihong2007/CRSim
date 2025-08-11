@@ -28,6 +28,8 @@
                     <TextBlock Text="&#xF8AC;" FontFamily="Segoe MDL2 Assets" FontSize="20" VerticalAlignment="Center" MouseLeftButtonDown="DecreaseSpeed"/>
                     <TextBlock x:Name="SpeedText" Text="1x" FontSize="22" VerticalAlignment="Center" Margin="4,0"/>
                     <TextBlock Text="&#xF8AD;" FontFamily="Segoe MDL2 Assets" FontSize="20" VerticalAlignment="Center" MouseLeftButtonDown="IncreaseSpeed"/>
+                    <TextBlock x:Name="RestoreSpeedIcon" Text="&#xE777;" FontFamily="Segoe MDL2 Assets" 
+                               FontSize="18" VerticalAlignment="Center" Margin="8,0,0,0" MouseLeftButtonDown="RestoreSpeed"/>
                     <TextBlock x:Name="FullScreenIcon" Text="&#xE92D;" FontFamily="Segoe MDL2 Assets"
                                FontSize="20" VerticalAlignment="Center" Margin="16,0,0,0" MouseLeftButtonDown="FullScreen"/>
                     <TextBlock x:Name="RestoreWindowIcon" Text="&#xE92C;" FontFamily="Segoe MDL2 Assets"
