@@ -50,6 +50,14 @@ namespace CRSim.ScreenSimulator.Views
             {
                 _timeService.Speed /= 2;
                 SpeedText.Text = _timeService.Speed.ToString() + "x";
+                if (_timeService.Speed == 1)
+                {
+                    RestoreSpeedIcon.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    RestoreSpeedIcon.Visibility = Visibility.Visible;
+                }
             }
         }
         private void IncreaseSpeed(object sender, MouseButtonEventArgs e)
@@ -58,7 +66,22 @@ namespace CRSim.ScreenSimulator.Views
             {
                 _timeService.Speed *= 2;
                 SpeedText.Text = _timeService.Speed.ToString() + "x";
+                if (_timeService.Speed == 1)
+                {
+                    RestoreSpeedIcon.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    RestoreSpeedIcon.Visibility = Visibility.Visible;
+                }
             }
+        }
+
+        private void RestoreSpeed(object sender, MouseButtonEventArgs e)
+        {
+            _timeService.Speed = 1;
+            SpeedText.Text = "1x";
+            RestoreSpeedIcon.Visibility = Visibility.Hidden;
         }
 
         private void Window_Closed(object sender, EventArgs e)
