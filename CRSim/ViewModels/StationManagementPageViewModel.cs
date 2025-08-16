@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using CRSim.Converters;
+using System.Text.RegularExpressions;
 
 namespace CRSim.ViewModels;
 
@@ -58,7 +59,7 @@ public partial class StationManagementPageViewModel : ObservableObject
         {
             IconGlyph = "\uF161",
             Title = "检票口数",
-            Detail = WaitingAreas.SelectMany(x=>x.TicketChecks).Count().ToString()
+            Detail = WaitingAreas.SelectMany(x => x.TicketChecks).Count().ToString()
         });
         InfoItems.Add(new InfoItem()
         {
@@ -107,7 +108,7 @@ public partial class StationManagementPageViewModel : ObservableObject
     [RelayCommand]
     public async Task AddStation()
     {
-        string? station = await _dialogService.GetInputAsync("请输入车站名称",string.Empty);
+        string? station = await _dialogService.GetInputAsync("请输入车站名称", string.Empty);
         if (station != null)
         {
             if (StationNames.Contains(station))
@@ -174,10 +175,10 @@ public partial class StationManagementPageViewModel : ObservableObject
     [RelayCommand]
     public async Task AddWaitingArea()
     {
-        string? waitingAreaName = await _dialogService.GetInputAsync("请输入候车室名称",string.Empty);
+        string? waitingAreaName = await _dialogService.GetInputAsync("请输入候车室名称", string.Empty);
         if (waitingAreaName != null)
         {
-            if (WaitingAreas.Any(x=>x.Name==waitingAreaName))
+            if (WaitingAreas.Any(x => x.Name == waitingAreaName))
             {
                 await _dialogService.ShowMessageAsync("添加失败", $"名称 {waitingAreaName} 候车室已存在。");
                 return;
@@ -203,7 +204,7 @@ public partial class StationManagementPageViewModel : ObservableObject
     [RelayCommand]
     public async Task AddTicketCheck(object selectedWaitingArea)
     {
-        if(selectedWaitingArea is WaitingArea waitingArea)
+        if (selectedWaitingArea is WaitingArea waitingArea)
         {
             var input = await _dialogService.GetInputAsync("请输入检票口", "试试“1-3”/“1A-5B”");
             if (input == null) return;
@@ -425,7 +426,7 @@ public partial class StationManagementPageViewModel : ObservableObject
     {
         if (!await CheckCanImport()) return;
 
-        var path = _dialogService.GetFile([".pyetgr",".pyetdb",".json"]);
+        var path = _dialogService.GetFile([".pyetgr", ".pyetdb", ".json"]);
         if (path == null) return;
         try
         {
@@ -540,36 +541,37 @@ public partial class StationManagementPageViewModel : ObservableObject
                     DepartureTime = TimeSpan.TryParseExact(worksheet.Cells[row, 4].Text, @"hh\:mm", null, out TimeSpan departure) ? departure : null,
                     TicketCheckIds = [.. worksheet.Cells[row, 5].Text
                         .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(entry =>
+                        .SelectMany(entry =>
                         {
-                            var parts = entry.Split('|');
+                            var parts = entry.Split('|', 2); // 分成候车区名和检票口字符串
                             if (parts.Length < 2)
-                                return Guid.Empty; 
+                                return null;
+
                             var waitingAreaName = parts[0];
-                            var ticketCheckName = parts[1];
+                            var ticketCheckNames = parts[1].Split(',', StringSplitOptions.RemoveEmptyEntries);
+
                             var waitingArea = WaitingAreas.FirstOrDefault(w => w.Name == waitingAreaName);
-                            TicketCheck tc;
                             if (waitingArea == null)
                             {
-                                tc = new TicketCheck { Name = ticketCheckName };
-                                WaitingAreas.Add(new WaitingArea
+                                waitingArea = new WaitingArea
                                 {
                                     Name = waitingAreaName,
-                                    TicketChecks = [tc]
-                                });
+                                    TicketChecks = []
+                                };
+                                WaitingAreas.Add(waitingArea);
                             }
-                            else
+
+                            return ticketCheckNames.Select(tcName =>
                             {
-                                tc = waitingArea.TicketChecks.FirstOrDefault(c => c.Name == ticketCheckName);
+                                var tc = waitingArea.TicketChecks.FirstOrDefault(c => c.Name == tcName);
                                 if (tc == null)
                                 {
-                                    tc = new TicketCheck { Name = ticketCheckName };
+                                    tc = new TicketCheck { Name = tcName };
                                     waitingArea.TicketChecks.Add(tc);
                                 }
-                            }
-                            return tc.Id;
-                        })
-                        .Where(id => id != Guid.Empty)],
+                                return tc.Id;
+                            });
+                        })],
                     Platform = worksheet.Cells[row, 6].Text.Trim(),
                     Landmark = worksheet.Cells[row, 7].Text.Trim() == "" ? "无" : worksheet.Cells[row, 8].Text.Trim(),
                     Origin = worksheet.Cells[row, 8].Text.Trim(),
@@ -587,6 +589,7 @@ public partial class StationManagementPageViewModel : ObservableObject
     {
         var path = _dialogService.SaveFile(".xlsx", "data");
         if (path == null) return;
+        var converter = new TicketChecksToStringConverter() { WaitingAreas = WaitingAreas };
         ExcelPackage.License.SetNonCommercialPersonal("CRSim");
         using var package = new ExcelPackage();
         var worksheet = package.Workbook.Worksheets.Add("Sheet1");
@@ -605,17 +608,7 @@ public partial class StationManagementPageViewModel : ObservableObject
             worksheet.Cells[i + 2, 2].Value = TrainStops[i].Length;
             worksheet.Cells[i + 2, 3].Value = TrainStops[i].ArrivalTime?.ToString(@"hh\:mm") ?? string.Empty;
             worksheet.Cells[i + 2, 4].Value = TrainStops[i].DepartureTime?.ToString(@"hh\:mm") ?? string.Empty;
-            worksheet.Cells[i + 2, 5].Value = TrainStops[i].TicketCheckIds is null ? string.Empty : string.Join(" ", TrainStops[i].TicketCheckIds
-                .Select(id =>
-                {
-                    var area = WaitingAreas.FirstOrDefault(a => a.TicketChecks.Any(tc => tc.Id == id));
-                    var check = area?.TicketChecks.FirstOrDefault(tc => tc.Id == id);
-                    if (area != null && check != null)
-                        return $"{area.Name}|{check.Name}";
-                    else
-                        return null;
-                })
-                .Where(x => x != null));
+            worksheet.Cells[i + 2, 5].Value = (string)converter.Convert(TrainStops[i].TicketCheckIds, null, null, null);
             worksheet.Cells[i + 2, 6].Value = TrainStops[i].Platform;
             worksheet.Cells[i + 2, 7].Value = TrainStops[i].Landmark;
             worksheet.Cells[i + 2, 8].Value = TrainStops[i].Origin;
@@ -711,22 +704,45 @@ public partial class StationManagementPageViewModel : ObservableObject
     {
         t.Landmark = new[] { "红色", "绿色", "褐色", "蓝色", "紫色", "黄色", "橙色", null }[new Random().Next(8)];
         t.Length = t.Number.StartsWith('G') || t.Number.StartsWith('D') || t.Number.StartsWith('C') ? Math.Abs(t.Number.GetHashCode()) % 3 == 0 ? 8 : 16 : 18;
-        t.Platform = Platforms[new Random().Next(Platforms.Count)].Name;
+        t.Platform = (
+            Platforms
+                .Where(p => !TrainStops.Any(s => s.Platform == p.Name &&
+                    ((s.ArrivalTime ?? (s.DepartureTime - TimeSpan.FromMinutes(3))) <
+                     (t.DepartureTime ?? (t.ArrivalTime + TimeSpan.FromMinutes(3)))) &&
+                    ((s.DepartureTime ?? (s.ArrivalTime + TimeSpan.FromMinutes(3))) >
+                     (t.ArrivalTime ?? (t.DepartureTime - TimeSpan.FromMinutes(3))))))
+                .Select(p => p.Name)
+                .ToList()
+        ) is { Count: > 0 } free ? free[Random.Shared.Next(free.Count)] : Platforms[Random.Shared.Next(Platforms.Count)].Name;
         if (t.DepartureTime.HasValue)
         {
-            //t.TicketCheckIds = [.. WaitingAreas
-            //    .FirstOrDefault(x => x.TicketChecks.Any(x => x.Name == t.Platform + "A")
-            //             && x.TicketChecks.Any(x => x.Name == t.Platform + "B"))?
-            //    .TicketChecks
-            //    .Where(x => x.Name == t.Platform + "A" || x.Name == t.Platform + "B")
-            //    .Select(x => x.Id)];
-            //根据站台选择检票口
-            if (t.TicketCheckIds is null || t.TicketCheckIds.Count == 0) t.TicketCheckIds = [WaitingAreas
-                .SelectMany(x => x.TicketChecks)
-                .Select(x => x.Id)
-                .OrderBy(_ => new Random().Next())
-                .FirstOrDefault()];
-            //若没有则随机匹配
+            string platformA = t.Platform + "A";
+            string platformB = t.Platform + "B";
+            // 查找有匹配 A 和 B 检票口的候车区
+            var targetWaitingArea = WaitingAreas
+                .FirstOrDefault(w =>
+                    w.TicketChecks.Any(tc => tc.Name == platformA) &&
+                    w.TicketChecks.Any(tc => tc.Name == platformB));
+
+            if (targetWaitingArea is not null)
+            {
+                t.TicketCheckIds = [.. targetWaitingArea.TicketChecks
+                    .Where(tc => tc.Name == platformA || tc.Name == platformB)
+                    .Select(tc => tc.Id)];
+            }
+            else
+            {
+                var allTicketChecks = WaitingAreas.SelectMany(w => w.TicketChecks).ToList();
+                if (allTicketChecks.Count > 0)
+                {
+                    var randomIndex = Random.Shared.Next(allTicketChecks.Count);
+                    t.TicketCheckIds = [allTicketChecks[randomIndex].Id];
+                }
+                else
+                {
+                    t.TicketCheckIds = [];
+                }
+            }
         }
         return t;
     }
@@ -768,14 +784,12 @@ public partial class StationManagementPageViewModel : ObservableObject
         {
             if (s.DepartureTime.HasValue)
             {
-                List<Guid> allTicketChecks = [.. WaitingAreas.SelectMany(x => x.TicketChecks.Select(x=>x.Id))];
-                foreach (var ticketCheckId in s.TicketCheckIds)
+                var allTicketChecks = new HashSet<Guid>(WaitingAreas.SelectMany(x => x.TicketChecks.Select(tc => tc.Id)));
+                var toRemove = s.TicketCheckIds.Where(id => !allTicketChecks.Contains(id)).ToList();
+                foreach (var id in toRemove)
                 {
-                    if (!allTicketChecks.Contains(ticketCheckId))
-                    {
-                        warningMessage += $"\n车次 {s.Number} 所分配的检票口 {ticketCheckId} 不存在，已自动删除；";
-                        s.TicketCheckIds.Remove(ticketCheckId);//感觉这个代码放在这个位置不合适，但我也不知放在哪里好QAQ
-                    }
+                    warningMessage += $"\n车次 {s.Number} 所分配的检票口 {id} 不存在，已自动删除该检票口；";
+                    s.TicketCheckIds.Remove(id);
                 }
             }
             if (!Platforms.Any(x => x.Name == s.Platform))

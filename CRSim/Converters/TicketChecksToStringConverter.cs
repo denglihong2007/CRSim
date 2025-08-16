@@ -11,11 +11,13 @@ namespace CRSim.Converters
             if (value is List<Guid> ticketCheckIds)
             {
                 var ticketChecks = WaitingAreas
-                        .SelectMany(w => w.TicketChecks
+                    .SelectMany(w => w.TicketChecks
                         .Where(tc => ticketCheckIds.Contains(tc.Id))
-                        .Select(tc => $"{w.Name}|{tc.Name}"));
-                return string.Join(Separator, ticketChecks);
+                        .Select(tc => new { AreaName = w.Name, TicketName = tc.Name }))
+                    .GroupBy(x => x.AreaName)
+                    .Select(g => $"{g.Key}|{string.Join(",", g.Select(x => x.TicketName))}");
 
+                return string.Join(Separator, ticketChecks);
             }
             return string.Empty;
         }
