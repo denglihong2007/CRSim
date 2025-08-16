@@ -61,6 +61,14 @@ public sealed partial class TrainStopDialog : Page
             EndMinute.IsEnabled = false;
             StationKindPanelRadioButtons.SelectedIndex = 2;
         }
+        if (trainStop.Status is null)
+        {
+            SuspendToggleSwitch.IsOn = true;
+        }
+        else
+        {
+            StatusTextBox.Text = trainStop.Status.Value.TotalMinutes.ToString();
+        }
         if (trainStop.TicketCheckIds != null)
         {
             foreach (var id in trainStop.TicketCheckIds)
@@ -81,6 +89,7 @@ public sealed partial class TrainStopDialog : Page
     }
     private void Validate(object sender, object e)
     {
+        if (StartHour is null) return;
         bool areTextBoxesFilled =
             (!StartHour.IsEnabled || ValidateTime(StartHour.Text, 24)) &&
             (!StartMinute.IsEnabled || ValidateTime(StartMinute.Text, 60)) &&
@@ -94,7 +103,8 @@ public sealed partial class TrainStopDialog : Page
             !string.IsNullOrWhiteSpace(ArrivalTextBox.Text) &&
             !string.IsNullOrWhiteSpace(DepartureTextBox.Text) &&
             int.TryParse(LengthTextBox.Text, out int i) && i > 0 &&
-            PlatformComboBox.SelectedItem != null;
+            PlatformComboBox.SelectedItem != null &&
+            int.TryParse(StatusTextBox.Text, out int m) && m >= 0;
         _onValidityChanged?.Invoke(isValid);
     }
 
@@ -130,6 +140,7 @@ public sealed partial class TrainStopDialog : Page
             Platform = (string)PlatformComboBox.SelectedItem,
             Length = int.Parse(LengthTextBox.Text),
             Landmark = (string)LandmarkComboBox.SelectedItem == "нч" ? null : (string)LandmarkComboBox.SelectedItem,
+            Status = SuspendToggleSwitch.IsOn ? null : TimeSpan.FromMinutes(int.Parse(StatusTextBox.Text))
         };
     }
 

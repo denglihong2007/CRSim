@@ -15,6 +15,9 @@ namespace CRSim.Core.Models
         [JsonConverter(typeof(TimeSpanJsonConverter))]
         public TimeSpan? DepartureTime { get; set; }
 
+        [JsonConverter(typeof(TimeSpanJsonConverter))]
+        public TimeSpan? Status { get; set; } = TimeSpan.Zero;
+
         public List<Guid>? TicketCheckIds { get; set; }
 
         public string? Origin { get; set; }

@@ -147,7 +147,7 @@ namespace CRSim.ScreenSimulator.ViewModels
                         Platform = trainNumber.Platform,
                         Length = trainNumber.Length,
                         Landmark = trainNumber.Landmark,
-                        State = TimeSpan.Zero
+                        State = trainNumber.Status
                     });
 
                 }

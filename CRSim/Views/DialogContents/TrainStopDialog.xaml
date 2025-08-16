@@ -36,6 +36,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBox Grid.Row="0" Grid.Column="0" x:Name="NumberTextBox" Header="车次" Width="96" TextChanged="Validate"/>
                 <TextBox Grid.Row="0" Grid.Column="1" x:Name="LengthTextBox" Header="长度" TextChanged="Validate" Text="16"/>
@@ -43,6 +44,8 @@
                 <ComboBox Grid.Row="1" Grid.Column="0" x:Name="LandmarkComboBox" Header="地标" Width="96" SelectedIndex="0" ItemsSource="{x:Bind Landmarks}"/>
                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="DepartureTextBox" Header="始发站" Width="96" TextChanged="Validate"/>
                 <TextBox Grid.Row="1" Grid.Column="2" x:Name="ArrivalTextBox" Header="终到站" Width="96" TextChanged="Validate"/>
+                <TextBox Grid.Row="2" Grid.Column="0" x:Name="StatusTextBox" Header="正晚点" Width="96" Text="0" Height="60" VerticalAlignment="Top" TextChanged="Validate"/>
+                <ToggleSwitch Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" x:Name="SuspendToggleSwitch" Header="停运" IsOn="False" Width="96" />
             </Grid>
             <RadioButtons x:Name="StationKindPanelRadioButtons" SelectedIndex="1" MaxColumns="3" 
                           SelectionChanged="StationKindPanelRadioButtons_SelectionChanged" Header="站点类型" Margin="0,16,0,0">
