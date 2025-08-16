@@ -1,84 +1,88 @@
 ﻿using CRSim.Core.Abstractions;
 using CRSim.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+
 namespace CRSim.ScreenSimulator.Converters
 {
     public class TrainStateColorConverter : IMultiValueConverter, IHasTimeService
     {
         public ITimeService TimeService { get; set; }
         private Settings _settings;
+
         public string DisplayMode { get; set; } = "Normal";
 
-        /*
-        Normal: 标准显示。
-        Alternating_Row_Colors: 候车状态隔行异色显示（第4个参数控制行号）。
-        Arrive: 到达屏显示
-        */
-
-        public List<SolidColorBrush> WaitingColorList { get; set; } = [];
+        public List<SolidColorBrush> WaitingColorList { get; set; } = new();
         public SolidColorBrush ArrivedText { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush ArrivingText { get; set; } = new(Colors.White);
         public SolidColorBrush WaitingColor { get; set; } = new(Colors.White);
         public SolidColorBrush CheckInColor { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush StopCheckInColor { get; set; } = new(Colors.Red);
-        object IMultiValueConverter.Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var serviceProvider = StyleManager.ServiceProvider;
-            _settings = serviceProvider.GetRequiredService<ISettingsService>().GetSettings();
-            if (DisplayMode == "Arrive" || ( values.Length > 1 && values[1] == null))
+            _settings ??= StyleManager.ServiceProvider
+                .GetRequiredService<ISettingsService>()
+                .GetSettings();
+
+            var now = TimeService.GetDateTimeNow();
+
+            // 到达模式或缺少关键数据
+            if (DisplayMode == "Arrive" || (values.Length > 1 && values[1] == null))
             {
                 if (values[0] is DateTime arriveTime)
-                {
-                    return TimeService.GetDateTimeNow() >= arriveTime ? ArrivedText : ArrivingText;
-                }
-                return string.Empty;
+                    return now >= arriveTime ? ArrivedText : ArrivingText;
+                return new SolidColorBrush(Colors.Transparent);
             }
-            if (values[0] != null && values[1] == null)
+
+            // 列车停运
+            if (values[2] is null)
+                return StopCheckInColor;
+
+            // 正点/晚点判断
+            if (values[0] != null && values[1] == null && values[2] is TimeSpan status)
+                return GetStatusColor(status);
+
+            // 有出发时间
+            if (values[1] is DateTime departureTime && departureTime != DateTime.MinValue)
             {
-                return WaitingColor;
-            }
-            if (values[1] is DateTime departureTime && departureTime !=new DateTime())
-            {
-                if (values[0] is DateTime)
-                {
-                    //过路站
-                    if (TimeService.GetDateTimeNow() > departureTime.Subtract(_settings.PassingCheckInAdvanceDuration) && TimeService.GetDateTimeNow() < departureTime.Subtract(_settings.StopCheckInAdvanceDuration))
-                    {
-                        return CheckInColor;
-                    }
-                }
-                else
-                {
-                    //始发站
-                    if (TimeService.GetDateTimeNow() > departureTime.Subtract(_settings.DepartureCheckInAdvanceDuration) && TimeService.GetDateTimeNow() < departureTime.Subtract(_settings.StopCheckInAdvanceDuration))
-                    {
-                        return CheckInColor;
-                    }
-                }
-                if (TimeService.GetDateTimeNow() > departureTime.Subtract(_settings.StopCheckInAdvanceDuration))
-                {
+                bool isPassingStation = values[0] is DateTime;
+                var checkInDuration = isPassingStation ? _settings.PassingCheckInAdvanceDuration : _settings.DepartureCheckInAdvanceDuration;
+
+                // 候车中/检票中
+                if (now > departureTime - checkInDuration && now < departureTime - _settings.StopCheckInAdvanceDuration)
+                    return CheckInColor;
+
+                // 停止检票
+                if (now >= departureTime - _settings.StopCheckInAdvanceDuration)
                     return StopCheckInColor;
-                }
-                if (values[2] is TimeSpan state && state.TotalMinutes > 0)
-                {
-                    return StopCheckInColor;
-                }
-                if (DisplayMode == "Alternating_Row_Colors" && values.Length > 3 && values[3] is int rowNumber){
-                    return WaitingColorList[rowNumber % WaitingColorList.Count];
-                }
-                return WaitingColor;
+
+                // 正点/晚点
+                if (values[2] is TimeSpan status2)
+                    return GetStatusColor(status2, values.Length > 3 && values[3] is int row ? row : -1);
             }
+
             return new SolidColorBrush(Colors.Transparent);
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        private SolidColorBrush GetStatusColor(TimeSpan status, int rowNumber = -1)
         {
-            // 通常不需要实现 ConvertBack
-            return null;
+            if (status == TimeSpan.Zero)
+            {
+                if (DisplayMode == "Alternating_Row_Colors" && rowNumber >= 0 && WaitingColorList.Count > 0)
+                    return WaitingColorList[rowNumber % WaitingColorList.Count];
+                return WaitingColor; // 正点
+            }
+            else
+            {
+                return StopCheckInColor; // 晚点
+            }
         }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 }

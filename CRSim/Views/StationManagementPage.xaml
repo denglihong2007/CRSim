@@ -18,7 +18,8 @@
     Loaded="Page_Loaded"
     d:DataContext="{d:DesignInstance Type=viewmodels:StationManagementPageViewModel}">
     <Page.Resources>
-        <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
+        <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter"/>
+        <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverterForStatus" NullString="停运" ZeroString="正点"/>
         <converters:TicketChecksToStringConverter x:Key="TicketChecksToStringConverter" Separator=" " WaitingAreas="{x:Bind ViewModel.WaitingAreas}"/>
         <DataTemplate x:Key="WaitingAreaTemplate" x:DataType="coremodels:WaitingArea">
             <TreeViewItem Content="{x:Bind Name}" ItemsSource="{x:Bind TicketChecks}" />
@@ -166,6 +167,7 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="1.5*" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="*" />
@@ -181,6 +183,7 @@
                                         <TextBlock Grid.Column="6" Text="地标" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
                                         <TextBlock Grid.Column="7" Text="始发站" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
                                         <TextBlock Grid.Column="8" Text="终到站" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="9" Text="正晚点" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
                                     </Grid>
                                 </ListView.Header>
                                 <ListView.ItemTemplate>
@@ -191,6 +194,7 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="1.5*" />
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
@@ -206,6 +210,7 @@
                                             <TextBlock Grid.Column="6" Text="{x:Bind Landmark}" />
                                             <TextBlock Grid.Column="7" Text="{x:Bind Origin}" />
                                             <TextBlock Grid.Column="8" Text="{x:Bind Terminal}" />
+                                            <TextBlock Grid.Column="9" Text="{x:Bind Status, Converter={StaticResource TimeSpanToStringConverterForStatus}}" />
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>

@@ -66,7 +66,7 @@ namespace CRSim.ScreenSimulator.ViewModels
                         Terminal = trainNumber.Terminal,
                         ArrivalTime = AdjustTime(trainNumber.ArrivalTime),
                         DepartureTime = AdjustTime(trainNumber.DepartureTime),
-                        State = TimeSpan.Zero
+                        State = trainNumber.Status
                     });
                 }
             }

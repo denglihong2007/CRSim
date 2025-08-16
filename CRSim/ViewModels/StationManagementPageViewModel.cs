@@ -575,7 +575,13 @@ public partial class StationManagementPageViewModel : ObservableObject
                     Platform = worksheet.Cells[row, 6].Text.Trim(),
                     Landmark = worksheet.Cells[row, 7].Text.Trim() == "" ? "无" : worksheet.Cells[row, 8].Text.Trim(),
                     Origin = worksheet.Cells[row, 8].Text.Trim(),
-                    Terminal = worksheet.Cells[row, 9].Text.Trim()
+                    Terminal = worksheet.Cells[row, 9].Text.Trim(),
+                    Status = worksheet.Cells[row, 10].Text switch
+                    {
+                        "停运" => null,
+                        "正点" => TimeSpan.Zero,
+                        var t => TimeSpan.TryParseExact(t, @"hh\:mm", null, out TimeSpan ts) ? ts : TimeSpan.Zero
+                    }
                 });
             }
         }
@@ -602,6 +608,7 @@ public partial class StationManagementPageViewModel : ObservableObject
         worksheet.Cells[1, 7].Value = "地标";
         worksheet.Cells[1, 8].Value = "始发站";
         worksheet.Cells[1, 9].Value = "终到站";
+        worksheet.Cells[1, 10].Value = "终到站";
         for (int i = 0; i < TrainStops.Count; i++)
         {
             worksheet.Cells[i + 2, 1].Value = TrainStops[i].Number;
@@ -613,6 +620,12 @@ public partial class StationManagementPageViewModel : ObservableObject
             worksheet.Cells[i + 2, 7].Value = TrainStops[i].Landmark;
             worksheet.Cells[i + 2, 8].Value = TrainStops[i].Origin;
             worksheet.Cells[i + 2, 9].Value = TrainStops[i].Terminal;
+            worksheet.Cells[i + 2, 10].Value = TrainStops[i].Status switch
+            {
+                null => "停运",
+                var ts when ts == TimeSpan.Zero => "正点",
+                var ts => ts.Value.ToString(@"hh\:mm")
+            };
         }
         await package.SaveAsAsync(new FileInfo(path));
     }
