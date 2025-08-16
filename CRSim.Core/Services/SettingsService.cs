@@ -2,13 +2,17 @@
 using CRSim.Core.Models;
 using Microsoft.Win32;
 using System.Text.Json;
+using Windows.Devices.Geolocation;
+using Windows.Storage;
 
 namespace CRSim.Core.Services
 {
     public class SettingsService : ISettingsService
     {
+        private const string Key = "HasShownWelcome";
         private Settings _settings;
         private RegistryKey _key = Registry.CurrentUser.OpenSubKey(@"Software\CRSim\Settings",true);
+        
         public void SaveSettings()
         {
             _key.SetValue("SwitchPageSeconds", _settings.SwitchPageSeconds);
@@ -52,6 +56,11 @@ namespace CRSim.Core.Services
         public Settings GetSettings()
         {
             return _settings;
+        }
+        public bool HasShownWelcome
+        {
+            get => (int?)_key.GetValue("HasShownWelcome") == 1;
+            set => _key.SetValue("HasShownWelcome", value ? 1 : 0);
         }
     }
 }

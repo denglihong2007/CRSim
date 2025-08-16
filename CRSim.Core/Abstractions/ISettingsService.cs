@@ -12,5 +12,6 @@ namespace CRSim.Core.Abstractions
         void LoadSettings();
         void SaveSettings();
         Settings GetSettings();
+        public bool HasShownWelcome { get; set; }
     }
 }

@@ -25,6 +25,7 @@
     <None Remove="Styles\Controls.xaml" />
     <None Remove="Views\DialogContents\InputDialog.xaml" />
     <None Remove="Views\StartWindow.xaml" />
+    <None Remove="Views\WelcomeWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -106,6 +107,9 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <Page Update="Views\WelcomeWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\StartWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

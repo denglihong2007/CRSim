@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading;
 
 namespace CRSim
 {
@@ -39,14 +40,16 @@ namespace CRSim
                     services.AddSingleton<INetworkService, NetworkService>();
                     services.AddSingleton<IDialogService, DialogService>();
                     services.AddTransient<ITimeService, TimeService>();
+                    services.AddSingleton<IFlagService, FlagService>();
                     services.AddSingleton<StyleManager>();
                     services.AddSingleton<MainWindow>();
                     services.AddSingleton<StartWindow>();
+                    services.AddSingleton<WelcomeWindow>();
                     services.AddTransient<DashboardPageViewModel>();
                     services.AddTransient<StationManagementPageViewModel>();
                     services.AddTransient<ScreenSimulatorPageViewModel>();
                     services.AddTransient<SettingsPageViewModel>();
-                    services.AddTransient<PluginManagementPageViewModel>(); 
+                    services.AddTransient<PluginManagementPageViewModel>();
                     PluginService.InitializePlugins(context, services, parsedOptions.ExternalPluginPath);
                 })
             .Build();
@@ -55,12 +58,20 @@ namespace CRSim
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
+
             var splashScreenWindow = AppHost.Services.GetRequiredService<StartWindow>();
             splashScreenWindow.Activate();
             await PerformInitializationAsync(splashScreenWindow);
+
+
+            var welcomeWindow = AppHost.Services.GetRequiredService<WelcomeWindow>();
+            welcomeWindow.Activate();
+            splashScreenWindow.Close();
+            if (AppHost.Services.GetRequiredService<ISettingsService>().HasShownWelcome == false) await App.AppHost.Services.GetRequiredService<IFlagService>().WaitCloseAsync();
+
             MainWindow = AppHost.Services.GetRequiredService<MainWindow>();
             MainWindow.Activate();
-            splashScreenWindow.Close();
+            welcomeWindow.Close();
         }
 
         private static async Task PerformInitializationAsync(StartWindow startWindow)
@@ -82,6 +93,7 @@ namespace CRSim
                 Console.WriteLine($"初始化错误: {ex.Message}");
             }
         }
+
 
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
         private static extern bool AllocConsole();
