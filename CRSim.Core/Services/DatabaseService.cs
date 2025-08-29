@@ -105,12 +105,9 @@ namespace CRSim.Core.Services
             return _trainNumbers;
         }
 
-        public void AddTrainNumber(string number)
+        public void AddTrainNumber(TrainNumber trainNumber)
         {
-            _trainNumbers.Add(new TrainNumber()
-            {
-                Number = number
-            });
+            _trainNumbers.Add(trainNumber);
         }
 
         public async Task ImportStationFrom7D(string path)

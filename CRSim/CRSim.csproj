@@ -89,6 +89,9 @@
     <Page Update="Views\SettingsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\TrainNumberManagementPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\StationManagementPage.xaml">
       <SubType>Designer</SubType>
     </Page>

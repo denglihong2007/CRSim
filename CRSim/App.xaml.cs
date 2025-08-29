@@ -44,6 +44,7 @@ namespace CRSim
                     services.AddSingleton<StartWindow>();
                     services.AddTransient<DashboardPageViewModel>();
                     services.AddTransient<StationManagementPageViewModel>();
+                    services.AddTransient<TrainNumberManagementPageViewModel>();
                     services.AddTransient<ScreenSimulatorPageViewModel>();
                     services.AddTransient<SettingsPageViewModel>();
                     services.AddTransient<PluginManagementPageViewModel>(); 

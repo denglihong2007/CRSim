@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="CRSim.Views.TrainNumberStopDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CRSim.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:coremodels="using:CRSim.Core.Models"
+    xmlns:selectors="using:CRSim.Selectors"
+    mc:Ignorable="d">
+    <StackPanel Orientation="Vertical">
+        <TextBox HorizontalAlignment="Left" x:Name="NumberTextBox" Header="车站" Width="96" TextChanged="Validate"/>
+        <RadioButtons x:Name="StationKindPanelRadioButtons" SelectedIndex="1" MaxColumns="3" 
+                          SelectionChanged="StationKindPanelRadioButtons_SelectionChanged" Header="站点类型" Margin="0,16,0,0">
+            <x:String>始发站</x:String>
+            <x:String>中间站</x:String>
+            <x:String>终到站</x:String>
+        </RadioButtons>
+        <TextBlock Text="停站时间" Margin="0,16,0,0"/>
+        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+            <TextBlock Margin="0,0,8,0" Text="由" VerticalAlignment="Center"/>
+            <TextBox TextChanged="StartHour_TextChanged" x:Name="StartHour" Margin="0,0,8,0" Width="70" />
+            <TextBlock Margin="0,0,8,0" Text="时" VerticalAlignment="Center"/>
+            <TextBox TextChanged="StartMinute_TextChanged" x:Name="StartMinute" Margin="0,0,8,0" Width="70" />
+            <TextBlock Text="分" VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+            <TextBlock Margin="0,0,8,0" Text="到" VerticalAlignment="Center"/>
+            <TextBox TextChanged="EndHour_TextChanged" x:Name="EndHour" Margin="0,0,8,0" Width="70" />
+            <TextBlock Margin="0,0,8,0" Text="时" VerticalAlignment="Center"/>
+            <TextBox TextChanged="Validate" x:Name="EndMinute" Margin="0,0,8,0" Width="70" />
+            <TextBlock Text="分" VerticalAlignment="Center"/>
+        </StackPanel>
+    </StackPanel>
+</Page>

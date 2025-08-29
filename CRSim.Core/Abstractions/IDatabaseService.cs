@@ -12,7 +12,7 @@ namespace CRSim.Core.Abstractions
         void AddStationByName(string name);
         void AddStation(Station station);
         Task ImportStationFrom7D(string path);
-        void AddTrainNumber(string number);
+        void AddTrainNumber(TrainNumber trainNumber);
         void DeleteStation(Station station);
         void DeleteTrainNumber(TrainNumber trainNumber);
         void UpdateStation(string stationName,Station station);

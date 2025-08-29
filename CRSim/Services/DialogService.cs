@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using CRSim.Core.Models;
+using Microsoft.Win32;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
@@ -96,17 +97,58 @@ namespace CRSim.Services
             return null;
         }
 
-        public TrainStop? GetInputTrainNumberStop(TrainStop? t)
+        public async Task<TrainStop?> GetInputTrainNumberStopAsync()
         {
-            //var dialog = new TrainNumberStopDialog(t)
-            //{
-            //    Owner = _owner
-            //};
-            //bool? result = dialog.ShowDialog();
-            //if (result == true)
-            //{
-            //    return dialog.GeneratedTrainStop;
-            //}
+            bool isButtonEnabled = false;
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "编辑车次",
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                IsPrimaryButtonEnabled = false
+            };
+            var platformDialog = new TrainNumberStopDialog(isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            dialog.Content = platformDialog;
+            dialog.PrimaryButtonClick += (s, e) =>
+            {
+                platformDialog.GenerateTrainStop();
+            };
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var inputDialog = dialog.Content as TrainNumberStopDialog;
+                return inputDialog.GeneratedTrainStop;
+            }
+            return null;
+        }
+        public async Task<TrainStop?> EditTrainNumberStopAsync(TrainStop trainStop)
+        {
+            bool isButtonEnabled = false;
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "编辑车次",
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                IsPrimaryButtonEnabled = false
+            };
+            var platformDialog = new TrainNumberStopDialog(trainStop, isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            dialog.Content = platformDialog;
+            dialog.PrimaryButtonClick += (s, e) =>
+            {
+                platformDialog.GenerateTrainStop();
+            };
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var inputDialog = dialog.Content as TrainNumberStopDialog;
+                return inputDialog.GeneratedTrainStop;
+            }
             return null;
         }
 
