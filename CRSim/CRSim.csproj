@@ -100,6 +100,12 @@
     <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Assets\Background\CRSim.wmv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Background\SplashScreenBackground.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\CRSimIcon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
