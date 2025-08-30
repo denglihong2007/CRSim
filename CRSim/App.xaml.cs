@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using CRSim.WebsiteSimulator;
+using System.Diagnostics;
 
 namespace CRSim
 {
@@ -45,6 +46,8 @@ namespace CRSim
                     services.AddTransient<DashboardPageViewModel>();
                     services.AddTransient<StationManagementPageViewModel>();
                     services.AddTransient<TrainNumberManagementPageViewModel>();
+                    services.AddTransient<WebsiteSimulatorPageViewModel>();
+                    services.AddTransient<Simulator>();
                     services.AddTransient<ScreenSimulatorPageViewModel>();
                     services.AddTransient<SettingsPageViewModel>();
                     services.AddTransient<PluginManagementPageViewModel>(); 

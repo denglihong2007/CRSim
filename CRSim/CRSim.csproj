@@ -54,6 +54,7 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.250402" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250402" />
+    <PackageReference Include="CRSim.WebsiteSimulator" Version="2.3.109" />
     <PackageReference Include="EPPlus" Version="8.0.8" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
@@ -78,6 +79,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\DialogContents\PlatformDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\WebsiteSimulatorPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\ScreenSimulatorPage.xaml">

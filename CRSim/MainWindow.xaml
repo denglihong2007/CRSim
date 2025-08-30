@@ -48,7 +48,12 @@
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE786;" />
                     </NavigationViewItem.Icon>
-                </NavigationViewItem>            
+                </NavigationViewItem>
+                <NavigationViewItem Content="12306" Tag="WebsiteSimulatorPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xEB41;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
             <Frame x:Name="contentFrame"/>
         </NavigationView>
