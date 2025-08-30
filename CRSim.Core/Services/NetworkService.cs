@@ -151,5 +151,20 @@ namespace CRSim.Core.Services
             }
             return null;
         }
+
+        public async Task<UpdateInfo?> GetUpdateAsync(string uri)
+        {
+            try
+            {
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("CRSim");
+                var response = await client.GetStringAsync(uri);
+                return JsonSerializer.Deserialize(response, JsonContext.Default.UpdateInfo);
+            }
+            catch
+            {
+            }
+            return null;
+        }
     }
 }

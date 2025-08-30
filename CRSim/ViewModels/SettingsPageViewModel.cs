@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.Metrics;
+﻿using Downloader;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.IO.Packaging;
 using System.Reflection;
 
 namespace CRSim.ViewModels
@@ -12,13 +15,18 @@ namespace CRSim.ViewModels
         public partial string AppVersion { get; set; } = "";
         public ObservableCollection<InfoItem> Apis { get; } =
         [
-            new InfoItem { Title = "官方插件源", Detail = "http://47.122.74.193:25565" },
-            new InfoItem { Title = "镜像站插件源", Detail = "https://crsim.com.cn/api" },
+            new InfoItem { Title = "官方源", Detail = "http://47.122.74.193:25565" },
+            new InfoItem { Title = "镜像站源", Detail = "https://crsim.com.cn/api" },
         ];
         private Settings _settings;
         private readonly ISettingsService _settingsService;
         private readonly IDatabaseService _databaseService;
+        private readonly INetworkService _networkService;
         private readonly IDialogService _dialogService;
+
+        [ObservableProperty]
+        public partial int UpdateProgress { get; set; }
+
         #region 偏好设置
         [ObservableProperty]
         public partial string DepartureCheckInAdvanceDuration { get; set; }
@@ -53,14 +61,16 @@ namespace CRSim.ViewModels
         [ObservableProperty]
         public partial bool ReopenUnclosedScreensOnLoad { get; set; }
         #endregion
-        public SettingsPageViewModel(ISettingsService settingsService, IDatabaseService databaseService, IDialogService dialogService)
+        public SettingsPageViewModel(ISettingsService settingsService, IDatabaseService databaseService, IDialogService dialogService, INetworkService networkService)
         {
             _settingsService = settingsService;
             _databaseService = databaseService;
             _dialogService = dialogService;
+            _networkService = networkService;
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             AppVersion = $"Version {version}";
             LoadSettings();
+
         }
 
         private void LoadSettings()
@@ -95,7 +105,7 @@ namespace CRSim.ViewModels
             _settings.ApiUri = ApiUri.Detail;
             _settingsService.SaveSettings();
         }
-        private void UpdateSettings(string input, bool allowNegative, Action<int> updateAction)
+        private static void UpdateSettings(string input, bool allowNegative, Action<int> updateAction)
         {
             if (int.TryParse(input, out int value) && (allowNegative || value >= 0))
             {
@@ -109,6 +119,89 @@ namespace CRSim.ViewModels
             if (!await _dialogService.GetConfirmAsync("该操作将会清空所有数据，请否继续？")) return;
             _databaseService.ClearData();
             await _databaseService.SaveData();
+        }
+        [RelayCommand]
+        public async Task CheckUpdate()
+        {
+            var update = ApiUri.Title == "官方源" ? 
+                await _networkService.GetUpdateAsync("https://api.github.com/repos/denglihong2007/CRSim/releases/latest") : 
+                await _networkService.GetUpdateAsync("https://crsim.com.cn/api/version");
+            if (update is null)
+            {
+                await _dialogService.ShowMessageAsync("错误", "检查更新失败。");
+            }
+            else if (update.Name == AppVersion.Split(' ')[1])
+            {
+                await _dialogService.ShowMessageAsync("信息", "当前已经是最新版本。");
+            }
+            else
+            {
+                await _dialogService.ShowTextAsync("发现新版本 " + update.Name, update.Body + "\n系统即将下载安装新版本。");
+                DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+                var downloader = new DownloadService();
+                UpdateProgress = 0;
+                try
+                {
+                    int lastProgress = 0;
+                    var lastUpdate = DateTime.MinValue;
+                    downloader.DownloadProgressChanged += (s, e) =>
+                    {
+                        var now = DateTime.Now;
+                        if ((e.ProgressPercentage - lastProgress >= 1) || (now - lastUpdate).TotalMilliseconds >= 100)
+                        {
+                            lastProgress = (int)e.ProgressPercentage;
+                            lastUpdate = now;
+
+                            dispatcherQueue.TryEnqueue(() =>
+                            {
+                                UpdateProgress = (int)e.ProgressPercentage;
+                            });
+                        }
+                    };
+                    var path = Path.Combine(AppPaths.TempPath, "update.zip");
+                    await downloader.DownloadFileTaskAsync(update.Assets[0].BrowserDownloadUrl, path);
+                    UpdateProgress = 0;
+
+                    if (!FileHashHelper.VerifySHA256(path, update.Assets[0].Digest.Split(':')[1]))
+                    {
+                        await _dialogService.ShowMessageAsync("错误", "下载的文件校验失败，请重试。");
+                        return;
+                    }
+
+                    var programDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    var appExePath = Process.GetCurrentProcess().MainModule.FileName;
+                    var appName = Path.GetFileName(appExePath);
+                    string batchScript = $@"
+                        @echo off
+                        taskkill /F /IM ""{appName}"" >nul 2>&1
+                        timeout /t 2 >nul
+                        cd /d ""{programDirectory}""
+                        powershell -Command ""Expand-Archive -Path '{path}' -DestinationPath '{programDirectory}' -Force""
+                        del /f /q ""{path}""
+                        start """" ""{appExePath}""
+                        exit /b 0
+                        ";
+                    string batchFilePath = Path.Combine(Path.GetTempPath(), "CRSimUpdate.bat");
+                    File.WriteAllText(batchFilePath, batchScript);
+                    var processInfo = new ProcessStartInfo
+                    {
+                        FileName = "cmd.exe",
+                        Arguments = $"/c \"{batchFilePath}\"",
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
+
+                    Process.Start(processInfo);
+                    Application.Current.Exit();
+                }
+                catch (Exception e)
+                {
+                    await _dialogService.ShowTextAsync("错误", "更新失败。\n" + e);
+                    UpdateProgress = 0;
+                    return;
+                }
+            }
         }
         [RelayCommand]
         public async Task ExportData()

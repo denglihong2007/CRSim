@@ -42,10 +42,14 @@
                     <controls:SettingsCard Header="密钥" Description="用于解锁特定功能" HeaderIcon="{winui:FontIcon Glyph=&#xE8D7;}">
                         <TextBox Width="168" Text="{x:Bind ViewModel.UserKey, Mode=TwoWay}"/>
                     </controls:SettingsCard>
-                    <controls:SettingsCard Header="插件市场API" Description="插件市场资源源，重启应用生效" HeaderIcon="{winui:FontIcon Glyph=&#xE943;}">
+                    <controls:SettingsCard Header="API 地址" Description="适用于插件市场与软件更新" HeaderIcon="{winui:FontIcon Glyph=&#xE943;}">
                         <ComboBox ItemsSource="{x:Bind ViewModel.Apis}" SelectedItem="{x:Bind ViewModel.ApiUri,Mode=TwoWay}"
                                   DisplayMemberPath="Title" Width="168"/>
                     </controls:SettingsCard>
+                    <controls:SettingsCard Header="应用更新" Description="检查软件更新" HeaderIcon="{winui:FontIcon Glyph=&#xECC5;}">
+                        <Button Style="{StaticResource AccentButtonStyle}" Content="检查更新" Command="{x:Bind ViewModel.CheckUpdateCommand}" />
+                    </controls:SettingsCard>
+                    <ProgressBar Visibility="{x:Bind ViewModel.UpdateProgress, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=false}" Value="{x:Bind ViewModel.UpdateProgress, Mode=OneWay}"/>
                 </StackPanel>
                 <TextBlock Text="引导屏模拟" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
                 <StackPanel Spacing="4" Margin="0,0,0,24">
