@@ -1,165 +1,35 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-    <ImplicitUsings>enable</ImplicitUsings>
+	  <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+	  <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+	  <Nullable>enable</Nullable>
+	  <UseWPF>true</UseWPF>
+	  <Platforms>AnyCPU;x64</Platforms>
+      <ImplicitUsings>enable</ImplicitUsings>
+	  <PackageId>CRSim.ScreenSimulator</PackageId>
+	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\BeijingNan\PrimaryPlatformScreen.png" />
-    <None Remove="Assets\ChengduDong\cdcz.png" />
-    <None Remove="Assets\ChengduDong\PillarTicketCheckScreen.png" />
-    <None Remove="Assets\ChengduDong\TicketCheck.png" />
-    <None Remove="Assets\ChengduShuangliuAirport\logo-CR.png" />
-    <None Remove="Assets\ChengduShuangliuAirport\logo-CRH.png" />
-    <None Remove="Assets\ChengduShuangliuAirport\logo-GTJT.png" />
-    <None Remove="Assets\ChengduShuangliuAirport\planetakingoff.png" />
-    <None Remove="Assets\ChengduShuangliuAirport\SecondaryScreen.png" />
-    <None Remove="Assets\KunmingChangshuiAirport\PrimaryScreen.png" />
-    <None Remove="Assets\Niuzhou\PrimaryScreen.png" />
-    <None Remove="Assets\ShenyangBei\PlatformScreen.png" />
-    <None Remove="Assets\TianjinMetro\PlatformScreen.png" />
-    <None Remove="Assets\TianjinMetro\TianjinMetro-Icon.png" />
+    <None Remove="Assets\logo-CR.png" />
+    <None Remove="Assets\logo-CRH.png" />
+    <None Remove="Assets\logo-GTJT.png" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Models\StylesInfoData.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
-    <PackageReference Include="PinYinConverterCore" Version="1.0.2" />
-    <PackageReference Include="PP.Wpf" Version="1.0.8" />
-  </ItemGroup>
-
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
+		<PackageReference Include="PinYinConverterCore" Version="1.0.2" />
+		<PackageReference Include="PP.Wpf" Version="1.0.8" />
+	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CRSim.Core\CRSim.Core.csproj" />
-    <ProjectReference Include="..\CRSim.Shared\CRSim.Shared.csproj" />
   </ItemGroup>
-
   <ItemGroup>
-    <Compile Update="Views\Ankang\ExitScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\BeijingXi\PrimaryScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\ChengduDong\PillarTicketCheckScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\ChengduDong\PrimaryTicketCheckScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\ChengduDong\SecondaryScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\KunmingChangshuiAirport\PrimaryScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\ChengduShuangliuAirport\SecondaryScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Niuzhou\PrimaryScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\TianjinMetro\PlatformScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\XuzhouMetro\PlatformScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\ChengduMetro\PlatformScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\GuangdongIntercity\SecondaryScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Guangyuan\PrimaryScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Hanzhong\PlatformScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Harbin\PrimaryScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Jinanxi\SmallScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Shanghai\OutsideScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Mianyang\PlatformScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Tianjin\PlatformScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Zibo\PrimaryScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Zibo\SecondaryScreenView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Assets\Ankang\ExitScreen.png" />
-    <Resource Include="Assets\BeijingNan\PrimaryPlatformScreen.png" />
-    <Resource Include="Assets\BeijingXi\PrimaryScreen.png" />
-    <Resource Include="Assets\BeijingNan\PrimaryScreen.png" />
-    <Resource Include="Assets\BeijingNan\TicketCheckScreen.png" />
-    <Resource Include="Assets\BeijingNan\SecondaryPlatformScreen.png" />
-    <Resource Include="Assets\Beijing\ArrivalScreen.png" />
-    <Resource Include="Assets\ChengduDong\cdcz.png" />
-    <Resource Include="Assets\ChengduDong\PillarTicketCheckScreen.png" />
-    <Resource Include="Assets\ChengduDong\PrimaryTicketCheckScreen.png" />
-    <Resource Include="Assets\ChengduDong\SecondaryScreen.png" />
-    <Resource Include="Assets\ChengduDong\TicketCheck.png" />
-    <Resource Include="Assets\ChengduMetro\ChengduMetro-Icon.png" />
-    <Resource Include="Assets\ChengduMetro\PlatformScreen.png" />
-    <Resource Include="Assets\ChengduShuangliuAirport\logo-CR.png" />
-    <Resource Include="Assets\ChengduShuangliuAirport\logo-CRH.png" />
-    <Resource Include="Assets\ChengduShuangliuAirport\logo-GTJT.png" />
-    <Resource Include="Assets\ChengduShuangliuAirport\planetakingoff.png" />
-    <Resource Include="Assets\ChengduShuangliuAirport\SecondaryScreen.png" />
-    <Resource Include="Assets\DaqingDong\ConcourseBridgeScreen.png" />
-    <Resource Include="Assets\DaqingDong\PlatformScreen.png" />
-    <Resource Include="Assets\DeZhouDong\PrimaryScreen.png" />
-    <Resource Include="Assets\DeZhouDong\TicketCheckScreen.png" />
-    <Resource Include="Assets\FuzhouNan\TicketCheckScreen.png" />
-    <Resource Include="Assets\Fuzhou\TicketCheckScreen.png" />
-    <Resource Include="Assets\GuangdongIntercity\SecondaryScreen.png" />
-    <Resource Include="Assets\Guangyuan\PrimaryScreen.png" />
-    <Resource Include="Assets\Hailaer\PrimaryScreen.png" />
-    <Resource Include="Assets\Hanzhong\Image.png" />
-    <Resource Include="Assets\Hanzhong\PlatformScreen.png" />
-    <Resource Include="Assets\Harbin\PrimaryScreen.png" />
-    <Resource Include="Assets\HarbinXi\PlatformScreen.png" />
-    <Resource Include="Assets\Jinanxi\SmallScreen.png" />
-    <Resource Include="Assets\KunmingChangshuiAirport\PrimaryScreen.png" />
-    <Resource Include="Assets\Mianyang\PlatformScreen.png" />
-    <Resource Include="Assets\Niuzhou\PrimaryScreen.png" />
-    <Resource Include="Assets\Shanghai\OutsideScreen.png" />
-    <Resource Include="Assets\ShenyangBei\PlatformScreen.png" />
-    <Resource Include="Assets\TianjinMetro\PlatformScreen.png" />
-    <Resource Include="Assets\TianjinMetro\TianjinMetro-Icon.png" />
-    <Resource Include="Assets\Tianjin\image.png" />
-    <Resource Include="Assets\Tianjin\PlatformScreen.png" />
-    <Resource Include="Assets\XuzhouMetro\Background.jpg" />
-    <Resource Include="Assets\XuzhouMetro\Metro.png" />
-    <Resource Include="Assets\XuzhouMetro\PlatformScreen.png" />
-    <Resource Include="Assets\XuzhouMetro\XuzhouMetro-Icon.png" />
-    <Resource Include="Assets\Yakeshi\PlatformScreen.png" />
-    <Resource Include="Assets\Zibo\ConcourseBridgeScreen.png" />
-    <Resource Include="Assets\Zibo\PlatformScreen.png" />
-    <Resource Include="Assets\Zibo\PrimaryScreen.png" />
-    <Resource Include="Assets\Zibo\SecondaryScreen.png" />
-    <Resource Include="Assets\Zibo\TicketCheckScreen.png" />
-    <Resource Include="Assets\Zibo\ExitScreen.png" />
+    <Resource Include="Assets\CRSimIcon.png" />
+    <Resource Include="Assets\logo-CR.png" />
+    <Resource Include="Assets\logo-CRH.png" />
+    <Resource Include="Assets\logo-GTJT.png" />
   </ItemGroup>
 
 </Project>

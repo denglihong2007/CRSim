@@ -24,8 +24,6 @@ namespace CRSim.ScreenSimulator.Converters
             if (values[0] is int Length && values[1] is int Location)
             {
                 if(DisplayMode == "least" && values[2] is string Direction){
-                    string AddString = "";
-                    if(values.Length >= 5 && values[4] is string TMP) AddString = TMP;
                     if(Direction == "left")
                     {   
                         string Arrow = DisplayArrow == "True"? "←" : "";
@@ -33,7 +31,7 @@ namespace CRSim.ScreenSimulator.Converters
                             if(IsClosedInterval == "closed"){
                                 if(Location < Length)
                                 {
-                                    return $"{Arrow}{AddString}1{HyphenText}{Location-1}";
+                                    return $"{Arrow}1{HyphenText}{Location-1}";
                                 }
                                 else if(Length == 1)
                                 {
@@ -41,21 +39,21 @@ namespace CRSim.ScreenSimulator.Converters
                                 }
                                 else
                                 {
-                                    return $"{Arrow}{AddString}1{HyphenText}{Length-1}";
+                                    return $"{Arrow}1{HyphenText}{Length-1}";
                                 }
                             }
                         }
                         if(Location <= Length)
                         {
-                            return $"{Arrow}{AddString}1{HyphenText}{Location}";
+                            return $"{Arrow}1{HyphenText}{Location}";
                         }
                         else if(Length == 1)
                         {
-                            return $"{Arrow}{AddString}1";
+                            return $"{Arrow}1";
                         }
                         else
                         {
-                            return $"{Arrow}{AddString}1{HyphenText}{Length}";
+                            return $"{Arrow}1{HyphenText}{Length}";
                         }
                     }
                     if(Direction == "right")
@@ -66,10 +64,10 @@ namespace CRSim.ScreenSimulator.Converters
                         }
                         else if(Location+1 == Length)
                         {
-                            return $"{Length}{AddString}{Arrow}";
+                            return $"{Length}{Arrow}";
                         }
                         else{
-                            return $"{Location+1}{HyphenText}{Length}{AddString}{Arrow}";
+                            return $"{Location+1}{HyphenText}{Length}{Arrow}";
                         }
                     }
                     return string.Empty;

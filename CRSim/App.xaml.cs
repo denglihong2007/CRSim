@@ -1,70 +1,109 @@
-﻿using CRSim.ScreenSimulator.Services;
+﻿using CRSim.WebsiteSimulator;
+using System.Diagnostics;
 
 namespace CRSim
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
-        private static readonly IHost _host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) =>
-            {
-                services.AddSingleton<ISettingsService,SettingsService>();
-                services.AddSingleton<ITimeService, TimeService>();
-                services.AddSingleton<INavigationService, NavigationService>();
-                services.AddSingleton<IDialogService, DialogService>();
-                services.AddSingleton<IDatabaseService, DatabaseService>();
-                services.AddSingleton<INetworkService, NetworkService>();
-                services.AddSingleton<MainWindow>();
-                services.AddSingleton<MainWindowViewModel>();
+        public static IHost AppHost { get; private set; }
+        public static MainWindow MainWindow;
+        public string[] commandLineArgs;
+        public CommandLineOptions parsedOptions;
+        public static string AppVersion { get; set; } = Assembly.GetAssembly(typeof(App)).GetName().Version.ToString();
+        private readonly Mutex mutex;
 
-                services.AddTransient<DashboardPage>();
-                services.AddTransient<DashboardPageViewModel>();
-
-                services.AddTransient<SettingsPage>();
-                services.AddTransient<SettingsPageViewModel>();
-
-                services.AddTransient<DataManagementPage>();
-                services.AddTransient<DataManagementPageViewModel>();
-                services.AddTransient<StationManagementPage>();
-                services.AddTransient<StationManagementPageViewModel>();
-                services.AddTransient<TrainNumberManagementPage>();
-                services.AddTransient<TrainNumberManagementPageViewModel>();
-
-                services.AddTransient<StartSimulationPage>();
-                services.AddTransient<StartSimulationPageViewModel>();
-                services.AddTransient<ScreenSimulationPage>();
-                services.AddTransient<ScreenSimulationPageViewModel>();
-                services.AddTransient<WebsiteSimulationPage>();
-                services.AddTransient<WebsiteSimulationPageViewModel>();
-
-                services.AddTransient<WebsiteSimulator.Simulator>();
-                services.AddScreenSimulatorServices();
-
-                services.AddTransient<UpdateChecker>();
-
-            }).Build();
-
-        [STAThread]
-        public static void Main()
+        public App()
         {
-            _host.Start();
+            mutex = new Mutex(true, "CRSim", out bool isNewInstance);
+            if (!isNewInstance)
+            {
+                Environment.Exit(0);
+            }
 
-            App app = new();
-            app.InitializeComponent();
-            Current.Resources["ServiceProvider"] = _host.Services;
-            app.MainWindow = _host.Services.GetRequiredService<MainWindow>();
+            var args = Environment.GetCommandLineArgs();
+            parsedOptions = CommandLineParser.Parse(args);
+            if (parsedOptions.Debug)
+            {
+                LaunchDebugConsole();
+            }
+            if (!Directory.Exists(AppPaths.AppDataPath))
+            {
+                Directory.CreateDirectory(AppPaths.AppDataPath);
+            }
+            AppHost = Host.CreateDefaultBuilder()
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddSingleton(parsedOptions);
+                    services.AddSingleton<IPluginService, PluginService>();
+                    services.AddSingleton<ISettingsService, SettingsService>();
+                    services.AddSingleton<IDatabaseService, DatabaseService>();
+                    services.AddSingleton<INetworkService, NetworkService>();
+                    services.AddSingleton<IDialogService, DialogService>();
+                    services.AddTransient<ITimeService, TimeService>();
+                    services.AddSingleton<StyleManager>();
+                    services.AddSingleton<MainWindow>();
+                    services.AddSingleton<StartWindow>();
+                    services.AddTransient<DashboardPageViewModel>();
+                    services.AddTransient<StationManagementPageViewModel>();
+                    services.AddTransient<TrainNumberManagementPageViewModel>();
+                    services.AddTransient<WebsiteSimulatorPageViewModel>();
+                    services.AddTransient<Simulator>();
+                    services.AddTransient<ScreenSimulatorPageViewModel>();
+                    services.AddTransient<SettingsPageViewModel>();
+                    services.AddTransient<PluginManagementPageViewModel>(); 
+                    PluginService.InitializePlugins(context, services, parsedOptions.ExternalPluginPath);
+                })
+            .Build();
+            InitializeComponent();
+        }
 
-            _host.Services.GetRequiredService<ITimeService>().Start();
-            _host.Services.GetRequiredService<IDialogService>().SetOwner(app.MainWindow);
+        protected override async void OnLaunched(LaunchActivatedEventArgs args)
+        {
+            var splashScreenWindow = AppHost.Services.GetRequiredService<StartWindow>();
+            splashScreenWindow.Activate();
+            await PerformInitializationAsync(splashScreenWindow);
+            MainWindow = AppHost.Services.GetRequiredService<MainWindow>();
+            MainWindow.Activate();
+            splashScreenWindow.Close();
+        }
 
-            var updateChecker = new UpdateChecker();
-            updateChecker.CheckForUpdates().Wait();
-            
-            app.MainWindow.Visibility = Visibility.Visible;
-            app.Run();
+        private static async Task PerformInitializationAsync(StartWindow startWindow)
+        { 
+            try
+            {
+                if(!Debugger.IsAttached) await Task.Delay(2000);
+                startWindow.Status = "正在加载设置...";
+                AppHost.Services.GetService<ISettingsService>().LoadSettings();
+                if (!Debugger.IsAttached) await Task.Delay(500);
+                startWindow.Status = "正在加载数据库...";
+                AppHost.Services.GetService<IDatabaseService>().ImportData(AppPaths.ConfigFilePath);
+                if (!Debugger.IsAttached) await Task.Delay(500);
+                startWindow.Status = new[] { "正在控票…", "正在关闭垃圾桶盖…", "正在刷绿车底…", "正在准备降弓用刑…" }[new Random().Next(4)];
+                if (!Debugger.IsAttached) await Task.Delay(500);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"初始化错误: {ex.Message}");
+            }
+        }
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        private static extern bool AllocConsole();
+
+        public static void LaunchDebugConsole()
+        {
+            AllocConsole();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(@"
+        ___ _____________________
+   _.-''---'  |  ___ ___ ___ ___|
+  (       __|_|_[___[___[___[__]  
+ =-(_)--(_)--'      (O)   (O) ");
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine("    CRSim - 国铁信息显示模拟 v" + AppVersion);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Debug console started.\n");
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
-
 }
