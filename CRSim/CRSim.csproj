@@ -14,22 +14,12 @@
     <WindowsPackageType>None</WindowsPackageType>
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Remove="Assets\CRSimIcon.png" />
-    <Content Remove="Assets\HomeHeaderTiles\CRSim-Icon.ico" />
-    <Content Remove="Assets\HomeHeaderTiles\Header-Afdian.png" />
-    <Content Remove="Assets\HomeHeaderTiles\Header-docs.png" />
-    <Content Remove="Assets\HomeHeaderTiles\Header-QQ.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Styles\Controls.xaml" />
-    <None Remove="Views\DialogContents\InputDialog.xaml" />
-    <None Remove="Views\StartWindow.xaml" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
@@ -51,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.2.250402" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.250402" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250402" />
@@ -68,13 +59,18 @@
     <ProjectReference Include="..\CRSim.ScreenSimulator\CRSim.ScreenSimulator.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\CRSimIcon.png" />
-    <Resource Include="Assets\HomeHeaderTiles\CRSim-Icon.ico" />
-    <Resource Include="Assets\HomeHeaderTiles\Header-Afdian.png" />
-    <Resource Include="Assets\HomeHeaderTiles\Header-docs.png" />
-    <Resource Include="Assets\HomeHeaderTiles\Header-QQ.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <Page Update="Controls\HorizontalScrollContainer.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Tile.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\OpacityMaskView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+	<Page Update="Controls\HomePageHeader.xaml">
+		<SubType>Designer</SubType>
+	</Page>
     <Page Update="Views\DialogContents\TextDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -113,18 +109,24 @@
     <Content Update="Assets\CRSimIcon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="Assets\HomeHeaderTiles\GalleryHeaderImage.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\HomeHeaderTiles\Header-Afdian.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\HomeHeaderTiles\Header-docs.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\HomeHeaderTiles\Header-QQ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Update="Assets\CRSimIcon.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <Page Update="Views\StartWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Styles\Controls.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\Dialogs\InputDialog.xaml">
