@@ -6,68 +6,32 @@
     xmlns:local="using:CRSim.Views"
     xmlns:winui="using:CommunityToolkit.WinUI"   
     xmlns:screensim="using:CRSim.ScreenSimulator.Views"
-    xmlns:animations="using:CommunityToolkit.WinUI.Animations"
-    xmlns:localcontrols="using:CRSim.Controls"
-    xmlns:converts="using:CRSim.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <Page.Resources>
-        <converts:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-    </Page.Resources>
-    <Grid>
-        <Grid.Resources>
-            <animations:ImplicitAnimationSet x:Name="ShowTransitions">
-                <animations:OffsetAnimation
-                    EasingMode="EaseOut"
-                    From="0,24,0"
-                    To="0"
-                    Duration="0:0:0.4" />
-                <animations:OpacityAnimation
-                    EasingMode="EaseOut"
-                    From="0"
-                    To="1"
-                    Duration="0:0:0.2" />
-            </animations:ImplicitAnimationSet>
-            <animations:ImplicitAnimationSet x:Name="HideTransitions">
-                <animations:OffsetAnimation
-                    EasingMode="EaseOut"
-                    From="0"
-                    To="0,24,0"
-                    Duration="0:0:0.2" />
-                <animations:OpacityAnimation
-                    EasingMode="EaseOut"
-                    From="1"
-                    To="0"
-                    Duration="0:0:0.1" />
-            </animations:ImplicitAnimationSet>
-        </Grid.Resources>
-        <ScrollViewer Padding="36">
-            <StackPanel Orientation="Vertical">
-                <localcontrols:HomePageHeader/>
-                <InfoBar Severity="Informational" IsOpen="True" Title="有可用更新" Message="{x:Bind ViewModel.UpdateMessage, Mode=OneWay}" Visibility="{x:Bind ViewModel.UpdateMessage,Converter={StaticResource NullToVisibilityConverter},Mode=OneWay}"/>
-                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="活动的引导屏"/>
-                <Border Style="{StaticResource ListViewBorder}">
-                    <ListView ItemsSource="{x:Bind ViewModel.StyleManager.ActiveWindows,Mode=OneWay}" SelectionMode="None">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="screensim:SimulatorWindow">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{x:Bind Session.StyleName}" VerticalAlignment="Center"/>
-                                    <Button Grid.Column="2" Style="{StaticResource AccentButtonStyle}" Height="32" 
+    <ScrollViewer Padding="36">
+        <StackPanel Orientation="Vertical">
+            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="活动的引导屏"/>
+            <Border Style="{StaticResource ListViewBorder}">
+                <ListView ItemsSource="{x:Bind ViewModel.StyleManager.ActiveWindows,Mode=OneWay}" SelectionMode="None">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="screensim:SimulatorWindow">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{x:Bind Session.StyleName}" VerticalAlignment="Center"/>
+                                <Button Grid.Column="2" Style="{StaticResource AccentButtonStyle}" Height="32" 
                                         Margin="0,0,4,0" Content="{winui:FontIcon FontSize=16, Glyph=&#xE890;}" Click="{x:Bind FoucsWindow}"/>
-                                    <Button Grid.Column="3" Height="32" Content="{winui:FontIcon FontSize=16, Glyph=&#xEA14;}" Click="{x:Bind CloseWindow}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </Border>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+                                <Button Grid.Column="3" Height="32" Content="{winui:FontIcon FontSize=16, Glyph=&#xEA14;}" Click="{x:Bind CloseWindow}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
 </Page>
