@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="CRSim.Views.PlatformDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CRSim.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <TextBox PlaceholderText="试试“1-3”" Margin="0,0,0,16" x:Name="PlatformTextBox" 
+                 TextChanged="Validate" Header="编号"/>
+        <NumberBox x:Name="LengthNumberBox" ValueChanged="Validate" Header="长度"
+                   Value="18" SpinButtonPlacementMode="Inline" Minimum="1" SmallChange="2" LargeChange="6"/>
+    </StackPanel>
+</Page>

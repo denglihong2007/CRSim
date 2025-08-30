@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="CRSim.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CRSim.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CRSim.Converters"     
+    xmlns:converters1="using:CommunityToolkit.WinUI.Converters"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"   
+    xmlns:winui="using:CommunityToolkit.WinUI"   
+    xmlns:viewmodels="using:CRSim.ViewModels"   
+    xmlns:models="using:CRSim.Models"  
+    xmlns:coremodels="using:CRSim.Core.Models"     
+    xmlns:pluginmodels="using:CRSim.Core.Models.Plugin"     
+    mc:Ignorable="d"
+    Loaded="Page_Loaded"
+    d:DataContext="{d:DesignInstance Type=viewmodels:SettingsPageViewModel}">
+    <interactivity:Interaction.Behaviors>
+        <interactivity:EventTriggerBehavior EventName="Unloaded">
+            <interactivity:InvokeCommandAction Command="{x:Bind ViewModel.UnloadCommand}" />
+        </interactivity:EventTriggerBehavior>
+    </interactivity:Interaction.Behaviors>
+    <Page.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter" />
+        <converters1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Page.Resources>
+    <Grid x:Name="ContentPagePane" Margin="36,40,0,36">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.PageTitle,Mode=OneWay}" Margin="0,0,0,36"
+                   Style="{StaticResource TitleTextBlockStyle}"/>
+        <ScrollViewer Grid.Row="1" Padding="0,0,36,0">
+            <StackPanel>
+                <TextBlock Text="用户设置" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
+                <StackPanel Spacing="4" Margin="0,0,0,24">
+                    <controls:SettingsCard Header="密钥" Description="用于解锁特定功能" HeaderIcon="{winui:FontIcon Glyph=&#xE8D7;}">
+                        <TextBox Width="168" Text="{x:Bind ViewModel.UserKey, Mode=TwoWay}"/>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Header="API 地址" Description="适用于插件市场与软件更新" HeaderIcon="{winui:FontIcon Glyph=&#xE943;}">
+                        <ComboBox ItemsSource="{x:Bind ViewModel.Apis}" SelectedItem="{x:Bind ViewModel.ApiUri,Mode=TwoWay}"
+                                  DisplayMemberPath="Title" Width="168"/>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Header="应用更新" Description="检查软件更新" HeaderIcon="{winui:FontIcon Glyph=&#xECC5;}">
+                        <Button Style="{StaticResource AccentButtonStyle}" Content="检查更新" Command="{x:Bind ViewModel.CheckUpdateCommand}" />
+                    </controls:SettingsCard>
+                    <ProgressBar Visibility="{x:Bind ViewModel.UpdateProgress, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=false}" Value="{x:Bind ViewModel.UpdateProgress, Mode=OneWay}"/>
+                </StackPanel>
+                <TextBlock Text="引导屏模拟" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
+                <StackPanel Spacing="4" Margin="0,0,0,24">
+                    <controls:SettingsCard Header="只加载当日车次" Description="不显示明日车次" HeaderIcon="{winui:FontIcon Glyph=&#xEC92;}">
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.LoadTodayOnly, Mode=TwoWay}"/>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Header="屏幕记忆" Description="启动时恢复未关闭的屏幕" HeaderIcon="{winui:FontIcon Glyph=&#xE7A7;}">
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.ReopenUnclosedScreensOnLoad, Mode=TwoWay}"/>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Header="最大显示页数" Description="翻页屏最大页数" HeaderIcon="{winui:FontIcon Glyph=&#xF57E;}">
+                        <TextBox MaxWidth="72" Text="{x:Bind ViewModel.MaxPages, Mode=TwoWay}"/>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Header="页面切换时长" Description="翻页屏每页停留时长" HeaderIcon="{winui:FontIcon Glyph=&#xE769;}">
+                        <TextBox MaxWidth="72" Text="{x:Bind ViewModel.SwitchPageSeconds, Mode=TwoWay}"/>
+                    </controls:SettingsCard>
+                    <controls:SettingsExpander Header="检票" Description="设置检票时长、停检时间等，单位为分钟" HeaderIcon="{winui:FontIcon Glyph=&#xF161;}">
+                        <controls:SettingsExpander.Items>
+                            <controls:SettingsCard Header="始发车提前检票时长">
+                                <TextBox MaxWidth="72" Text="{x:Bind ViewModel.DepartureCheckInAdvanceDuration, Mode=TwoWay}" />
+                            </controls:SettingsCard>
+                            <controls:SettingsCard Header="过路车提前检票时长">
+                                <TextBox MaxWidth="72" Text="{x:Bind ViewModel.PassingCheckInAdvanceDuration, Mode=TwoWay}" />
+                            </controls:SettingsCard>
+                            <controls:SettingsCard Header="提前停止检票时长">
+                                <TextBox MaxWidth="72" Text="{x:Bind ViewModel.StopCheckInAdvanceDuration, Mode=TwoWay}" />
+                            </controls:SettingsCard>
+                            <controls:SettingsCard Header="显示停检至开点前时长">
+                                <TextBox MaxWidth="72" Text="{x:Bind ViewModel.StopDisplayUntilDepartureDuration, Mode=TwoWay}" />
+                            </controls:SettingsCard>
+                            <controls:SettingsCard Header="终到车显示至到达后时长">
+                                <TextBox MaxWidth="72" Text="{x:Bind ViewModel.StopDisplayFromArrivalDuration, Mode=TwoWay}" />
+                            </controls:SettingsCard>
+                        </controls:SettingsExpander.Items>
+                    </controls:SettingsExpander>
+                </StackPanel>
+                <TextBlock Text="备份与恢复" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
+                <StackPanel Spacing="4" Margin="0,0,0,24">
+                    <controls:SettingsCard Header="导入数据文件" Description="从本地文件加载数据" HeaderIcon="{winui:FontIcon Glyph=&#xE8B6;}">
+                        <Button Command="{x:Bind ViewModel.ImportDataCommand}" Content="导入数据" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Header="导出数据文件" Description="保存数据到本地文件" HeaderIcon="{winui:FontIcon Glyph=&#xEDE1;}">
+                        <Button Command="{x:Bind ViewModel.ExportDataCommand}" Content="导出数据" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Header="清除所有数据" Description="恢复到安装后状态" HeaderIcon="{winui:FontIcon Glyph=&#xE74D;}">
+                        <Button Command="{x:Bind ViewModel.ClearDataCommand}" Content="清除数据" />
+                    </controls:SettingsCard>
+                </StackPanel>
+                <TextBlock Text="关于" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
+                <controls:SettingsExpander Header="CRSim - 国铁信息显示模拟" Description="© 电排骨 2025" HeaderIcon="{winui:BitmapIcon Source=/Assets/CRSimIcon.ico}">
+                    <TextBlock IsTextSelectionEnabled="True" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind ViewModel.AppVersion,Mode=OneWay}" />
+                    <controls:SettingsExpander.Items>
+                        <controls:SettingsCard Header="克隆项目仓库">
+                            <TextBlock FontFamily="Consolas" Foreground="{ThemeResource TextFillColorSecondaryBrush}" IsTextSelectionEnabled="True"
+                                       Text="git clone https://github.com/denglihong2007/CRSim.git" />
+                        </controls:SettingsCard>
+                        <controls:SettingsCard Header="报告漏洞或请求新样式" ActionIcon="{winui:FontIcon Glyph=&#xE8A7;}" Click="Open_Issues" IsClickEnabled="True"/>
+                        <controls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Vertical" Header="项目引用">
+                            <controls:WrapPanel Margin="-12,0,0,0">
+                                <HyperlinkButton Content="WinUI 3" NavigateUri="https://aka.ms/winui" />
+                                <HyperlinkButton Content="EPPlus" NavigateUri="https://github.com/EPPlusSoftware/EPPlus" />
+                                <HyperlinkButton Content="PP.Wpf" NavigateUri="https://github.com/LowPlayer/PP.Wpf" />
+                                <HyperlinkButton Content="PinYinConverterCore" NavigateUri="https://github.com/netcorepal/PinYinConverterCore" />
+                                <HyperlinkButton Content="Windows Community Toolkit" NavigateUri="https://aka.ms/toolkit/windows" />
+                                <HyperlinkButton Content="CommunityToolkit.Mvvm" NavigateUri="https://github.com/CommunityToolkit/dotnet" />
+                                <HyperlinkButton Content="Microsoft.Extensions.DependencyInjection" NavigateUri="https://github.com/aspnet/DependencyInjection" />
+                            </controls:WrapPanel>
+                        </controls:SettingsCard>
+                        <controls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Vertical" Header="贡献者">
+                            <StackPanel Margin="-12,0,0,0" Orientation="Horizontal">
+                                <HyperlinkButton Content="wxl0430" NavigateUri="https://github.com/wxl0430" />
+                                <HyperlinkButton Content="niuzhix" NavigateUri="https://github.com/niuzhix" />
+                            </StackPanel>
+                        </controls:SettingsCard>
+                        <controls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Vertical" Header="捐赠者">
+                            <StackPanel Margin="-12,0,0,0" Orientation="Horizontal">
+                                <HyperlinkButton Content="车迷小黄" NavigateUri="https://afdian.com/u/5d5d090a006811f0b49052540025c377" />
+                            </StackPanel>
+                        </controls:SettingsCard>
+                    </controls:SettingsExpander.Items>
+                </controls:SettingsExpander>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

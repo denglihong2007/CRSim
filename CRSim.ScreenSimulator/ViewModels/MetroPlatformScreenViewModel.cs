@@ -1,13 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CRSim.Core.Abstractions;
 using CRSim.Core.Models;
-using CRSim.Core.Services;
+using CRSim.ScreenSimulator.Abstractions;
 using CRSim.ScreenSimulator.Models;
 
 namespace CRSim.ScreenSimulator.ViewModels
 {
-    public partial class MetroPlatformScreenViewModel : ObservableObject
+    public partial class MetroPlatformScreenViewModel : ObservableObject, IScreenViewModel
     {
-        public readonly ITimeService _timeService;
+        public ITimeService TimeService { get; set; }
         public readonly Settings _settings;
         [ObservableProperty]
         private DateTime _currentTime = new();
@@ -19,17 +20,20 @@ namespace CRSim.ScreenSimulator.ViewModels
         private string _text;
         [ObservableProperty]
         private Uri _video;
+        [ObservableProperty]
+        public int _location;
+        public System.Windows.Threading.Dispatcher UIDispatcher { get; set; }
         public List<TrainInfo> TrainInfos { get; set; } = [];
         public MetroPlatformScreenViewModel(ITimeService timeService, ISettingsService settingsService)
         {
-            _timeService = timeService;
+            TimeService = timeService;
             _settings = settingsService.GetSettings();
             timeService.OneSecondElapsed += RefreshDisplay;
         }
         private void RefreshDisplay(object? sender, EventArgs e)
         {
-            CurrentTime = _timeService.GetDateTimeNow();
-            List<TrainInfo> itemsToRemove = [.. TrainInfos.Where(info => info.DepartureTime < _timeService.GetDateTimeNow())];
+            CurrentTime = TimeService.GetDateTimeNow();
+            List<TrainInfo> itemsToRemove = [.. TrainInfos.Where(info => info.DepartureTime < TimeService.GetDateTimeNow())];
             foreach (var item in itemsToRemove)
             {
                 TrainInfos.Remove(item);
@@ -40,14 +44,14 @@ namespace CRSim.ScreenSimulator.ViewModels
             OnPropertyChanged(nameof(FirstTrain));
             OnPropertyChanged(nameof(SecondTrain));
         }
-        public void LoadData(Station station, string _ticketCheck, string platform)
+        public void LoadData(Station station, TicketCheck? _ticketCheck, string platform)
         {
             var trains = station.TrainStops;
             foreach (var trainNumber in trains)
             {
                 if (trainNumber != null && trainNumber.DepartureTime != null && trainNumber.Platform == platform)
                 {
-                    var now = _timeService.GetDateTimeNow();
+                    var now = TimeService.GetDateTimeNow();
                     var today = now.Date;
                     if (_settings.LoadTodayOnly && today.Add((trainNumber.DepartureTime ?? trainNumber.ArrivalTime)!.Value) < now)
                     {
@@ -62,7 +66,7 @@ namespace CRSim.ScreenSimulator.ViewModels
                         Terminal = trainNumber.Terminal,
                         ArrivalTime = AdjustTime(trainNumber.ArrivalTime),
                         DepartureTime = AdjustTime(trainNumber.DepartureTime),
-                        State = TimeSpan.Zero
+                        State = trainNumber.Status
                     });
                 }
             }

@@ -1,29 +1,26 @@
-﻿using CRSim.Core.Services;
+﻿using CRSim.Core.Abstractions;
 using CRSim.ScreenSimulator.Models;
-using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
 namespace CRSim.ScreenSimulator.Converters
 {
-    public class MetroDateTimeToStringConverter : IValueConverter
+    public class MetroDateTimeToStringConverter : IValueConverter, IHasTimeService
     {
-        private ITimeService _timeService;
+        public ITimeService TimeService { get; set; }
         public string WaitingText { get; set; } = "请耐心等待";
         public string ComingText { get; set; } = "即将进站";
         public string ArrivedText { get; set; } = "列车进站";
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            var serviceProvider = (IServiceProvider)Application.Current.Resources["ServiceProvider"];
-            _timeService = serviceProvider.GetRequiredService<ITimeService>();
             if (value is TrainInfo trainInfo && parameter is string para)
             {
                 if(trainInfo.TrainNumber == null)
                 {
                     return WaitingText;
                 }
-                var timeDifference = (trainInfo.ArrivalTime ?? DateTime.MinValue) - _timeService.GetDateTimeNow();
+                var timeDifference = (trainInfo.ArrivalTime ?? DateTime.MinValue) - TimeService.GetDateTimeNow();
                 bool isArrivalTimeNull = trainInfo.ArrivalTime == null;
                 var checkInAdvanceDuration = TimeSpan.FromMinutes(1);
                 if (timeDifference < checkInAdvanceDuration)
@@ -32,7 +29,7 @@ namespace CRSim.ScreenSimulator.Converters
                     {
                         if (!isArrivalTimeNull) 
                         {
-                            if(trainInfo.ArrivalTime - _timeService.GetDateTimeNow() > TimeSpan.Zero)
+                            if(trainInfo.ArrivalTime - TimeService.GetDateTimeNow() > TimeSpan.Zero)
                             {
                                 return ComingText;
                             }
@@ -43,7 +40,7 @@ namespace CRSim.ScreenSimulator.Converters
                 else
                 {
                     if (para == "StackPanel")
-                        return Math.Round((trainInfo.ArrivalTime - _timeService.GetDateTimeNow()).Value.TotalMinutes).ToString();
+                        return Math.Round((trainInfo.ArrivalTime - TimeService.GetDateTimeNow()).Value.TotalMinutes).ToString();
                 }
             }
             return string.Empty;

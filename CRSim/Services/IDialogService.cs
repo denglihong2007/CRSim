@@ -2,16 +2,17 @@
 {
     public interface IDialogService
     {
-        string? GetFile(string filter);
+        string? GetFile(string[] filter);
         string? SaveFile(string filter,string fileName);
-        string? GetInput(string title);
-        bool GetConfirm(string title);
-        void ShowMessage(string title, string message);
-        TrainStop? GetInputTrainNumberStop(TrainStop? t);
-        TrainStop? GetInputTrainStop(List<string> ticketChecks, List<string> platforms);
-        TrainStop? GetInputTrainStop(List<string> ticketChecks, List<string> platforms, TrainStop trainStop);
-        List<Platform>? GetInputPlatform();
-        (string, List<string>) GetInputTicketCheck(List<string> waitingAreaNames);
-        void SetOwner(Window owner);
+        Task<string?> GetInputAsync(string title,string placeholder);
+        Task<bool> GetConfirmAsync(string title);
+        Task ShowMessageAsync(string title, string message);
+        Task ShowTextAsync(string title, string message);
+        Task<TrainStop?> GetInputTrainNumberStopAsync();
+        Task<TrainStop?> EditTrainNumberStopAsync(TrainStop trainStop);
+        Task<TrainStop?> GetInputTrainStopAsync(List<WaitingArea> waitingAreas, List<string> platforms);
+        Task<TrainStop?> EditInputTrainStopAsync(List<WaitingArea> waitingAreas, List<string> platforms, TrainStop trainStop);
+        Task<List<Platform>?> GetInputPlatformAsync();
+        XamlRoot? XamlRoot { get; set; }
     }
 }

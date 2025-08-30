@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="CRSim.Views.StationManagementPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CRSim.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CRSim.Converters"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"   
+    xmlns:winui="using:CommunityToolkit.WinUI"   
+    xmlns:viewmodels="using:CRSim.ViewModels"   
+    xmlns:models="using:CRSim.Models"     
+    xmlns:coremodels="using:CRSim.Core.Models"
+    xmlns:selectors="using:CRSim.Selectors"
+    mc:Ignorable="d"
+    Loaded="Page_Loaded"
+    d:DataContext="{d:DesignInstance Type=viewmodels:StationManagementPageViewModel}">
+    <Page.Resources>
+        <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter"/>
+        <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverterForStatus" NullString="停运" ZeroString="正点"/>
+        <converters:TicketChecksToStringConverter x:Key="TicketChecksToStringConverter" Separator=" " WaitingAreas="{x:Bind ViewModel.WaitingAreas}"/>
+        <DataTemplate x:Key="WaitingAreaTemplate" x:DataType="coremodels:WaitingArea">
+            <TreeViewItem Content="{x:Bind Name}" ItemsSource="{x:Bind TicketChecks}" />
+        </DataTemplate>
+        <DataTemplate x:Key="TicketCheckTemplate" x:DataType="coremodels:TicketCheck">
+            <TextBlock Text="{x:Bind Name}" />
+        </DataTemplate>
+        <selectors:TreeViewTemplateSelector
+            x:Key="TreeViewTemplateSelector"
+            WaitingAreaTemplate="{StaticResource WaitingAreaTemplate}"
+            TicketCheckTemplate="{StaticResource TicketCheckTemplate}" />
+    </Page.Resources>
+    <Grid x:Name="ContentPagePane" Margin="36,40,0,36">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.PageTitle}" Margin="0,0,0,36"
+                   Style="{StaticResource TitleTextBlockStyle}"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <CommandBar DefaultLabelPosition="Right" Grid.Row="0" Margin="0,0,0,8">
+                    <AppBarButton Icon="Add" Label="添加" Command="{x:Bind ViewModel.AddStationCommand}" />
+                    <AppBarButton Icon="Clear" Label="删除" Command="{x:Bind ViewModel.DeleteStationCommand}" CommandParameter="{x:Bind StationsList.SelectedItem, Mode=OneWay}" />
+                    <CommandBar.SecondaryCommands>
+                        <AppBarButton Label="清空所有车站" Command="{x:Bind ViewModel.DeleteAllStationsCommand}" />
+                        <AppBarButton Label="从模拟广播系统导入" Command="{x:Bind ViewModel.ImportFrom7DCommand}" />
+                    </CommandBar.SecondaryCommands>
+                </CommandBar>
+                <Border Grid.Row="1" Style="{StaticResource ListViewBorder}">
+                    <ListView x:Name="StationsList" ItemsSource="{x:Bind ViewModel.StationNames,Mode=OneWay}" SelectionMode="Single">
+                        <interactivity:Interaction.Behaviors>
+                            <interactivity:EventTriggerBehavior EventName="SelectionChanged">
+                                <interactivity:InvokeCommandAction Command="{x:Bind ViewModel.StationSelectedCommand}" />
+                            </interactivity:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{x:Bind}" Style="{StaticResource BodyTextBlockStyle}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Border>
+            </Grid>
+            <ScrollViewer Grid.Column="1" Padding="0,0,36,0">
+                <ContentControl HorizontalContentAlignment="Stretch" IsEnabled="{x:Bind ViewModel.IsSelected, Mode=OneWay}">
+                    <StackPanel Margin="16,0,0,0">
+                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.InfoItems}" HorizontalAlignment="Left">
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="models:InfoItem">
+                                    <StackPanel Orientation="Horizontal" Margin="8,0">
+                                        <FontIcon Glyph="{x:Bind IconGlyph,Mode=OneWay}" FontSize="20" Margin="0,0,12,0"/>
+                                        <StackPanel Orientation="Vertical">
+                                            <TextBlock Text="{x:Bind Title,Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,0,0,4"/>
+                                            <TextBlock Text="{x:Bind Detail,Mode=OneWay}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                            <ItemsRepeater.Layout>
+                                <controls:WrapLayout Orientation="Horizontal" VerticalSpacing="8" HorizontalSpacing="24"/>
+                            </ItemsRepeater.Layout>      
+                        </ItemsRepeater>
+                        <TextBlock Text="站台" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,24,0,0"/>
+                        <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Right" Margin="0,12,0,0">
+                            <AppBarButton Icon="Add" Label="添加" Command="{x:Bind ViewModel.AddPlatformCommand}" />
+                            <AppBarButton Icon="Clear" Label="删除" Command="{x:Bind ViewModel.DeletePlatformCommand}" CommandParameter="{x:Bind PlatformsList.SelectedItem, Mode=OneWay}" />
+                            <AppBarButton Icon="Delete" Label="清空" Command="{x:Bind ViewModel.DeleteAllPlatformCommand}" />
+                        </CommandBar>
+                        <Border Style="{StaticResource ListViewBorder}" Margin="0,8,0,0">
+                            <ListView x:Name="PlatformsList" ItemsSource="{x:Bind ViewModel.Platforms}" MaxHeight="300">
+                                <ListView.Header>
+                                    <Grid Padding="16,12" ColumnSpacing="16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="编号" />
+                                        <TextBlock Grid.Column="1" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="长度" />
+                                    </Grid>
+                                </ListView.Header>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="coremodels:Platform">
+                                        <Grid ColumnSpacing="16">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="80" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{x:Bind Name}" />
+                                            <TextBlock Grid.Column="1" Text="{x:Bind Length}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                                <ListView.ItemContainerStyle>
+                                    <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                            </ListView>
+                        </Border>
+                        <TextBlock Text="检票口" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,24,0,0"/>
+                        <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Right" Margin="0,12,0,0">
+                            <AppBarButton Icon="Add" Label="添加候车区" Command="{x:Bind ViewModel.AddWaitingAreaCommand}" />
+                            <AppBarButton Icon="Add" Label="添加检票口" Command="{x:Bind ViewModel.AddTicketCheckCommand}" CommandParameter="{x:Bind WaitingAreasList.SelectedItem, Mode=OneWay}"/>
+                            <AppBarButton Icon="Clear" Label="删除" Command="{x:Bind ViewModel.DeleteItemCommand}" CommandParameter="{x:Bind WaitingAreasList.SelectedItem, Mode=OneWay}" />
+                            <AppBarButton Icon="Delete" Label="清空" Command="{x:Bind ViewModel.DeleteAllTicketChecksCommand}" />
+                        </CommandBar>
+                        <Border Style="{StaticResource ListViewBorder}" Margin="0,8,0,0">
+                            <TreeView MaxHeight="300" Name="WaitingAreasList"
+                                      ItemsSource="{x:Bind ViewModel.WaitingAreas, Mode=OneWay}" ItemTemplateSelector="{StaticResource TreeViewTemplateSelector}" />
+                        </Border>
+                        <TextBlock Text="车次" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,24,0,0"/>
+                        <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Right" Margin="0,12,0,0">
+                            <AppBarButton Icon="Add" Label="添加" Command="{x:Bind ViewModel.AddTrainStopCommand}" />
+                            <AppBarButton Icon="Edit" Label="编辑" Command="{x:Bind ViewModel.EditTrainStopCommand}" CommandParameter="{x:Bind TrainStopsList.SelectedItem, Mode=OneWay}"/>
+                            <AppBarButton Icon="Clear" Label="删除" Command="{x:Bind ViewModel.DeleteTrainStopCommand}" CommandParameter="{x:Bind TrainStopsList.SelectedItem, Mode=OneWay}"/>
+                            <CommandBar.SecondaryCommands>
+                                <AppBarButton Label="清空所有车次" Command="{x:Bind ViewModel.DeleteAllTrainStopCommand}" />
+                                <AppBarSeparator />
+                                <AppBarButton Label="导出到Excel表格" Command="{x:Bind ViewModel.ExportToExcelCommand}" />
+                                <AppBarSeparator />
+                                <AppBarButton Label="联网获取" Command="{x:Bind ViewModel.ImportFromInternetCommand}" />
+                                <AppBarButton Label="从路路通导入" Command="{x:Bind ViewModel.ImportFromLulutongCommand}" />
+                                <AppBarButton Label="从pyETRC/qETRC导入" Command="{x:Bind ViewModel.ImportFrompyETRCCommand}" />
+                                <AppBarButton Label="从Excel表格导入" Command="{x:Bind ViewModel.ImportFromExcelCommand}" />
+                                <AppBarButton Label="从车次数据库导入" Command="{x:Bind ViewModel.ImportFromTrainNumbersCommand}" />
+                            </CommandBar.SecondaryCommands>
+                        </CommandBar>
+                        <Border Style="{StaticResource ListViewBorder}" Margin="0,8,0,0">
+                            <ListView x:Name="TrainStopsList" ItemsSource="{x:Bind ViewModel.TrainStops}" MaxHeight="300">
+                                <ListView.Header>
+                                    <Grid Padding="16,12" ColumnSpacing="16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="1.5*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="车次" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="1" Text="长度" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="2" Text="到时" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="3" Text="发时" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="4" Text="检票口" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                                        <TextBlock Grid.Column="5" Text="站台" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="6" Text="地标" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="7" Text="始发站" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="8" Text="终到站" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock Grid.Column="9" Text="正晚点" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                                    </Grid>
+                                </ListView.Header>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="coremodels:TrainStop">
+                                        <Grid ColumnSpacing="16">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="1.5*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{x:Bind Number}" />
+                                            <TextBlock Grid.Column="1" Text="{x:Bind Length}" />
+                                            <TextBlock Grid.Column="2" Text="{x:Bind ArrivalTime, Converter={StaticResource TimeSpanToStringConverter}}" />
+                                            <TextBlock Grid.Column="3" Text="{x:Bind DepartureTime, Converter={StaticResource TimeSpanToStringConverter}}" />
+                                            <TextBlock Grid.Column="4" Text="{x:Bind TicketCheckIds, Converter={StaticResource TicketChecksToStringConverter}}"/>
+                                            <TextBlock Grid.Column="5" Text="{x:Bind Platform}" />
+                                            <TextBlock Grid.Column="6" Text="{x:Bind Landmark}" />
+                                            <TextBlock Grid.Column="7" Text="{x:Bind Origin}" />
+                                            <TextBlock Grid.Column="8" Text="{x:Bind Terminal}" />
+                                            <TextBlock Grid.Column="9" Text="{x:Bind Status, Converter={StaticResource TimeSpanToStringConverterForStatus}}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                                <ListView.ItemContainerStyle>
+                                    <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                            </ListView>
+                        </Border>
+                        <TextBlock Text="杂项" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,24,0,0"/>
+                        <controls:SettingsCard Header="保存车站配置" Description="验证并保存数据配置" Margin="0,12,0,0">
+                            <controls:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph="&#xE74E;"/>
+                            </controls:SettingsCard.HeaderIcon>
+                            <Button Content="保存配置" Command="{x:Bind ViewModel.SaveChangesCommand}" Style="{StaticResource AccentButtonStyle}" />
+                        </controls:SettingsCard>
+                    </StackPanel>
+                </ContentControl>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Page>

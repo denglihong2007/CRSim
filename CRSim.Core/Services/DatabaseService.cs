@@ -1,4 +1,6 @@
-﻿using CRSim.Core.Models;
+﻿using CRSim.Core.Abstractions;
+using CRSim.Core.Models;
+using CRSim.Core.Utils;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -6,22 +8,8 @@ namespace CRSim.Core.Services
 {
     public class DatabaseService : IDatabaseService
     {
-        private readonly string _jsonFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CRSim");
         private List<Station> _stations;
         private List<TrainNumber> _trainNumbers;
-
-        private readonly JsonSerializerOptions options = new() 
-        {
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        };
-
-        public DatabaseService()
-        {
-            if (!Directory.Exists(_jsonFilePath)) Directory.CreateDirectory(_jsonFilePath);
-            _jsonFilePath += "\\data.json";
-            ImportData(_jsonFilePath);
-        }
 
         public List<Station> GetAllStations()
         {
@@ -32,21 +20,10 @@ namespace CRSim.Core.Services
         {
             try
             {
-                var json =  File.ReadAllText(jsonFilePath).Replace("StationStop", "TrainStop");// 修复旧版本的数据
-                var data = JsonSerializer.Deserialize<Json>(json);
+                var json =  File.ReadAllText(jsonFilePath).Replace("StationStop", "TrainStop");
+                var data = JsonSerializer.Deserialize<Json>(json,JsonContext.Default.Json);
                 _stations = data.Stations;
                 _trainNumbers = data.TrainNumbers;
-
-                foreach (var station in _stations)
-                {
-                    foreach(var trainStop in station.TrainStops)
-                    {
-                        if (trainStop.WaitingArea == null)
-                        {
-                            trainStop.WaitingArea = station.WaitingAreas.Where(x => x.TicketChecks.Contains(trainStop.TicketChecks[0])).FirstOrDefault().Name;
-                        }
-                    }
-                }// 修复旧版本的数据
             }
             catch
             {
@@ -109,8 +86,8 @@ namespace CRSim.Core.Services
             { 
                 Stations = _stations,
                 TrainNumbers = _trainNumbers
-            }, options);
-            await File.WriteAllTextAsync(_jsonFilePath, json);
+            },JsonContext.Default.Json);
+            await File.WriteAllTextAsync(AppPaths.ConfigFilePath, json);
         }
 
         public async Task ExportData(string p)
@@ -119,7 +96,7 @@ namespace CRSim.Core.Services
             {
                 Stations = _stations,
                 TrainNumbers = _trainNumbers
-            }, options);
+            }, JsonContext.Default.Json);
             await File.WriteAllTextAsync(p, json);
         }
 
@@ -128,12 +105,9 @@ namespace CRSim.Core.Services
             return _trainNumbers;
         }
 
-        public void AddTrainNumber(string number)
+        public void AddTrainNumber(TrainNumber trainNumber)
         {
-            _trainNumbers.Add(new TrainNumber()
-            {
-                Number = number
-            });
+            _trainNumbers.Add(trainNumber);
         }
 
         public async Task ImportStationFrom7D(string path)
@@ -169,9 +143,9 @@ namespace CRSim.Core.Services
 
                 foreach (var ticketCheckName in ticketCheck.Split('|'))
                 {
-                    if (!string.IsNullOrWhiteSpace(ticketCheckName) && !waitingArea.TicketChecks.Contains(ticketCheckName))
+                    if (!string.IsNullOrWhiteSpace(ticketCheckName) && !waitingArea.TicketChecks.Any(x => x.Name == ticketCheckName))
                     {
-                        waitingArea.TicketChecks.Add(ticketCheckName);
+                        waitingArea.TicketChecks.Add(new TicketCheck { Name = ticketCheckName });
                     }
                 }
 
@@ -199,10 +173,9 @@ namespace CRSim.Core.Services
                         Number = data[0],
                         Terminal = data[3],
                         Origin = data[2],
-                        TicketChecks = [.. ticketCheck.Split('|')],
+                        TicketCheckIds = [.. waitingArea.TicketChecks.Select(x=>x.Id)],
                         ArrivalTime = arrivalTime,
                         DepartureTime = departureTime,
-                        WaitingArea = waitingAreaName,
                         Platform = platform,
                         Length = data[0].StartsWith('G') || data[0].StartsWith('D') || data[0].StartsWith('C') ? Math.Abs(data[0].GetHashCode()) % 3 == 0 ? 8 : 16 : 18,
                         Landmark = data[8] + "色" ?? null,

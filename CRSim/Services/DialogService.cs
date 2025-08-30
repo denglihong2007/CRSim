@@ -1,143 +1,254 @@
-﻿
+﻿using CRSim.Core.Models;
+using Microsoft.Win32;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+
 namespace CRSim.Services
 {
     public class DialogService : IDialogService
     {
-        private Window? _owner;
-        public void SetOwner(Window owner)
+        public XamlRoot? XamlRoot { get; set; }
+        public async Task<string?> GetInputAsync(string title,string placeholder)
         {
-            _owner = owner;
-        }
-        public string? GetInput(string title)
-        {
-            var dialog = new InputDialog(title)
+            ContentDialog dialog = new()
             {
-                Owner = _owner
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = title,
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                Content = new InputDialog(placeholder)
             };
-            bool? result = dialog.ShowDialog();
-            if (result == true)
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
             {
-                string input = dialog.UserInput;
+                var inputDialog = dialog.Content as InputDialog;
+                string input = inputDialog?.InputText??string.Empty;
                 return input;
             }
             return null;
         }
-        public bool GetConfirm(string title)
+        public async Task<bool> GetConfirmAsync(string title)
         {
-            var dialog = new ConfirmDialog(title)
+            ContentDialog dialog = new()
             {
-                Owner = _owner
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "警告",
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                Content = title
             };
-            bool? result = dialog.ShowDialog();
-            if (result == true)
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
             {
                 return true;
             }
             return false;
         }
-        public void ShowMessage(string title, string message)
+        public async Task ShowMessageAsync(string title, string message)
         {
-            dynamic dialog = message.Length > 25 ? new LongMessageDialog(title, message) : new MessageDialog(title, message);
-            dialog.Owner = _owner;
-            dialog.ShowDialog();
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = title,
+                PrimaryButtonText = "确定",
+                DefaultButton = ContentDialogButton.Primary,
+                Content = message
+            };
+            await dialog.ShowAsync();
+        }
+        public async Task ShowTextAsync(string title, string message)
+        {
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = title,
+                PrimaryButtonText = "确定",
+                DefaultButton = ContentDialogButton.Primary,
+                Content = new TextDialog(message)
+            };
+            await dialog.ShowAsync();
         }
 
-        public (string, List<string>) GetInputTicketCheck(List<string> waitingAreaNames)
+        public string? GetFile(string[] extensions)
         {
-            var dialog = new TicketCheckDialog(waitingAreaNames)
-            {
-                Owner = _owner
-            };
-            bool? result = dialog.ShowDialog();
-            if (result == true)
-            {
-                return (dialog.WaitingAreaName, dialog.TicketCheck);
-            }
-            return (null,null);
-        }
+            var dlg = new OpenFileDialog();
+            dlg.Multiselect = false;
 
-        public string? GetFile(string filter)
-        {
-            OpenFileDialog openFileDialog = new()
-            {
-                Filter = filter
-            };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                string filePath = openFileDialog.FileName;
-                return filePath;
-            }
-            return null;
-        }
-        public TrainStop? GetInputTrainNumberStop(TrainStop? t)
-        {
-            var dialog = new TrainNumberStopDialog(t)
-            {
-                Owner = _owner
-            };
-            bool? result = dialog.ShowDialog();
-            if (result == true)
-            {
-                return dialog.GeneratedTrainStop;
-            }
-            return null;
-        }
+            var filters = extensions
+                .Select(ext =>
+                {
+                    var extNoDot = ext.TrimStart('.').ToUpperInvariant();
+                    return $"{extNoDot} 文件 (*{ext})|*{ext}";
+                });
 
-        public TrainStop? GetInputTrainStop(List<string> ticketChecks, List<string> platforms)
-        {
-            var dialog = new TrainStopDialog(ticketChecks,platforms)
-            {
-                Owner = _owner
-            };
-            bool? result = dialog.ShowDialog();
+            dlg.Filter = string.Join("|", filters);
+
+            bool? result = dlg.ShowDialog();
             if (result == true)
             {
-                return dialog.GeneratedTrainStop;
+                return dlg.FileName;
             }
             return null;
         }
 
-        public TrainStop? GetInputTrainStop(List<string> ticketChecks, List<string> platforms, TrainStop trainStop)
+        public async Task<TrainStop?> GetInputTrainNumberStopAsync()
         {
-            var dialog = new TrainStopDialog(ticketChecks,platforms, trainStop)
+            bool isButtonEnabled = false;
+            ContentDialog dialog = new()
             {
-                Owner = _owner
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "编辑车次",
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                IsPrimaryButtonEnabled = false
             };
-            bool? result = dialog.ShowDialog();
-            if (result == true)
+            var platformDialog = new TrainNumberStopDialog(isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            dialog.Content = platformDialog;
+            dialog.PrimaryButtonClick += (s, e) =>
             {
-                return dialog.GeneratedTrainStop;
-            }
-            return null;
-
-        }
-
-        public string? SaveFile(string filter, string f)
-        {
-            SaveFileDialog saveFileDialog = new()
-            {
-                FileName = f,
-                CheckPathExists = true,
-                Filter = filter
+                platformDialog.GenerateTrainStop();
             };
-            if (saveFileDialog.ShowDialog() == true)
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
             {
-                string filePath = saveFileDialog.FileName;
-                return filePath;
+                var inputDialog = dialog.Content as TrainNumberStopDialog;
+                return inputDialog.GeneratedTrainStop;
             }
             return null;
         }
-
-        public List<Platform>? GetInputPlatform()
+        public async Task<TrainStop?> EditTrainNumberStopAsync(TrainStop trainStop)
         {
-            var dialog = new PlatformDialog()
+            bool isButtonEnabled = false;
+            ContentDialog dialog = new()
             {
-                Owner = _owner
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "编辑车次",
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                IsPrimaryButtonEnabled = false
             };
-            bool? result = dialog.ShowDialog();
+            var platformDialog = new TrainNumberStopDialog(trainStop, isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            dialog.Content = platformDialog;
+            dialog.PrimaryButtonClick += (s, e) =>
+            {
+                platformDialog.GenerateTrainStop();
+            };
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var inputDialog = dialog.Content as TrainNumberStopDialog;
+                return inputDialog.GeneratedTrainStop;
+            }
+            return null;
+        }
+
+        public async Task<TrainStop?> GetInputTrainStopAsync(List<WaitingArea> waitingAreas, List<string> platforms)
+        {
+            bool isButtonEnabled = false;
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "编辑车次",
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                IsPrimaryButtonEnabled = false
+            };
+            var platformDialog = new TrainStopDialog(waitingAreas, platforms,isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            dialog.Content = platformDialog;
+            dialog.PrimaryButtonClick += (s, e) =>
+            {
+                platformDialog.GenerateTrainStop();
+            };
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var inputDialog = dialog.Content as TrainStopDialog;
+                return inputDialog.GeneratedTrainStop;
+            }
+            return null;
+        }
+
+        public async Task<TrainStop?> EditInputTrainStopAsync(List<WaitingArea> waitingAreas, List<string> platforms, TrainStop trainStop)
+        {
+            bool isButtonEnabled = false;
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "编辑车次",
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                IsPrimaryButtonEnabled = false
+            };
+            var platformDialog = new TrainStopDialog(waitingAreas, platforms, trainStop, isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            dialog.Content = platformDialog;
+            dialog.PrimaryButtonClick += (s, e) =>
+            {
+                platformDialog.GenerateTrainStop();
+            };
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var inputDialog = dialog.Content as TrainStopDialog;
+                return inputDialog.GeneratedTrainStop;
+            }
+            return null;
+        }
+
+        public string? SaveFile(string extension, string suggestedFileName)
+        {
+            var dlg = new SaveFileDialog
+            {
+                FileName = suggestedFileName
+            };
+            var extNoDot = extension.TrimStart('.').ToUpperInvariant();
+            var filter = $"{extNoDot} Files (*{extension})|*{extension}";
+            dlg.Filter = filter;
+            bool? result = dlg.ShowDialog();
             if (result == true)
             {
-                return dialog.GeneratedPlatforms;
+                return dlg.FileName;
+            }
+            return null;
+        }
+
+        public async Task<List<Platform>?> GetInputPlatformAsync()
+        {
+            bool isButtonEnabled = false;
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "新增站台",
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                IsPrimaryButtonEnabled = false
+            };
+            var platformDialog = new PlatformDialog(isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            dialog.Content = platformDialog;
+            dialog.PrimaryButtonClick += (s, e) =>
+            {
+                platformDialog.GeneratePlatform();
+            };
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var inputDialog = dialog.Content as PlatformDialog;
+                return inputDialog.GeneratedPlatforms;
             }
             return null;
         }

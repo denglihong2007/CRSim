@@ -10,17 +10,17 @@ namespace CRSim.ScreenSimulator.Converters
             if (value == null)
                 return null;
             string trainNumber = value.ToString();
-            string imageName = "pack://application:,,,/CRSim.ScreenSimulator;component/Assets/ChengduShuangliuAirport/logo-GTJT.png";
+            string imageName = "pack://application:,,,/CRSim.ScreenSimulator;component/Assets/logo-GTJT.png";
             if (!string.IsNullOrEmpty(trainNumber) && (trainNumber.StartsWith('G') || trainNumber.StartsWith('C') || trainNumber.StartsWith('D')))
             {
                 int probability = trainNumber.GetHashCode() % 2;
                 if (probability == 1)
                 {
-                    imageName = "pack://application:,,,/CRSim.ScreenSimulator;component/Assets/ChengduShuangliuAirport/logo-CR.png";
+                    imageName = "pack://application:,,,/CRSim.ScreenSimulator;component/Assets/logo-CR.png";
                 }
                 else
                 {
-                    imageName = "pack://application:,,,/CRSim.ScreenSimulator;component/Assets/ChengduShuangliuAirport/logo-CRH.png";
+                    imageName = "pack://application:,,,/CRSim.ScreenSimulator;component/Assets/logo-CRH.png";
                 }
             }
             var image = new System.Windows.Media.Imaging.BitmapImage();
