@@ -136,6 +136,11 @@ namespace CRSim.ViewModels
             }
             else
             {
+                if (!Debugger.IsAttached)
+                {
+                    await _dialogService.ShowTextAsync("提示", "当前为开发环境构建，请使用Git拉取以更新！" + update.Name + "  " + update.Body);
+                    return;
+                }
                 await _dialogService.ShowTextAsync("发现新版本 " + update.Name, update.Body + "\n系统即将下载安装新版本。");
                 DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
                 var downloader = new DownloadService();
