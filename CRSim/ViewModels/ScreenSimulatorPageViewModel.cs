@@ -154,7 +154,7 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
             Text = (TextNeeded && !string.IsNullOrWhiteSpace(Text)) ? Text : null,
             Video = (VideoNeeded && !string.IsNullOrWhiteSpace(Video)) ? new Uri(Video) : null,
             Station = StationNeeded ? databaseService.GetStationByName(SelectedStationName) : null,
-            TicketCheck = TicketCheckNeeded ? SelectedTicketCheck : null,
+            TicketCheck = TicketCheckNeeded ? new TicketCheck() { Id = SelectedTicketCheck.Id , Name = SelectedTicketCheck.Name.Split(' ').Last() } : null,
             PlatformName = PlatformNeeded ? SelectedPlatformName : string.Empty,
             Loaction = (LocationNeeded && SelectedLoaction != 0) ? SelectedLoaction : 0
         };
