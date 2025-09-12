@@ -92,7 +92,8 @@ jobs:
 
       - name: Publish
         run: |
-          dotnet publish -c Release -o out
+          dotnet publish -c Release -p:PublishProfile=win-x64.pubxml -o out
+
 
       - name: Create Zip Package
         shell: pwsh
