@@ -1,8 +1,8 @@
+
 name: Bug 反馈
 description: 在使用 CRSim 的过程中遇到了 Bug。
 title: （将此栏【替换】为你的标题）
-labels: ["Bug", "待查看", "优先级：无"]
-type: Bug
+labels: ["Bug"]
 body:
   - type: markdown
     attributes:
@@ -90,3 +90,6 @@ body:
       options:
         - label: 我认为上述的描述已经足以详细，以允许开发人员能复现该问题。如果我的 issue 没有按照上述的要求填写，可能会被无条件关闭。
           required: true
+
+
+
