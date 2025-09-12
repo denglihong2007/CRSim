@@ -25,7 +25,7 @@ jobs:
         id: get_version
         shell: pwsh
         run: |
-          [xml]$props = Get-Content ".Directory.Build.props"
+          [xml]$props = Get-Content "Directory.Build.props"
           # 确保选择包含Version的PropertyGroup
           $version = $props.Project.PropertyGroup.Version
           echo "Detected version: $version"
