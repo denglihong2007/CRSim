@@ -21,13 +21,13 @@ jobs:
         with:
           fetch-depth: 0  # 获取全部提交历史以便比较标签
 
-      - name: Extract version from csproj
+      - name: Extract version from props
         id: get_version
         shell: pwsh
         run: |
-          [xml]$csproj = Get-Content "./CRSim/CRSim.csproj"
+          [xml]$props = Get-Content ".Directory.Build.props"
           # 确保选择包含Version的PropertyGroup
-          $version = $csproj.Project.PropertyGroup.Version
+          $version = $props.Project.PropertyGroup.Version
           echo "Detected version: $version"
           # 将版本设置为步骤输出
           echo "version=$version" >> $env:GITHUB_OUTPUT
