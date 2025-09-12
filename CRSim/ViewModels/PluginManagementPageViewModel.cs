@@ -100,9 +100,10 @@ public partial class PluginManagementPageViewModel : ObservableObject
     public static void Restart()
     {
         string exePath = Environment.ProcessPath;
-        Process.Start(new ProcessStartInfo(exePath)
+        Process.Start(new ProcessStartInfo("cmd", $"/C timeout /t 0.75 & start \"\" \"{exePath}\"")
         {
-            UseShellExecute = true 
+            CreateNoWindow = true,
+            UseShellExecute = false
         });
         Application.Current.Exit();
     }
