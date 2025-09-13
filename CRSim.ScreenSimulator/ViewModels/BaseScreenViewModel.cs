@@ -139,7 +139,7 @@ namespace CRSim.ScreenSimulator.ViewModels
                         Origin = trainNumber.Origin,
                         ArrivalTime = AdjustTime(trainNumber.ArrivalTime),
                         DepartureTime = AdjustTime(trainNumber.DepartureTime),
-                        TicketChecks = [.. station.WaitingAreas
+                        TicketChecks = trainNumber.TicketCheckIds is null ? [] : [.. station.WaitingAreas
                             .SelectMany(w => w.TicketChecks)
                             .Where(tc => trainNumber.TicketCheckIds.Contains(tc.Id))
                             .Select(tc => tc.Name)],
