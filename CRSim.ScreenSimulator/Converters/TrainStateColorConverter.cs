@@ -19,6 +19,7 @@ namespace CRSim.ScreenSimulator.Converters
         public List<SolidColorBrush> WaitingColorList { get; set; } = new();
         public SolidColorBrush ArrivedText { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush ArrivingText { get; set; } = new(Colors.White);
+        public SolidColorBrush ArrivingLateText { get; set; } = new(Colors.Red);
         public SolidColorBrush WaitingColor { get; set; } = new(Colors.White);
         public SolidColorBrush CheckInColor { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush StopCheckInColor { get; set; } = new(Colors.Red);
@@ -34,8 +35,13 @@ namespace CRSim.ScreenSimulator.Converters
             // 到达模式或缺少关键数据
             if (DisplayMode == "Arrive" || (values.Length > 1 && values[1] == null))
             {
-                if (values[0] is DateTime arriveTime)
-                    return now >= arriveTime ? ArrivedText : ArrivingText;
+                if (values[0] is DateTime arriveTime){
+                    if (values.Length > 1 && values[1] is TimeSpan state){
+                        if (state.TotalMinutes > 0) return ArrivingLateText;
+                        return now >= arriveTime ? ArrivedText : ArrivingText;
+                    }
+                    return now >= arriveTime? ArrivedText : ArrivingText;
+                }
                 return new SolidColorBrush(Colors.Transparent);
             }
 
@@ -82,7 +88,19 @@ namespace CRSim.ScreenSimulator.Converters
                 return StopCheckInColor; // 晚点
             }
         }
+        public static string ToHourMinuteString(TimeSpan ts)
+        {
+            int totalHours = (int)ts.TotalHours; // 可以超过24
+            int minutes = ts.Minutes;
 
+            if (totalHours > 0 && minutes > 0)
+                return $"{totalHours}小时{minutes}分钟";
+            if (totalHours > 0)
+                return $"{totalHours}小时";
+            if (minutes > 0)
+                return $"{minutes}分钟";
+            return "0分钟"; // 特殊情况，完全为0
+        }
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }
 }
