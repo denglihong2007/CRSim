@@ -63,11 +63,24 @@
                     x:Name="ImageGrid"
                     Margin="0,-100,0,0"
                     Background="{ThemeResource BackgroundGradient}">
-                    <Image
-                        x:Name="HeroImage"
-                        Opacity="{ThemeResource ImageOpacity}"
-                        Source="/Assets/HomeHeaderTiles/GalleryHeaderImage.jpg"
-                        Stretch="UniformToFill" />
+                    <FlipView
+                        x:Name="HeroImageFlipView"
+                        Grid.RowSpan="3"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Background="{ThemeResource BackgroundGradient}"
+                        BorderThickness="0"
+                        Padding="0"
+                    ItemsSource="{x:Bind CarouselImages}">
+                        <FlipView.ItemTemplate>
+                            <DataTemplate>
+                                <Image
+                                    Source="{Binding}"
+                                    Stretch="UniformToFill"
+                                Opacity="{ThemeResource ImageOpacity}" />
+                            </DataTemplate>
+                        </FlipView.ItemTemplate>
+                    </FlipView>
                 </Grid>
 
             </local:OpacityMaskView>
