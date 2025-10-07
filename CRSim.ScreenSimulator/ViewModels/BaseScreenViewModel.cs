@@ -124,13 +124,13 @@ namespace CRSim.ScreenSimulator.ViewModels
                     var now = TimeService.GetDateTimeNow();
                     var today = now.Date;
 
-                    if (_settings.LoadTodayOnly && today.Add((trainNumber.DepartureTime??trainNumber.ArrivalTime)!.Value) < now)
+                    if (_settings.LoadTodayOnly && today.Add((trainNumber.DepartureTime??trainNumber.ArrivalTime)!.Value).Add(trainNumber.Status.Value) < now)
                     {
                         continue;
                     }
 
                     DateTime? AdjustTime(TimeSpan? time) =>
-                        time.HasValue ? (today.Add(time.Value) > now ? today.Add(time.Value) : today.Add(time.Value).AddDays(1)) : null;
+                        time.HasValue ? (today.Add(time.Value).Add(trainNumber.Status.Value) > now ? today.Add(time.Value) : today.Add(time.Value).AddDays(1)) : null;
 
                     TrainInfo.Add(new TrainInfo
                     {
