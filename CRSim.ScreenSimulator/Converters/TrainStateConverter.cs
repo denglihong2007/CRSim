@@ -13,6 +13,8 @@ namespace CRSim.ScreenSimulator.Converters
         public string DisplayMode { get; set; } = "Normal";
         public string ArrivedText { get; set; } = "列车已到达";
         public string ArrivingText { get; set; } = "正点";
+        public string ArrivedLateText { get; set; } = "晚点{0}到达";
+        public string ArrivingLateText { get; set; } = "预计晚点{0}";
         public string WaitingText { get; set; } = "候车";
         public string CheckInText { get; set; } = "正在检票";
         public string StopCheckInText { get; set; } = "停止检票";
@@ -28,8 +30,22 @@ namespace CRSim.ScreenSimulator.Converters
             // 到达模式或关键数据缺失
             if (DisplayMode == "Arrive" || (values.Length > 1 && values[1] == null))
             {
-                if (values[0] is DateTime arriveTime)
-                    return now >= arriveTime ? ArrivedText : ArrivingText;
+                
+                if (values[0] is DateTime arriveTime){
+                    if (values[2] is TimeSpan state){
+                        // arriveTime += TimeSpan.FromMinutes(state.TotalMinutes);
+                        if (now >= arriveTime){
+                            if (state.TotalMinutes > 0)
+                                return string.Format(ArrivedLateText, ToHourMinuteString(state));
+                            return ArrivedText;
+                        }else{
+                            if (state.TotalMinutes > 0)
+                                return string.Format(ArrivingLateText, ToHourMinuteString(state));
+                            return ArrivingText;
+                        }
+                    }
+                    return now >= arriveTime? ArrivedText : ArrivingText;
+                }
                 return string.Empty;
             }
 
