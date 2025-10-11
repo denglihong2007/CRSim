@@ -1,4 +1,5 @@
-﻿using CRSim.WebsiteSimulator;
+﻿using CRSim.PlatformDiagram;
+using CRSim.WebsiteSimulator;
 using System.Diagnostics;
 
 namespace CRSim
@@ -43,14 +44,16 @@ namespace CRSim
                     services.AddSingleton<StyleManager>();
                     services.AddSingleton<MainWindow>();
                     services.AddSingleton<StartWindow>();
+                    services.AddSingleton<Generator>();
+                    services.AddTransient<Simulator>();
                     services.AddTransient<DashboardPageViewModel>();
                     services.AddTransient<StationManagementPageViewModel>();
                     services.AddTransient<TrainNumberManagementPageViewModel>();
                     services.AddTransient<WebsiteSimulatorPageViewModel>();
-                    services.AddTransient<Simulator>();
                     services.AddTransient<ScreenSimulatorPageViewModel>();
+                    services.AddTransient<PluginManagementPageViewModel>();
+                    services.AddTransient<PlatformDiagramPageViewModel>();
                     services.AddTransient<SettingsPageViewModel>();
-                    services.AddTransient<PluginManagementPageViewModel>(); 
                     PluginService.InitializePlugins(context, services, parsedOptions.ExternalPluginPath);
                 })
             .Build();
