@@ -138,12 +138,12 @@ namespace CRSim.Core.Services
             return null;
         }
 
-        public List<PluginManifest>? GetOnlinePlugins(string url)
+        public async Task<List<PluginManifest>?> GetOnlinePluginsAsync(string url)
         {
             try
             {
                 var client = new HttpClient();
-                var response = client.GetStringAsync(url).Result;
+                var response = await client.GetStringAsync(url);
                 return JsonSerializer.Deserialize(response, JsonContextWithCamelCase.Default.ListPluginManifest);
             }
             catch
