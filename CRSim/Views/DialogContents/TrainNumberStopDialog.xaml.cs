@@ -1,4 +1,4 @@
-using CRSim.Core.Models;
+﻿using CRSim.Core.Models;
 
 namespace CRSim.Views;
 public sealed partial class TrainNumberStopDialog : Page
@@ -99,19 +99,19 @@ public sealed partial class TrainNumberStopDialog : Page
             string selectedType = rb.SelectedItem as string;
             switch (selectedType)
             {
-                case "ʼ��վ":
+                case "始发站":
                     StartHour.IsEnabled = false;
                     StartMinute.IsEnabled = false;
                     EndHour.IsEnabled = true;
                     EndMinute.IsEnabled = true;
                     break;
-                case "�м�վ":
+                case "中间站":
                     StartHour.IsEnabled = true;
                     StartMinute.IsEnabled = true;
                     EndHour.IsEnabled = true;
                     EndMinute.IsEnabled = true;
                     break;
-                case "�յ�վ":
+                case "终到站":
                     StartHour.IsEnabled = true;
                     StartMinute.IsEnabled = true;
                     EndHour.IsEnabled = false;
