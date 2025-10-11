@@ -1,13 +1,13 @@
-using System.ComponentModel;
+ï»¿using System.ComponentModel;
 
 namespace CRSim.Views
 {
     public sealed partial class StartWindow : Window, INotifyPropertyChanged
     {
-        // ÉùÃ÷ÊÂ¼ş
+        // å£°æ˜äº‹ä»¶
         public string AppVersion { get; set; } = App.AppVersion;
 
-        private string _status = "ÕıÔÚÆô¶¯...";
+        private string _status = "æ­£åœ¨å¯åŠ¨...";
         public string Status
         {
             get => _status;
