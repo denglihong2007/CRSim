@@ -573,7 +573,7 @@ public partial class StationManagementPageViewModel : ObservableObject
                             });
                         })],
                     Platform = worksheet.Cells[row, 6].Text.Trim(),
-                    Landmark = worksheet.Cells[row, 7].Text.Trim() == "" ? "无" : worksheet.Cells[row, 8].Text.Trim(),
+                    Landmark = worksheet.Cells[row, 7].Text.Trim() == "" ? "无" : worksheet.Cells[row, 7].Text.Trim(),
                     Origin = worksheet.Cells[row, 8].Text.Trim(),
                     Terminal = worksheet.Cells[row, 9].Text.Trim(),
                     Status = worksheet.Cells[row, 10].Text switch
