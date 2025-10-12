@@ -525,7 +525,6 @@ public partial class StationManagementPageViewModel : ObservableObject
             {
                 if (worksheet.Cells[row, 1].Text.Trim() == "" ||
                     worksheet.Cells[row, 2].Text.Trim() == "" ||
-                    worksheet.Cells[row, 5].Text.Trim() == "" ||
                     worksheet.Cells[row, 6].Text.Trim() == "" ||
                     worksheet.Cells[row, 8].Text.Trim() == "" ||
                     worksheet.Cells[row, 9].Text.Trim() == "")
@@ -539,7 +538,7 @@ public partial class StationManagementPageViewModel : ObservableObject
                     Length = int.TryParse(worksheet.Cells[row, 2].Text, out int length) ? length : 0,
                     ArrivalTime = TimeSpan.TryParseExact(worksheet.Cells[row, 3].Text, @"hh\:mm", null, out TimeSpan arrival) ? arrival : null,
                     DepartureTime = TimeSpan.TryParseExact(worksheet.Cells[row, 4].Text, @"hh\:mm", null, out TimeSpan departure) ? departure : null,
-                    TicketCheckIds = [.. worksheet.Cells[row, 5].Text
+                    TicketCheckIds = worksheet.Cells[row, 6].Text.Trim() == "" ? null : [.. worksheet.Cells[row, 5].Text
                         .Split(' ', StringSplitOptions.RemoveEmptyEntries)
                         .SelectMany(entry =>
                         {
