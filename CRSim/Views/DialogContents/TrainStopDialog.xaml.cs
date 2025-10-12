@@ -1,11 +1,11 @@
-using CRSim.Core.Models;
+ï»¿using CRSim.Core.Models;
 
 namespace CRSim.Views;
 public sealed partial class TrainStopDialog : Page
 {
     public TrainStop GeneratedTrainStop;
 
-    public List<string> Landmarks { get; set; } = ["ÎŞ", "ºìÉ«", "ÂÌÉ«", "ºÖÉ«", "À¶É«", "×ÏÉ«", "»ÆÉ«", "³ÈÉ«"];
+    public List<string> Landmarks { get; set; } = ["æ— ", "çº¢è‰²", "ç»¿è‰²", "è¤è‰²", "è“è‰²", "ç´«è‰²", "é»„è‰²", "æ©™è‰²"];
 
     public List<string> Platforms { get; set; } = [];
 
@@ -38,7 +38,7 @@ public sealed partial class TrainStopDialog : Page
         ArrivalTextBox.Text = trainStop.Terminal;
         DepartureTextBox.Text = trainStop.Origin;
         PlatformComboBox.SelectedItem = trainStop.Platform;
-        LandmarkComboBox.SelectedItem = trainStop.Landmark ?? "ÎŞ";
+        LandmarkComboBox.SelectedItem = trainStop.Landmark ?? "æ— ";
         if (trainStop.ArrivalTime.HasValue)
         {
             StartHour.Text = trainStop.ArrivalTime.Value.Hours.ToString("D2");
@@ -139,7 +139,7 @@ public sealed partial class TrainStopDialog : Page
                 .Select(x => x.Id)] : null,
             Platform = (string)PlatformComboBox.SelectedItem,
             Length = int.Parse(LengthTextBox.Text),
-            Landmark = (string)LandmarkComboBox.SelectedItem == "ÎŞ" ? null : (string)LandmarkComboBox.SelectedItem,
+            Landmark = (string)LandmarkComboBox.SelectedItem == "æ— " ? null : (string)LandmarkComboBox.SelectedItem,
             Status = SuspendToggleSwitch.IsOn ? null : TimeSpan.FromMinutes(int.Parse(StatusTextBox.Text))
         };
     }
@@ -152,21 +152,21 @@ public sealed partial class TrainStopDialog : Page
             string selectedType = rb.SelectedItem as string;
             switch (selectedType)
             {
-                case "Ê¼·¢Õ¾":
+                case "å§‹å‘ç«™":
                     StartHour.IsEnabled = false;
                     StartMinute.IsEnabled = false;
                     EndHour.IsEnabled = true;
                     EndMinute.IsEnabled = true;
                     WaitingAreasList.IsEnabled = true;
                     break;
-                case "ÖĞ¼äÕ¾":
+                case "ä¸­é—´ç«™":
                     StartHour.IsEnabled = true;
                     StartMinute.IsEnabled = true;
                     EndHour.IsEnabled = true;
                     EndMinute.IsEnabled = true;
                     WaitingAreasList.IsEnabled = true;
                     break;
-                case "ÖÕµ½Õ¾":
+                case "ç»ˆåˆ°ç«™":
                     StartHour.IsEnabled = true;
                     StartMinute.IsEnabled = true;
                     EndHour.IsEnabled = false;

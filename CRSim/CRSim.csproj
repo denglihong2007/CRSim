@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CRSim.Core\CRSim.Core.csproj" />
+    <ProjectReference Include="..\CRSim.PlatformDiagram\CRSim.PlatformDiagram.csproj" />
     <ProjectReference Include="..\CRSim.ScreenSimulator\CRSim.ScreenSimulator.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +79,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\DialogContents\PlatformDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\PlatformDiagramPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\WebsiteSimulatorPage.xaml">

@@ -130,7 +130,7 @@ public class PluginService : IPluginService
     }
     public async Task LoadOnlinePluginsAsync()
     {
-        var pluginManifests = _networkService.GetOnlinePlugins(IndexUrl);
+        var pluginManifests = await _networkService.GetOnlinePluginsAsync(IndexUrl);
         IPluginService.OnlinePluginsInternal.Clear();
         foreach (var Manifest in pluginManifests ?? [])
         {

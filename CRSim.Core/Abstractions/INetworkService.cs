@@ -7,7 +7,7 @@ namespace CRSim.Core.Abstractions
     {
         Task<List<TrainStop>?> GetTimeTableAsync(string number);
         Task<List<TrainStop>?> GetTrainNumbersAsync(string name);
-        List<PluginManifest>? GetOnlinePlugins(string uri);
+        Task<List<PluginManifest>?> GetOnlinePluginsAsync(string uri);
         Task<UpdateInfo?> GetUpdateAsync(string uri);
     }
 }
