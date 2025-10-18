@@ -1,4 +1,5 @@
 ﻿using CRSim.Converters;
+using CRSim.Core.Models.Plugin;
 using System.Text.RegularExpressions;
 
 namespace CRSim.ViewModels;
@@ -11,10 +12,14 @@ public partial class StationManagementPageViewModel : ObservableObject
     public partial string PageTitle { get; set; } = "车站管理";
 
     [ObservableProperty]
-    public partial bool IsSelected { get; set; } = false;
+    public partial string SearchText { get; set; } = "";
 
     [ObservableProperty]
-    public partial List<string> StationNames { get; set; } = [];
+    public partial bool IsSelected { get; set; } = false;
+
+    public List<string> StationNames { get; set; } = [];
+
+    public List<string> FilteredStationNames => [.. StationNames.Where(x => x.Contains(SearchText))];
 
     [ObservableProperty]
     public partial Station SelectedStation { get; set; } = new();
@@ -74,6 +79,7 @@ public partial class StationManagementPageViewModel : ObservableObject
     {
         var stationsList = _databaseService.GetAllStations();
         StationNames = [.. stationsList.Select(s => s.Name)];
+        OnPropertyChanged(nameof(FilteredStationNames));
     }
     [RelayCommand]
     public void StationSelected(object args)
@@ -826,4 +832,9 @@ public partial class StationManagementPageViewModel : ObservableObject
         return false;
     }
 
+    [RelayCommand]
+    public void Search()
+    {
+        OnPropertyChanged(nameof(FilteredStationNames));
+    }
 }

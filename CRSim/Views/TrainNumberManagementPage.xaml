@@ -38,6 +38,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <CommandBar DefaultLabelPosition="Right" Grid.Row="0" Margin="0,0,0,8">
@@ -60,8 +61,16 @@
                     </CommandBar.SecondaryCommands>
                 </CommandBar>
                 <ProgressBar Grid.Row="1" Value="{x:Bind ViewModel.ProgressValue,Mode=OneWay}" Visibility="{x:Bind ViewModel.ProgressValue,Mode=OneWay,Converter={StaticResource IntToVisibilityConverter},ConverterParameter=false}"/>
-                <Border Grid.Row="2" Style="{StaticResource ListViewBorder}">
-                    <ListView x:Name="TrainNumbersList" ItemsSource="{x:Bind ViewModel.TrainNumbers,Mode=OneWay}" SelectionMode="Single">
+                <AutoSuggestBox Grid.Row="2" PlaceholderText="搜索车次" QueryIcon="Find" Text="{x:Bind ViewModel.SearchText,Mode=TwoWay}"
+                                    Margin="0,0,0,8" HorizontalAlignment="Stretch">
+                    <interactivity:Interaction.Behaviors>
+                        <interactivity:EventTriggerBehavior EventName="TextChanged">
+                            <interactivity:InvokeCommandAction Command="{x:Bind ViewModel.SearchCommand}" />
+                        </interactivity:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </AutoSuggestBox>
+                <Border Grid.Row="3" Style="{StaticResource ListViewBorder}">
+                    <ListView x:Name="TrainNumbersList" ItemsSource="{x:Bind ViewModel.FilteredTrainNumbers,Mode=OneWay}" SelectionMode="Single">
                         <interactivity:Interaction.Behaviors>
                             <interactivity:EventTriggerBehavior EventName="SelectionChanged">
                                 <interactivity:InvokeCommandAction Command="{x:Bind ViewModel.TrainNumberSelectedCommand}" />

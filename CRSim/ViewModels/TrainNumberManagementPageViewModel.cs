@@ -6,8 +6,14 @@ public partial class TrainNumberManagementPageViewModel : ObservableObject
     public partial string PageTitle { get; set; } = "车次管理";
 
     [ObservableProperty]
+    public partial string SearchText { get; set; } = "";
+
+    [ObservableProperty]
     public partial bool IsSelected { get; set; } = false;
-    public ObservableCollection<TrainNumber> TrainNumbers { get; set; } = [];
+
+    public List<TrainNumber> TrainNumbers { get; set; } = [];
+
+    public List<TrainNumber> FilteredTrainNumbers => [.. TrainNumbers.Where(x => x.Number.Contains(SearchText))];
 
     [ObservableProperty]
     public partial TrainNumber SelectedTrainNumber { get; set; } = new();
@@ -72,6 +78,7 @@ public partial class TrainNumberManagementPageViewModel : ObservableObject
         {
             TrainNumbers.Add(t);
         }
+        OnPropertyChanged(nameof(FilteredTrainNumbers));
     }
 
     [RelayCommand]
@@ -826,5 +833,11 @@ public partial class TrainNumberManagementPageViewModel : ObservableObject
         if (TimeSpan.TryParse(timeString, out var time))
             return TimeSpan.FromMinutes(Math.Round(time.TotalMinutes));
         return default;
+    }
+
+    [RelayCommand]
+    public void Search()
+    {
+        OnPropertyChanged(nameof(FilteredTrainNumbers));
     }
 }
