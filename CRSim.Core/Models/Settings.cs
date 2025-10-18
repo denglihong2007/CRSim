@@ -1,5 +1,5 @@
-﻿using CRSim.Core.Converters;
-using System.Text.Json.Serialization;
+﻿using CRSim.Core.Abstractions;
+using CRSim.Core.Services;
 
 namespace CRSim.Core.Models
 {
@@ -18,8 +18,9 @@ namespace CRSim.Core.Models
         /// 直到终到后多久停止显示
         /// </summary>
         public TimeSpan StopDisplayFromArrivalDuration { get; set; } = TimeSpan.FromMinutes(10);
+
         public TimeSpan StopCheckInAdvanceDuration { get; set; } = TimeSpan.FromMinutes(2);
-        public string ApiUri { get; set; } = "http://47.122.74.193:25565";
+        public IApi Api { get; set; } = new ApiFactory().CreateApi("官方站");
         public int MaxPages { get; set; } = 3;
         public int SwitchPageSeconds { get; set; } = 20;
         public string UserKey { get; set; } = "";
