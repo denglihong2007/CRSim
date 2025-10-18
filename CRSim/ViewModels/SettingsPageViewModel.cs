@@ -195,7 +195,7 @@ namespace CRSim.ViewModels
                 }
                 catch (Exception e)
                 {
-                    await _dialogService.ShowTextAsync("错误", "更新失败。\n" + e);
+                    await _dialogService.ShowTextAsync("错误", "更新失败。若使用“官方站”，可尝试更换到“镜像站”。\n" + e);
                     UpdateProgress = 0;
                     return;
                 }
