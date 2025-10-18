@@ -8,14 +8,14 @@ using iText.Kernel.Pdf.Canvas;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using System.Reflection;
 
 namespace CRSim.PlatformDiagram
 {
     public class Generator
     {
-        public static void Generate(Station station, string savePath)
-        {
-            float PageWidth = 5000;
+        public static void Generate(Station station, string savePath, float pageWidth)
+        { 
             float Padding = 40;
             float HeaderHeight = 16;
             float PlatformTableVerticalMargin = 9;
@@ -31,7 +31,7 @@ namespace CRSim.PlatformDiagram
 
             int platformCount = station.Platforms.Count;
             float pageHeight = (Padding + TimelineHeight + PlatformTableVerticalMargin) * 2 + platformCount * PlatformHeight + HeaderHeight;
-            Document doc = new(pdf, new PageSize(PageWidth, pageHeight)); doc.SetMargins(Padding, Padding, Padding, Padding);
+            Document doc = new(pdf, new PageSize(pageWidth, pageHeight)); doc.SetMargins(Padding, Padding, Padding, Padding);
             var canvas = new PdfCanvas(pdf.AddNewPage());
             TimeSpan startTime = TimeSpan.FromHours(0);
             TimeSpan endTime = TimeSpan.FromHours(24);
@@ -44,7 +44,7 @@ namespace CRSim.PlatformDiagram
             // 绘制整条横线
             canvas.SetLineWidth(1f);
             var xStart = Padding + InfoBarWidth + PlatformTableHorizontalMargin - TimelineExtLength;
-            var xEnd = PageWidth - Padding;
+            var xEnd = pageWidth - Padding;
             var yTop = pageHeight - Padding - HeaderHeight - TimelineHeight;
             var yBottom = Padding + TimelineHeight;
             canvas.MoveTo(xStart, yTop).LineTo(xEnd, yTop).Stroke();
@@ -54,7 +54,7 @@ namespace CRSim.PlatformDiagram
             var xBase = Padding + InfoBarWidth + PlatformTableHorizontalMargin;
             yTop = pageHeight - Padding - HeaderHeight - TimelineHeight - PlatformTableVerticalMargin;
             yBottom = Padding + TimelineHeight + PlatformTableVerticalMargin;
-            var PlatformTableLength = PageWidth - Padding * 2 - InfoBarWidth - PlatformTableHorizontalMargin - TimelineExtLength;
+            var PlatformTableLength = pageWidth - Padding * 2 - InfoBarWidth - PlatformTableHorizontalMargin - TimelineExtLength;
             for (TimeSpan t = startTime; t <= endTime; t += TimeSpan.FromMinutes(intervalMin))
             {
                 float x = xBase + MapTime(t, startTime, endTime, PlatformTableLength);
@@ -221,7 +221,19 @@ namespace CRSim.PlatformDiagram
                 .SetFontSize(18)
                 .SetFontColor(ColorConstants.BLUE)
                 .SetMargins(0,0,0,0));
-            foreach(var kvp in platformHeights)
+
+            string text = $"使用 CRSim v{Assembly.GetExecutingAssembly().GetName().Version} 绘制";
+            float fontSize = 12f;
+            var para = new Paragraph(text)
+                .SetFont(font)
+                .SetFontSize(fontSize)
+                .SetFontColor(ColorConstants.BLUE)
+                .SetMargins(0, 0, 0, 0);
+            rect1 = new(pageWidth - Padding - font.GetWidth(text, fontSize), pageHeight - Padding, 500, HeaderHeight);
+            layoutCanvas = new Canvas(canvas, rect1);
+            layoutCanvas.Add(para);
+
+            foreach (var kvp in platformHeights)
             {
                 rect1 = new(Padding, kvp.Value + PlatformHeight / 2 - 10, InfoBarWidth, 20);
                 layoutCanvas = new Canvas(canvas, rect1);

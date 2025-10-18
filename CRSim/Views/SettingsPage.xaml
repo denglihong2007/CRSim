@@ -43,8 +43,8 @@
                         <TextBox Width="168" Text="{x:Bind ViewModel.UserKey, Mode=TwoWay}"/>
                     </controls:SettingsCard>
                     <controls:SettingsCard Header="API 地址" Description="适用于插件市场与软件更新" HeaderIcon="{winui:FontIcon Glyph=&#xE943;}">
-                        <ComboBox ItemsSource="{x:Bind ViewModel.Apis}" SelectedItem="{x:Bind ViewModel.ApiUri,Mode=TwoWay}"
-                                  DisplayMemberPath="Title" Width="168"/>
+                        <ComboBox ItemsSource="{x:Bind ViewModel.Apis}" SelectedItem="{x:Bind ViewModel.Api,Mode=TwoWay}"
+                                  DisplayMemberPath="Name" Width="168"/>
                     </controls:SettingsCard>
                     <controls:SettingsCard Header="应用更新" Description="检查软件更新" HeaderIcon="{winui:FontIcon Glyph=&#xECC5;}">
                         <Button Style="{StaticResource AccentButtonStyle}" Content="检查更新" Command="{x:Bind ViewModel.CheckUpdateCommand}" />

@@ -47,6 +47,7 @@
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <CommandBar DefaultLabelPosition="Right" Grid.Row="0" Margin="0,0,0,8">
@@ -57,8 +58,16 @@
                         <AppBarButton Label="从模拟广播系统导入" Command="{x:Bind ViewModel.ImportFrom7DCommand}" />
                     </CommandBar.SecondaryCommands>
                 </CommandBar>
-                <Border Grid.Row="1" Style="{StaticResource ListViewBorder}">
-                    <ListView x:Name="StationsList" ItemsSource="{x:Bind ViewModel.StationNames,Mode=OneWay}" SelectionMode="Single">
+                <AutoSuggestBox Grid.Row="1" PlaceholderText="搜索车站" QueryIcon="Find" Text="{x:Bind ViewModel.SearchText,Mode=TwoWay}"
+                                    Margin="0,0,0,8" HorizontalAlignment="Stretch">
+                    <interactivity:Interaction.Behaviors>
+                        <interactivity:EventTriggerBehavior EventName="TextChanged">
+                            <interactivity:InvokeCommandAction Command="{x:Bind ViewModel.SearchCommand}" />
+                        </interactivity:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </AutoSuggestBox>
+                <Border Grid.Row="2" Style="{StaticResource ListViewBorder}">
+                    <ListView x:Name="StationsList" ItemsSource="{x:Bind ViewModel.FilteredStationNames,Mode=OneWay}" SelectionMode="Single">
                         <interactivity:Interaction.Behaviors>
                             <interactivity:EventTriggerBehavior EventName="SelectionChanged">
                                 <interactivity:InvokeCommandAction Command="{x:Bind ViewModel.StationSelectedCommand}" />

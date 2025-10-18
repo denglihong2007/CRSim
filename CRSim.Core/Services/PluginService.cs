@@ -13,12 +13,12 @@ using Downloader;
 
 namespace CRSim.Core.Services;
 
-public class PluginService : IPluginService
+public class PluginService(INetworkService networkService, ISettingsService settingsService) : IPluginService
 {
     public static readonly string PluginManifestFileName = "manifest.json";
     public static readonly string StyleInfoFileName = "style.json";
 
-    private string IndexUrl => $"{_settings.ApiUri}/GetFile?fileName=plugins.json";
+    private string IndexUrl => $"{_settings.Api.BaseApi}/GetFile?fileName=plugins.json";
 
     public static void InitializePlugins(HostBuilderContext context, IServiceCollection services,string externalPluginPath)
     {
@@ -121,16 +121,11 @@ public class PluginService : IPluginService
             }
         }        
     }
-    private readonly Models.Settings _settings;
-    private readonly INetworkService _networkService;
-    public PluginService(INetworkService networkService,ISettingsService settingsService)
-    {
-        _networkService = networkService;
-        _settings = settingsService.GetSettings();
-    }
+    private readonly Settings _settings = settingsService.GetSettings();
+
     public async Task LoadOnlinePluginsAsync()
     {
-        var pluginManifests = await _networkService.GetOnlinePluginsAsync(IndexUrl);
+        var pluginManifests = await networkService.GetOnlinePluginsAsync(IndexUrl);
         IPluginService.OnlinePluginsInternal.Clear();
         foreach (var Manifest in pluginManifests ?? [])
         {
@@ -138,7 +133,7 @@ public class PluginService : IPluginService
             var info = new PluginInfo
             {
                 Manifest = Manifest,
-                RealIconPath = $"{_settings.ApiUri}/GetFile?fileName=icons/{Manifest.Id}.png",
+                RealIconPath = $"{_settings.Api.BaseApi}/GetFile?fileName=icons/{Manifest.Id}.png",
                 LoadStatus = localInfo?.LoadStatus ?? PluginLoadStatus.NotLoaded,
                 PluginFolderPath = localInfo?.PluginFolderPath ?? string.Empty,
             };
@@ -150,7 +145,7 @@ public class PluginService : IPluginService
     public async Task InstallPluginOnlineAsync(PluginInfo plugin)
     {
         var id = plugin.Manifest.Id;
-        var packageUrl = $"{_settings.ApiUri}/GetFile?fileName=plugins/{id}{IPluginService.PluginPackageExtension}";
+        var packageUrl = $"{_settings.Api.BaseApi}/GetFile?fileName=plugins/{id}{IPluginService.PluginPackageExtension}";
         var tempDir = Path.Combine(AppPaths.TempPath, "Plugins", Guid.NewGuid().ToString());
         Directory.CreateDirectory(tempDir);
         var packagePath = Path.Combine(tempDir, $"{id}{IPluginService.PluginPackageExtension}");

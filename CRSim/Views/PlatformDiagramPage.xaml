@@ -22,18 +22,30 @@
                    Style="{StaticResource TitleTextBlockStyle}"/>
         <ScrollViewer Grid.Row="1" Padding="0,0,36,0">
             <StackPanel>
+                <TextBlock Text="参数配置" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
+                <StackPanel Spacing="4" Orientation="Vertical" Margin="0,0,0,24">
+                    <controls:SettingsCard Header="车站" Description="选择目标车站。" HeaderIcon="{winui:FontIcon Glyph=&#xE825;}">
+                        <ComboBox ItemsSource="{x:Bind ViewModel.Stations}" DisplayMemberPath="Name" Name="StationsComboBox">
+                            <i:Interaction.Behaviors>
+                                <i:EventTriggerBehavior EventName="SelectionChanged">
+                                    <i:InvokeCommandAction  Command="{x:Bind ViewModel.StationSelectedCommand}" CommandParameter="{x:Bind StationsComboBox.SelectedItem, Mode=OneWay}"/>
+                                </i:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </ComboBox>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Header="页宽" Description="生成的 PDF 页面宽度。" HeaderIcon="{winui:FontIcon Glyph=&#xEF6B;}">
+                        <NumberBox Value="{x:Bind ViewModel.PageWidth, Mode=TwoWay}" Width="120">
+                            <i:Interaction.Behaviors>
+                                <i:EventTriggerBehavior EventName="ValueChanged">
+                                    <i:InvokeCommandAction Command="{x:Bind ViewModel.ValidateCommand}"/>
+                                </i:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </NumberBox>
+                    </controls:SettingsCard>
+                </StackPanel>
                 <TextBlock Text="操作" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
-                <controls:SettingsCard Header="车站" Description="选择目标车站。" HeaderIcon="{winui:FontIcon Glyph=&#xE825;}">
-                    <ComboBox ItemsSource="{x:Bind ViewModel.Stations}" DisplayMemberPath="Name" Name="StationsComboBox"> 
-                        <i:Interaction.Behaviors>
-                            <i:EventTriggerBehavior EventName="SelectionChanged">
-                                <i:InvokeCommandAction  Command="{x:Bind ViewModel.StationSelectedCommand}" CommandParameter="{x:Bind StationsComboBox.SelectedItem, Mode=OneWay}"/>
-                            </i:EventTriggerBehavior>
-                        </i:Interaction.Behaviors>
-                    </ComboBox>
-                </controls:SettingsCard>
                 <controls:SettingsCard Margin="0,4,0,0" Header="生成并保存图示" Description="选择位置保存图示。" HeaderIcon="{winui:FontIcon Glyph=&#xE74E;}">
-                    <Button Content="生成" IsEnabled="{x:Bind ViewModel.IsSelected, Mode=OneWay}" Style="{StaticResource AccentButtonStyle}"
+                    <Button Content="生成" IsEnabled="{x:Bind ViewModel.Validated, Mode=OneWay}" Style="{StaticResource AccentButtonStyle}"
                             Command="{x:Bind ViewModel.GenerateCommand}"/>
                 </controls:SettingsCard>
             </StackPanel>

@@ -1,6 +1,4 @@
-﻿using System.Windows;
-
-namespace CRSim.ViewModels;
+﻿namespace CRSim.ViewModels;
 public partial class DashboardPageViewModel : ObservableObject
 {
     [ObservableProperty]
@@ -17,12 +15,7 @@ public partial class DashboardPageViewModel : ObservableObject
     }
     private async void InitializeAsync()
     {
-        var url = _settingsService.GetSettings().ApiUri.Contains("47")
-            ? "https://api.github.com/repos/denglihong2007/CRSim/releases/latest"
-            : "https://crsim.com.cn/api/version";
-
-        var updateInfo = await _networkService.GetUpdateAsync(url);
-
+        var updateInfo = await _networkService.GetUpdateAsync(_settingsService.GetSettings().Api.UpdateApi);
         if (updateInfo is not null && updateInfo.Name != Assembly.GetExecutingAssembly().GetName().Version.ToString())
         {
             UpdateMessage = $"有新版本 {updateInfo.Name} 可用，请前往“设置”下载安装更新！";
