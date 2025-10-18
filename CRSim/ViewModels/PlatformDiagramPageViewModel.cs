@@ -9,7 +9,10 @@ public partial class PlatformDiagramPageViewModel(IDialogService _dialogService,
     public List<Station> Stations => _databaseService.GetAllStations();
 
     [ObservableProperty]
-    public partial bool IsSelected { get; set; } = false;
+    public partial bool Validated { get; set; } = false;
+
+    [ObservableProperty]
+    public partial int PageWidth { get; set; } = 5000;
 
     [RelayCommand]
     public void StationSelected(object s)
@@ -17,10 +20,14 @@ public partial class PlatformDiagramPageViewModel(IDialogService _dialogService,
         if(s is Station station)
         {
             SelectedStation = station;
-            IsSelected = true;
         }
+        Validate();
     }
-
+    [RelayCommand]
+    public void Validate()
+    {
+        Validated = SelectedStation != null && PageWidth > 0;
+    }
     [RelayCommand]
     public async Task Generate()
     {
@@ -30,7 +37,7 @@ public partial class PlatformDiagramPageViewModel(IDialogService _dialogService,
         }
         var path = _dialogService.SaveFile(".pdf", $"{SelectedStation.Name}站台占用图");
         if(string.IsNullOrEmpty(path) || SelectedStation == null) return;
-        await Task.Run(() => Generator.Generate(SelectedStation, path));
+        await Task.Run(() => Generator.Generate(SelectedStation, path,PageWidth));
     }
 
     public static bool CheckStation(Station station,out string detail)
