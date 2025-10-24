@@ -70,6 +70,7 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
             VideoNeeded = paramaters.Contains("video");
             LocationNeeded = paramaters.Contains("location");
         }
+        CheckCanStart();
     }
     [RelayCommand]
     public void StationSelected(object s)
