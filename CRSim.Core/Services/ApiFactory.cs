@@ -21,7 +21,7 @@ namespace CRSim.Core.Services
     public class OfficialApi : IApi
     {
         public string Name => "官方站";
-        public string BaseApi => "https://47.122.74.193:25565/";
+        public string BaseApi => "http://47.122.74.193:25565";
         public string UpdateApi => "https://api.github.com/repos/denglihong2007/CRSim/releases/latest";
     }
 
