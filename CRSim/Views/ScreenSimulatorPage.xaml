@@ -102,10 +102,13 @@
                 </Border>
                 <TextBlock Text="参数配置" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
                 <StackPanel Spacing="4" Orientation="Vertical" Margin="0,0,0,24">
-                    <controls:SettingsCard Header="初始日期" Description="显示日期从某日开始" HeaderIcon="{winui:FontIcon Glyph=&#xE787;}">
+                    <controls:SettingsCard Header="自定义起始时间" Description="自定义模拟时间原点" HeaderIcon="{winui:FontIcon Glyph=&#xE916;}">
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.CustomizedTime,Mode=TwoWay}"/>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Visibility="{x:Bind ViewModel.CustomizedTime,Converter={StaticResource BoolToVisibilityConverter},Mode=OneWay}" Header="初始日期" Description="显示日期从某日开始" HeaderIcon="{winui:FontIcon Glyph=&#xE787;}">
                         <DatePicker Date="{x:Bind ViewModel.SelectedDate,Mode=TwoWay}"/>
                     </controls:SettingsCard>
-                    <controls:SettingsCard Header="初始时间" Description="显示时间从某刻开始" HeaderIcon="{winui:FontIcon Glyph=&#xECC5;}">
+                    <controls:SettingsCard Visibility="{x:Bind ViewModel.CustomizedTime,Converter={StaticResource BoolToVisibilityConverter},Mode=OneWay}" Header="初始时间" Description="显示时间从某刻开始" HeaderIcon="{winui:FontIcon Glyph=&#xECC5;}">
                         <TimePicker ClockIdentifier="24HourClock" Time="{x:Bind ViewModel.SelectedTime,Mode=TwoWay}"/>
                     </controls:SettingsCard>
                     <controls:SettingsCard Header="车站" Description="使用的车站数据库" HeaderIcon="{winui:FontIcon Glyph=&#xEC08;}"
