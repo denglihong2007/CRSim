@@ -613,7 +613,7 @@ public partial class StationManagementPageViewModel : ObservableObject
     {
         var path = _dialogService.SaveFile(".xlsx", "data");
         if (path == null) return;
-        var converter = new TicketChecksToStringConverter() { WaitingAreas = WaitingAreas };
+        var converter = new TicketChecksToStringConverter() { WaitingAreas = WaitingAreas, Separator=" " };
         ExcelPackage.License.SetNonCommercialPersonal("CRSim");
         using var package = new ExcelPackage();
         var worksheet = package.Workbook.Worksheets.Add("Sheet1");
