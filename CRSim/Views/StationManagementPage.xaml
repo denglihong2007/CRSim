@@ -167,8 +167,16 @@
                                 <AppBarButton Label="从车次数据库导入" Command="{x:Bind ViewModel.ImportFromTrainNumbersCommand}" />
                             </CommandBar.SecondaryCommands>
                         </CommandBar>
+                        <AutoSuggestBox PlaceholderText="搜索车次" QueryIcon="Find" Text="{x:Bind ViewModel.SearchTrainNumberText,Mode=TwoWay}"
+                                    Margin="0,8,0,0" HorizontalAlignment="Stretch">
+                            <interactivity:Interaction.Behaviors>
+                                <interactivity:EventTriggerBehavior EventName="TextChanged">
+                                    <interactivity:InvokeCommandAction Command="{x:Bind ViewModel.SearchTrainNumberCommand}" />
+                                </interactivity:EventTriggerBehavior>
+                            </interactivity:Interaction.Behaviors>
+                        </AutoSuggestBox>
                         <Border Style="{StaticResource ListViewBorder}" Margin="0,8,0,0">
-                            <ListView x:Name="TrainStopsList" ItemsSource="{x:Bind ViewModel.TrainStops}" MaxHeight="300">
+                            <ListView x:Name="TrainStopsList" ItemsSource="{x:Bind ViewModel.FilteredTrainStops,Mode=OneWay}" MaxHeight="300">
                                 <ListView.Header>
                                     <Grid Padding="16,12" ColumnSpacing="16">
                                         <Grid.ColumnDefinitions>

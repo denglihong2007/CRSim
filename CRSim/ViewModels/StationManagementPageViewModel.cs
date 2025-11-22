@@ -15,6 +15,9 @@ public partial class StationManagementPageViewModel : ObservableObject
     public partial string SearchText { get; set; } = "";
 
     [ObservableProperty]
+    public partial string SearchTrainNumberText { get; set; } = "";
+
+    [ObservableProperty]
     public partial bool IsSelected { get; set; } = false;
 
     public List<string> StationNames { get; set; } = [];
@@ -29,6 +32,7 @@ public partial class StationManagementPageViewModel : ObservableObject
     public ObservableCollection<Platform> Platforms { get; private set; } = [];
 
     public ObservableCollection<TrainStop> TrainStops { get; private set; } = [];
+    public ObservableCollection<TrainStop> FilteredTrainStops =>[.. TrainStops.Where(x => x.Number.ToUpper().Contains(SearchTrainNumberText.ToUpper()))];
 
     private readonly IDatabaseService _databaseService = App.AppHost.Services.GetService<IDatabaseService>();
 
@@ -37,6 +41,8 @@ public partial class StationManagementPageViewModel : ObservableObject
     private readonly INetworkService _networkService = App.AppHost.Services.GetService<INetworkService>();
     public StationManagementPageViewModel()
     {
+        TrainStops.CollectionChanged += (sender, e) =>
+                    OnPropertyChanged(nameof(FilteredTrainStops));
         RefreshStations();
     }
     private void UpdateInfoItems()
@@ -87,6 +93,7 @@ public partial class StationManagementPageViewModel : ObservableObject
         WaitingAreas.Clear();
         Platforms.Clear();
         TrainStops.Clear();
+        SearchTrainNumberText = string.Empty;
         if (args is SelectionChangedEventArgs selectedStation && selectedStation.AddedItems.Count > 0)
         {
             SelectedStation = _databaseService.GetStationByName(selectedStation.AddedItems[0].ToString());
@@ -352,6 +359,12 @@ public partial class StationManagementPageViewModel : ObservableObject
     #endregion
 
     #region TrainStop
+    [RelayCommand]
+    public void SearchTrainNumber()
+    {
+        OnPropertyChanged(nameof(FilteredTrainStops));
+    }
+
     [RelayCommand]
     public async Task ImportFromTrainNumbers()
     {
