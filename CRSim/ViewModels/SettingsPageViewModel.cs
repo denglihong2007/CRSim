@@ -13,10 +13,10 @@ namespace CRSim.ViewModels
 
         [ObservableProperty]
         public partial string AppVersion { get; set; } = "";
-        public ObservableCollection<InfoItem> Apis { get; } =
+        public ObservableCollection<IApi> Apis { get; } =
         [
-            new InfoItem { Title = "官方源", Detail = "http://47.122.74.193:25565" },
-            new InfoItem { Title = "镜像站源", Detail = "https://crsim.com.cn/api" },
+            new ApiFactory().CreateApi("官方站"),
+            new ApiFactory().CreateApi("镜像站"),
         ];
         private Settings _settings;
         private readonly ISettingsService _settingsService;
@@ -50,7 +50,7 @@ namespace CRSim.ViewModels
         public partial string SwitchPageSeconds { get; set; }
 
         [ObservableProperty]
-        public partial InfoItem ApiUri { get; set; }
+        public partial IApi Api { get; set; }
 
         [ObservableProperty]
         public partial string UserKey { get; set; }
@@ -81,7 +81,7 @@ namespace CRSim.ViewModels
             StopDisplayUntilDepartureDuration = _settings.StopDisplayUntilDepartureDuration.TotalMinutes.ToString();
             StopDisplayFromArrivalDuration = _settings.StopDisplayFromArrivalDuration.TotalMinutes.ToString();
             StopCheckInAdvanceDuration = _settings.StopCheckInAdvanceDuration.TotalMinutes.ToString();
-            ApiUri = Apis.Where(x => x.Detail == _settings.ApiUri).FirstOrDefault();
+            Api = Apis.First(x => x.Name == _settings.Api.Name);
             MaxPages = _settings.MaxPages.ToString();
             SwitchPageSeconds = _settings.SwitchPageSeconds.ToString();
             UserKey = _settings.UserKey;
@@ -102,7 +102,7 @@ namespace CRSim.ViewModels
             _settings.UserKey = UserKey;
             _settings.LoadTodayOnly = LoadTodayOnly;
             _settings.ReopenUnclosedScreensOnLoad = ReopenUnclosedScreensOnLoad;
-            _settings.ApiUri = ApiUri.Detail;
+            _settings.Api = Api;
             _settingsService.SaveSettings();
         }
         private static void UpdateSettings(string input, bool allowNegative, Action<int> updateAction)
@@ -123,9 +123,7 @@ namespace CRSim.ViewModels
         [RelayCommand]
         public async Task CheckUpdate()
         {
-            var update = ApiUri.Title == "官方源" ? 
-                await _networkService.GetUpdateAsync("https://api.github.com/repos/denglihong2007/CRSim/releases/latest") : 
-                await _networkService.GetUpdateAsync("https://crsim.com.cn/api/version");
+            var update = await _networkService.GetUpdateAsync(Api.UpdateApi);
             if (update is null)
             {
                 await _dialogService.ShowMessageAsync("错误", "检查更新失败。");
@@ -174,7 +172,7 @@ namespace CRSim.ViewModels
                     }
 
                     var programDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                    var appExePath = Process.GetCurrentProcess().MainModule.FileName;
+                    var appExePath = Environment.ProcessPath;
                     var appName = Path.GetFileName(appExePath);
                     string batchScript = $@"
                         @echo off
@@ -202,7 +200,7 @@ namespace CRSim.ViewModels
                 }
                 catch (Exception e)
                 {
-                    await _dialogService.ShowTextAsync("错误", "更新失败。\n" + e);
+                    await _dialogService.ShowTextAsync("错误", "更新失败。若使用“官方站”，可尝试更换到“镜像站”。\n" + e);
                     UpdateProgress = 0;
                     return;
                 }

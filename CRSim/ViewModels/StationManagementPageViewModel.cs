@@ -1,4 +1,5 @@
 ﻿using CRSim.Converters;
+using CRSim.Core.Models.Plugin;
 using System.Text.RegularExpressions;
 
 namespace CRSim.ViewModels;
@@ -11,10 +12,17 @@ public partial class StationManagementPageViewModel : ObservableObject
     public partial string PageTitle { get; set; } = "车站管理";
 
     [ObservableProperty]
-    public partial bool IsSelected { get; set; } = false;
+    public partial string SearchText { get; set; } = "";
 
     [ObservableProperty]
-    public partial List<string> StationNames { get; set; } = [];
+    public partial string SearchTrainNumberText { get; set; } = "";
+
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; } = false;
+
+    public List<string> StationNames { get; set; } = [];
+
+    public List<string> FilteredStationNames => [.. StationNames.Where(x => x.Contains(SearchText))];
 
     [ObservableProperty]
     public partial Station SelectedStation { get; set; } = new();
@@ -24,6 +32,7 @@ public partial class StationManagementPageViewModel : ObservableObject
     public ObservableCollection<Platform> Platforms { get; private set; } = [];
 
     public ObservableCollection<TrainStop> TrainStops { get; private set; } = [];
+    public ObservableCollection<TrainStop> FilteredTrainStops =>[.. TrainStops.Where(x => x.Number.ToUpper().Contains(SearchTrainNumberText.ToUpper()))];
 
     private readonly IDatabaseService _databaseService = App.AppHost.Services.GetService<IDatabaseService>();
 
@@ -32,6 +41,8 @@ public partial class StationManagementPageViewModel : ObservableObject
     private readonly INetworkService _networkService = App.AppHost.Services.GetService<INetworkService>();
     public StationManagementPageViewModel()
     {
+        TrainStops.CollectionChanged += (sender, e) =>
+                    OnPropertyChanged(nameof(FilteredTrainStops));
         RefreshStations();
     }
     private void UpdateInfoItems()
@@ -74,6 +85,7 @@ public partial class StationManagementPageViewModel : ObservableObject
     {
         var stationsList = _databaseService.GetAllStations();
         StationNames = [.. stationsList.Select(s => s.Name)];
+        OnPropertyChanged(nameof(FilteredStationNames));
     }
     [RelayCommand]
     public void StationSelected(object args)
@@ -81,6 +93,7 @@ public partial class StationManagementPageViewModel : ObservableObject
         WaitingAreas.Clear();
         Platforms.Clear();
         TrainStops.Clear();
+        SearchTrainNumberText = string.Empty;
         if (args is SelectionChangedEventArgs selectedStation && selectedStation.AddedItems.Count > 0)
         {
             SelectedStation = _databaseService.GetStationByName(selectedStation.AddedItems[0].ToString());
@@ -347,6 +360,12 @@ public partial class StationManagementPageViewModel : ObservableObject
 
     #region TrainStop
     [RelayCommand]
+    public void SearchTrainNumber()
+    {
+        OnPropertyChanged(nameof(FilteredTrainStops));
+    }
+
+    [RelayCommand]
     public async Task ImportFromTrainNumbers()
     {
         if (!await CheckCanImport()) return;
@@ -525,7 +544,6 @@ public partial class StationManagementPageViewModel : ObservableObject
             {
                 if (worksheet.Cells[row, 1].Text.Trim() == "" ||
                     worksheet.Cells[row, 2].Text.Trim() == "" ||
-                    worksheet.Cells[row, 5].Text.Trim() == "" ||
                     worksheet.Cells[row, 6].Text.Trim() == "" ||
                     worksheet.Cells[row, 8].Text.Trim() == "" ||
                     worksheet.Cells[row, 9].Text.Trim() == "")
@@ -539,7 +557,7 @@ public partial class StationManagementPageViewModel : ObservableObject
                     Length = int.TryParse(worksheet.Cells[row, 2].Text, out int length) ? length : 0,
                     ArrivalTime = TimeSpan.TryParseExact(worksheet.Cells[row, 3].Text, @"hh\:mm", null, out TimeSpan arrival) ? arrival : null,
                     DepartureTime = TimeSpan.TryParseExact(worksheet.Cells[row, 4].Text, @"hh\:mm", null, out TimeSpan departure) ? departure : null,
-                    TicketCheckIds = [.. worksheet.Cells[row, 5].Text
+                    TicketCheckIds = worksheet.Cells[row, 6].Text.Trim() == "" ? null : [.. worksheet.Cells[row, 5].Text
                         .Split(' ', StringSplitOptions.RemoveEmptyEntries)
                         .SelectMany(entry =>
                         {
@@ -573,7 +591,7 @@ public partial class StationManagementPageViewModel : ObservableObject
                             });
                         })],
                     Platform = worksheet.Cells[row, 6].Text.Trim(),
-                    Landmark = worksheet.Cells[row, 7].Text.Trim() == "" ? "无" : worksheet.Cells[row, 8].Text.Trim(),
+                    Landmark = worksheet.Cells[row, 7].Text.Trim() == "" ? "无" : worksheet.Cells[row, 7].Text.Trim(),
                     Origin = worksheet.Cells[row, 8].Text.Trim(),
                     Terminal = worksheet.Cells[row, 9].Text.Trim(),
                     Status = worksheet.Cells[row, 10].Text switch
@@ -595,7 +613,7 @@ public partial class StationManagementPageViewModel : ObservableObject
     {
         var path = _dialogService.SaveFile(".xlsx", "data");
         if (path == null) return;
-        var converter = new TicketChecksToStringConverter() { WaitingAreas = WaitingAreas };
+        var converter = new TicketChecksToStringConverter() { WaitingAreas = WaitingAreas, Separator=" " };
         ExcelPackage.License.SetNonCommercialPersonal("CRSim");
         using var package = new ExcelPackage();
         var worksheet = package.Workbook.Worksheets.Add("Sheet1");
@@ -827,4 +845,9 @@ public partial class StationManagementPageViewModel : ObservableObject
         return false;
     }
 
+    [RelayCommand]
+    public void Search()
+    {
+        OnPropertyChanged(nameof(FilteredStationNames));
+    }
 }

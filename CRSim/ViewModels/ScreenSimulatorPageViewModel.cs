@@ -27,6 +27,9 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
     public partial bool VideoNeeded { get; set; }
 
     [ObservableProperty]
+    public partial bool CustomizedTime { get; set; } = false;
+
+    [ObservableProperty]
     public partial bool LocationNeeded { get; set; }
     public List<string> StationNames => [.. databaseService.GetAllStations().Select(x => x.Name)];
     public ObservableCollection<TicketCheck> TicketChecks { get; private set; } = [];
@@ -70,6 +73,7 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
             VideoNeeded = paramaters.Contains("video");
             LocationNeeded = paramaters.Contains("location");
         }
+        CheckCanStart();
     }
     [RelayCommand]
     public void StationSelected(object s)
@@ -150,7 +154,7 @@ public partial class ScreenSimulatorPageViewModel(IEnumerable<PluginBase> plugin
         {
             ID = Guid.NewGuid(),
             StyleName = SelectedStyle.Manifest.Name,
-            SimulateTime = SelectedDate.Add(SelectedTime).DateTime,
+            SimulateTime = CustomizedTime ? SelectedDate.Add(SelectedTime).DateTime : DateTime.Now,
             Text = (TextNeeded && !string.IsNullOrWhiteSpace(Text)) ? Text : null,
             Video = (VideoNeeded && !string.IsNullOrWhiteSpace(Video)) ? new Uri(Video) : null,
             Station = StationNeeded ? databaseService.GetStationByName(SelectedStationName) : null,
