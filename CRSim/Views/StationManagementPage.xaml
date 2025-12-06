@@ -55,7 +55,6 @@
                     <AppBarButton Icon="Clear" Label="删除" Command="{x:Bind ViewModel.DeleteStationCommand}" CommandParameter="{x:Bind StationsList.SelectedItem, Mode=OneWay}" />
                     <CommandBar.SecondaryCommands>
                         <AppBarButton Label="清空所有车站" Command="{x:Bind ViewModel.DeleteAllStationsCommand}" />
-                        <AppBarButton Label="从模拟广播系统导入" Command="{x:Bind ViewModel.ImportFrom7DCommand}" />
                     </CommandBar.SecondaryCommands>
                 </CommandBar>
                 <AutoSuggestBox Grid.Row="1" PlaceholderText="搜索车站" QueryIcon="Find" Text="{x:Bind ViewModel.SearchText,Mode=TwoWay}"
@@ -239,12 +238,20 @@
                             </ListView>
                         </Border>
                         <TextBlock Text="杂项" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,24,0,0"/>
-                        <controls:SettingsCard Header="保存车站配置" Description="验证并保存数据配置" Margin="0,12,0,0">
-                            <controls:SettingsCard.HeaderIcon>
-                                <FontIcon Glyph="&#xE74E;"/>
-                            </controls:SettingsCard.HeaderIcon>
-                            <Button Content="保存配置" Command="{x:Bind ViewModel.SaveChangesCommand}" Style="{StaticResource AccentButtonStyle}" />
-                        </controls:SettingsCard>
+                        <StackPanel Orientation="Vertical" Spacing="4" Margin="0,12,0,0">
+                            <controls:SettingsCard Header="导出车站" Description="验证并导出车站文件">
+                                <controls:SettingsCard.HeaderIcon>
+                                    <FontIcon Glyph="&#xE72D;"/>
+                                </controls:SettingsCard.HeaderIcon>
+                                <Button Content="导出" Command="{x:Bind ViewModel.ExportStationCommand}" Style="{StaticResource AccentButtonStyle}" />
+                            </controls:SettingsCard>
+                            <controls:SettingsCard Header="保存配置" Description="验证并保存数据配置">
+                                <controls:SettingsCard.HeaderIcon>
+                                    <FontIcon Glyph="&#xE74E;"/>
+                                </controls:SettingsCard.HeaderIcon>
+                                <Button Content="保存" Command="{x:Bind ViewModel.SaveChangesCommand}" Style="{StaticResource AccentButtonStyle}" />
+                            </controls:SettingsCard>
+                        </StackPanel>
                     </StackPanel>
                 </ContentControl>
             </ScrollViewer>

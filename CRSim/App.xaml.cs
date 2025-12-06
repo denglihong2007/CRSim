@@ -6,23 +6,38 @@ namespace CRSim
 {
     public partial class App : Application
     {
-        public static IHost AppHost { get; private set; }
+        public IHost AppHost { get; private set; }
+
         public static MainWindow MainWindow;
-        public string[] commandLineArgs;
-        public CommandLineOptions parsedOptions;
-        public static string AppVersion { get; set; } = Assembly.GetAssembly(typeof(App)).GetName().Version.ToString();
-        private readonly Mutex mutex;
+        public static string AppVersion { get; set; }
+
+        private Mutex mutex;
 
         public App()
         {
+            InitializeComponent();
+        }
+
+        public static T GetService<T>()
+    where T : class
+        {
+            if ((Current as App)!.AppHost.Services.GetService(typeof(T)) is not T service)
+            {
+                throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
+            }
+
+            return service;
+        }
+
+        protected override async void OnLaunched(LaunchActivatedEventArgs args)
+        {
+            AppVersion = Assembly.GetAssembly(typeof(App)).GetName().Version.ToString();
             mutex = new Mutex(true, "CRSim", out bool isNewInstance);
             if (!isNewInstance)
             {
                 Environment.Exit(0);
             }
-
-            var args = Environment.GetCommandLineArgs();
-            parsedOptions = CommandLineParser.Parse(args);
+            var parsedOptions = CommandLineParser.Parse(Environment.GetCommandLineArgs());
             if (parsedOptions.Debug)
             {
                 LaunchDebugConsole();
@@ -57,11 +72,6 @@ namespace CRSim
                     PluginService.InitializePlugins(context, services, parsedOptions.ExternalPluginPath);
                 })
             .Build();
-            InitializeComponent();
-        }
-
-        protected override async void OnLaunched(LaunchActivatedEventArgs args)
-        {
             var splashScreenWindow = AppHost.Services.GetRequiredService<StartWindow>();
             splashScreenWindow.Activate();
             await PerformInitializationAsync(splashScreenWindow);
@@ -76,10 +86,10 @@ namespace CRSim
             {
                 if(!Debugger.IsAttached) await Task.Delay(2000);
                 startWindow.Status = "正在加载设置...";
-                AppHost.Services.GetService<ISettingsService>().LoadSettings();
+                GetService<ISettingsService>().LoadSettings();
                 if (!Debugger.IsAttached) await Task.Delay(500);
                 startWindow.Status = "正在加载数据库...";
-                AppHost.Services.GetService<IDatabaseService>().ImportData(AppPaths.ConfigFilePath);
+                GetService<IDatabaseService>().ImportData(AppPaths.ConfigFilePath);
                 if (!Debugger.IsAttached) await Task.Delay(500);
                 startWindow.Status = new[] { "正在控票…", "正在关闭垃圾桶盖…", "正在刷绿车底…", "正在准备降弓用刑…" }[new Random().Next(4)];
                 if (!Debugger.IsAttached) await Task.Delay(500);

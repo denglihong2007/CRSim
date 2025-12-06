@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35424.110
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11218.70 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRSim.Core", "CRSim.Core\CRSim.Core.csproj", "{C72B16CC-AA3E-4E0F-A424-07D3987A9FD9}"
 EndProject
@@ -31,10 +31,9 @@ Global
 		{94927020-7AD7-4F6F-A456-F34A8E0BC40A}.Debug|x64.Build.0 = Debug|x64
 		{94927020-7AD7-4F6F-A456-F34A8E0BC40A}.Release|x64.ActiveCfg = Release|x64
 		{94927020-7AD7-4F6F-A456-F34A8E0BC40A}.Release|x64.Build.0 = Release|x64
-		{895EE8B3-1A15-4CA8-9AFE-246585732AA5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{895EE8B3-1A15-4CA8-9AFE-246585732AA5}.Debug|x64.Build.0 = Debug|Any CPU
-		{895EE8B3-1A15-4CA8-9AFE-246585732AA5}.Release|x64.ActiveCfg = Release|Any CPU
-		{895EE8B3-1A15-4CA8-9AFE-246585732AA5}.Release|x64.Build.0 = Release|Any CPU
+		{895EE8B3-1A15-4CA8-9AFE-246585732AA5}.Debug|x64.ActiveCfg = Debug|x64
+		{895EE8B3-1A15-4CA8-9AFE-246585732AA5}.Debug|x64.Build.0 = Debug|x64
+		{895EE8B3-1A15-4CA8-9AFE-246585732AA5}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
