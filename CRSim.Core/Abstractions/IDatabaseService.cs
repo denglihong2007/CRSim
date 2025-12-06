@@ -9,9 +9,7 @@ namespace CRSim.Core.Abstractions
         List<TrainNumber> GetAllTrainNumbers();
         Station GetStationByName(string name);
         TrainNumber GetTrainNumberByNumber(string number);
-        void AddStationByName(string name);
         void AddStation(Station station);
-        Task ImportStationFrom7D(string path);
         void AddTrainNumber(TrainNumber trainNumber);
         void DeleteStation(Station station);
         void DeleteTrainNumber(TrainNumber trainNumber);

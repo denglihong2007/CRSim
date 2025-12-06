@@ -252,5 +252,28 @@ namespace CRSim.Services
             }
             return null;
         }
+
+        public async Task<Station?> CreateStationAsync()
+        {
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "新增车站",
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                IsPrimaryButtonEnabled = false
+            };
+            var createStationDialog = new CreateStationDialog(isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            dialog.Content = createStationDialog;
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var inputDialog = dialog.Content as CreateStationDialog;
+                return inputDialog.GeneratedStation;
+            }
+            return null;
+        }
     }
 }

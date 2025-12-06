@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="CRSim.Views.CreateStationDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CRSim.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <RadioButton x:Name="Blank" GroupName="options" Content="新建空白车站" Margin="0,0,0,4" IsChecked="True" Checked="Validate"/>
+        <TextBox x:Name="textBoxBlank" IsEnabled="{x:Bind ToBoolean(Blank.IsChecked), Mode=OneWay}" 
+                 PlaceholderText="车站名" Margin="0,0,0,8" TextChanged="Validate"/>
+        <RadioButton x:Name="btnFile" GroupName="options" Content="从车站文件导入" Margin="0,0,0,4" Checked="Validate"/>
+        <ContentControl IsEnabled="{x:Bind ToBoolean(btnFile.IsChecked), Mode=OneWay}" HorizontalContentAlignment="Stretch">
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="textBoxFile" Grid.Column="0" PlaceholderText="文件路径"/>
+                <Button Grid.Column="1" VerticalAlignment="Stretch" Margin="8,0,0,0" Click="ImportFromFileAsync">
+                    <FontIcon Glyph="&#xE8E5;" FontSize="16"/>
+                </Button>
+            </Grid>
+        </ContentControl>
+        <RadioButton x:Name="Broadcast" GroupName="options" Content="从模拟广播系统导入" Margin="0,0,0,4" Checked="Validate"/>
+        <ContentControl IsEnabled="{x:Bind ToBoolean(Broadcast.IsChecked), Mode=OneWay}" HorizontalContentAlignment="Stretch">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="textBoxBroadcast" Grid.Column="0" PlaceholderText="文件路径"/>
+                <Button Grid.Column="1" VerticalAlignment="Stretch" Margin="8,0,0,0" Click="ImportFromSS7DSAsync">
+                    <FontIcon Glyph="&#xE8E5;" FontSize="16"/>
+                </Button>
+            </Grid>
+        </ContentControl>
+    </StackPanel>
+</Page>

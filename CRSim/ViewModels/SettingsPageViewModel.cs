@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.IO.Packaging;
 using System.Reflection;
+using System.Security.Policy;
+using Windows.System;
 
 namespace CRSim.ViewModels
 {
@@ -134,71 +136,8 @@ namespace CRSim.ViewModels
             }
             else
             {
-                await _dialogService.ShowTextAsync("发现新版本 " + update.Name, update.Body + "\n系统即将下载安装新版本。");
-                DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-                var downloader = new DownloadService();
-                UpdateProgress = 0;
-                try
-                {
-                    int lastProgress = 0;
-                    var lastUpdate = DateTime.MinValue;
-                    downloader.DownloadProgressChanged += (s, e) =>
-                    {
-                        var now = DateTime.Now;
-                        if ((e.ProgressPercentage - lastProgress >= 1) || (now - lastUpdate).TotalMilliseconds >= 100)
-                        {
-                            lastProgress = (int)e.ProgressPercentage;
-                            lastUpdate = now;
-
-                            dispatcherQueue.TryEnqueue(() =>
-                            {
-                                UpdateProgress = (int)e.ProgressPercentage;
-                            });
-                        }
-                    };
-                    var path = Path.Combine(AppPaths.TempPath, "update.zip");
-                    await downloader.DownloadFileTaskAsync(update.Assets[0].BrowserDownloadUrl, path);
-                    UpdateProgress = 0;
-
-                    if (!FileHashHelper.VerifySHA256(path, update.Assets[0].Digest.Split(':')[1]))
-                    {
-                        await _dialogService.ShowMessageAsync("错误", "下载的文件校验失败，请重试。");
-                        return;
-                    }
-
-                    var programDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                    var appExePath = Environment.ProcessPath;
-                    var appName = Path.GetFileName(appExePath);
-                    string batchScript = $@"
-                        @echo off
-                        taskkill /F /IM ""{appName}"" >nul 2>&1
-                        timeout /t 2 >nul
-                        cd /d ""{programDirectory}""
-                        powershell -Command ""Expand-Archive -Path '{path}' -DestinationPath '{programDirectory}' -Force""
-                        del /f /q ""{path}""
-                        start """" ""{appExePath}""
-                        exit /b 0
-                        ";
-                    string batchFilePath = Path.Combine(Path.GetTempPath(), "CRSimUpdate.bat");
-                    File.WriteAllText(batchFilePath, batchScript);
-                    var processInfo = new ProcessStartInfo
-                    {
-                        FileName = "cmd.exe",
-                        Arguments = $"/c \"{batchFilePath}\"",
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    };
-
-                    Process.Start(processInfo);
-                    Application.Current.Exit();
-                }
-                catch (Exception e)
-                {
-                    await _dialogService.ShowTextAsync("错误", "更新失败。若使用“官方站”，可尝试更换到“镜像站”。\n" + e);
-                    UpdateProgress = 0;
-                    return;
-                }
+                await _dialogService.ShowTextAsync("发现新版本 " + update.Name, update.Body + "\n请前往微软商店下载新版本。");
+                await Launcher.LaunchUriAsync(new Uri("https://apps.microsoft.com/detail/9n4xhrrmph8v"));
             }
         }
         [RelayCommand]

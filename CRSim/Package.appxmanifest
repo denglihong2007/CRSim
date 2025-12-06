@@ -8,15 +8,15 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="dce25a3c-6edb-4272-ab6b-496e3069c38f"
-    Publisher="CN=电排骨"
-    Version="1.0.0.0" />
+    Name="53D4FFDC.CRSim"
+    Publisher="CN=A0D23678-D7D4-4933-B369-1877DD38719C"
+    Version="3.1.3.0" />
 
-  <mp:PhoneIdentity PhoneProductId="dce25a3c-6edb-4272-ab6b-496e3069c38f" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="947762ab-9c52-4d97-843d-eeea6b5d81ce" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>国铁信息显示模拟</DisplayName>
-    <PublisherDisplayName>电排骨</PublisherDisplayName>
+    <DisplayName>CRSim</DisplayName>
+    <PublisherDisplayName>电排骨工坊</PublisherDisplayName>
     <Logo>Assets\CRSimIcon.png</Logo>
   </Properties>
 
@@ -34,7 +34,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="国铁信息显示模拟"
+        DisplayName="CRSim"
         Description="CRSim"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
@@ -47,5 +47,6 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+    <Capability Name="internetClient"/>
   </Capabilities>
 </Package>

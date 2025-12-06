@@ -3,6 +3,7 @@ using CRSim.Core.Models;
 using CRSim.Core.Models.Plugin;
 using System.Net;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace CRSim.Core.Services
 {

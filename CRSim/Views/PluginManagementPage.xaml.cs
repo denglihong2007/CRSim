@@ -4,7 +4,7 @@ namespace CRSim.Views;
 
 public sealed partial class PluginManagementPage : Page
 {
-    public PluginManagementPageViewModel ViewModel { get; } = App.AppHost.Services.GetService<PluginManagementPageViewModel>();
+    public PluginManagementPageViewModel ViewModel { get; } = App.GetService<PluginManagementPageViewModel>();
 
     public PluginManagementPage()
     {
@@ -18,6 +18,6 @@ public sealed partial class PluginManagementPage : Page
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        App.AppHost.Services.GetService<IDialogService>().XamlRoot = this.XamlRoot;
+        App.GetService<IDialogService>().XamlRoot = this.XamlRoot;
     }
 }

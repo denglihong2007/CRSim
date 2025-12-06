@@ -4,6 +4,7 @@
     {
         string? GetFile(string[] filter);
         string? SaveFile(string filter,string fileName);
+        Task<Station?> CreateStationAsync();
         Task<string?> GetInputAsync(string title,string placeholder);
         Task<bool> GetConfirmAsync(string title);
         Task ShowMessageAsync(string title, string message);
