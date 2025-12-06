@@ -124,6 +124,9 @@
     <Content Update="Assets\HomeHeaderTiles\Header-QQ.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="Assets\HomeHeaderTiles\Header-Store.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Update="Assets\CRSimIcon.png">

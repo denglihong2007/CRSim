@@ -109,6 +109,14 @@
                             </local:Tile.Source>
                         </local:Tile>
                         <local:Tile
+                            Title="商店页面"
+                            Description="访问我们在微软商店的页面。"
+                            Link="https://apps.microsoft.com/detail/9n4xhrrmph8v">
+                            <local:Tile.Source>
+                                <Image Source="/Assets/HomeHeaderTiles/Header-Store.png" />
+                            </local:Tile.Source>
+                        </local:Tile>
+                        <local:Tile
                             Title="开源仓库"
                             Description="欢迎贡献代码！当然功能样式请求和 Bug 反馈也请交到 Issue 中！"
                             Link="https://github.com/denglihong2007/CRSim">
