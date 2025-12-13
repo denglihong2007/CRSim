@@ -49,14 +49,15 @@
                         <FontIcon Glyph="&#xE786;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="站台占用图" Tag="PlatformDiagramPage">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xECA5;" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
                 <NavigationViewItem Content="12306" Tag="WebsiteSimulatorPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xEB41;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItemHeader Content="其他工具"/>
+                <NavigationViewItem Content="站台占用图" Tag="PlatformDiagramPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xECA5;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
