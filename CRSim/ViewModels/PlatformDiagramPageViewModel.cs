@@ -1,8 +1,6 @@
-﻿using CRSim.PlatformDiagram;
+﻿namespace CRSim.ViewModels;
 
-namespace CRSim.ViewModels;
-
-public partial class PlatformDiagramPageViewModel(IDialogService _dialogService, IDatabaseService _databaseService, Generator _generator) : ObservableObject
+public partial class PlatformDiagramPageViewModel(IDialogService _dialogService, IDatabaseService _databaseService) : ObservableObject
 {
     public string PageTitle = "生成站台占用图";
     public Station? SelectedStation;
