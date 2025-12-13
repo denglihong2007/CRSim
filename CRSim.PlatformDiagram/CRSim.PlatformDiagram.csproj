@@ -11,6 +11,7 @@
     <PackageReference Include="itext" Version="9.4.0" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.4.0" />
     <PackageReference Include="itext.font-asian" Version="9.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
   <ItemGroup>

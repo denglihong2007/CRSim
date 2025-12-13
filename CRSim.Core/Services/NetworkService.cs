@@ -121,15 +121,21 @@ namespace CRSim.Core.Services
                     var startTimeStr = item.GetProperty("start_time").GetString();
                     TimeSpan? arriveTime = null;
                     TimeSpan? startTime = null;
-                    if (arriveTimeStr != "----")
+                    if (item.GetProperty("start_station_name").ToString() != name)
                     {
                         arriveTime = TimeSpan.Parse(arriveTimeStr);
                     }
-                    if (startTimeStr != arriveTimeStr)
+                    if (item.GetProperty("end_station_name").ToString() != name)
                     {
                         startTime = TimeSpan.Parse(startTimeStr);
                     }
-                    trainStops.Add(new TrainStop() { Number = item.GetProperty("station_train_code").ToString(), Terminal = item.GetProperty("end_station_name").ToString(), Origin = item.GetProperty("start_station_name").ToString(), ArrivalTime = arriveTime, DepartureTime = startTime });
+                    trainStops.Add(new TrainStop() 
+                    {
+                        Number = item.GetProperty("station_train_code").ToString(), 
+                        Terminal = item.GetProperty("end_station_name").ToString(), 
+                        Origin = item.GetProperty("start_station_name").ToString(), 
+                        ArrivalTime = arriveTime, 
+                        DepartureTime = startTime });
                 }
                 return trainStops;
             }
