@@ -1,4 +1,5 @@
-﻿using CRSim.Core.Models;
+// Trigger CI build
+using CRSim.Core.Models;
 using iText.IO.Font;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
@@ -15,7 +16,7 @@ namespace CRSim.PlatformDiagram
     public class Generator
     {
         public static void Generate(Station station, string savePath, float pageWidth)
-        { 
+        {
             float Padding = 40;
             float HeaderHeight = 16;
             float PlatformTableVerticalMargin = 9;
@@ -118,7 +119,7 @@ namespace CRSim.PlatformDiagram
                     DrawLabel(canvas, font, "30", x - 10, yBottom - PlatformTableVerticalMargin - TimelineHeight - 2, 20, TimelineHeight, lineColor, alignBottom: false);
                 }
             }
-            
+
             Dictionary<string, float> platformHeights = station.TrainStops
                 .Select(x => x.Platform)
                 .Where(p => p != null)
@@ -142,7 +143,7 @@ namespace CRSim.PlatformDiagram
             #region 列车
             foreach (var train in station.TrainStops)
             {
-                float barHeight = PlatformHeight / 2.5f - 4;       
+                float barHeight = PlatformHeight / 2.5f - 4;
                 TimeSpan fixedDuration = TimeSpan.FromMinutes(2);
                 if (train.Platform is null || !platformHeights.TryGetValue(train.Platform, out var yBottom1))
                     continue;
@@ -207,7 +208,7 @@ namespace CRSim.PlatformDiagram
                         .SetFont(font)
                         .SetFontSize(8)
                         .SetMultipliedLeading(1f)
-                        .SetMargins(0,0,0,0)); 
+                        .SetMargins(0,0,0,0));
                     canvas.Fill();
                 }
             }
