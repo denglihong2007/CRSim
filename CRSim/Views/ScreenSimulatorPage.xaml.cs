@@ -2,7 +2,7 @@ namespace CRSim.Views;
 
 public sealed partial class ScreenSimulatorPage : Page
 {
-    public ScreenSimulatorPageViewModel ViewModel { get; } = App.AppHost.Services.GetService<ScreenSimulatorPageViewModel>();
+    public ScreenSimulatorPageViewModel ViewModel { get; } = App.GetService<ScreenSimulatorPageViewModel>();
 
     public ScreenSimulatorPage()
     {

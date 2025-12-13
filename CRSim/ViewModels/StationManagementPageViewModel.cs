@@ -1,4 +1,5 @@
 ﻿using CRSim.Converters;
+using CRSim.Core.Models;
 using CRSim.Core.Models.Plugin;
 using System.Text.RegularExpressions;
 
@@ -34,11 +35,11 @@ public partial class StationManagementPageViewModel : ObservableObject
     public ObservableCollection<TrainStop> TrainStops { get; private set; } = [];
     public ObservableCollection<TrainStop> FilteredTrainStops =>[.. TrainStops.Where(x => x.Number.ToUpper().Contains(SearchTrainNumberText.ToUpper()))];
 
-    private readonly IDatabaseService _databaseService = App.AppHost.Services.GetService<IDatabaseService>();
+    private readonly IDatabaseService _databaseService = App.GetService<IDatabaseService>();
 
-    private readonly IDialogService _dialogService = App.AppHost.Services.GetService<IDialogService>();
+    private readonly IDialogService _dialogService = App.GetService<IDialogService>();
 
-    private readonly INetworkService _networkService = App.AppHost.Services.GetService<INetworkService>();
+    private readonly INetworkService _networkService = App.GetService<INetworkService>();
     public StationManagementPageViewModel()
     {
         TrainStops.CollectionChanged += (sender, e) =>
@@ -121,15 +122,15 @@ public partial class StationManagementPageViewModel : ObservableObject
     [RelayCommand]
     public async Task AddStation()
     {
-        string? station = await _dialogService.GetInputAsync("请输入车站名称", string.Empty);
+        var station = await _dialogService.CreateStationAsync();
         if (station != null)
         {
-            if (StationNames.Contains(station))
+            if (StationNames.Contains(station.Name))
             {
-                await _dialogService.ShowMessageAsync("添加失败", $"车站 {station} 已存在。");
+                await _dialogService.ShowMessageAsync("添加失败", $"车站 {station.Name} 已存在。");
                 return;
             }
-            _databaseService.AddStationByName(station);
+            _databaseService.AddStation(station);
             await _databaseService.SaveData();
             RefreshStations();
         }
@@ -167,20 +168,18 @@ public partial class StationManagementPageViewModel : ObservableObject
         return station;
     }
     [RelayCommand]
-    public async Task ImportFrom7D()
+    public async Task ExportStation()
     {
-        var path = _dialogService.GetFile([".exe"]);
+        if (!await Validate()) return;
+        var path = _dialogService.SaveFile(".json", $"{SelectedStation.Name}车站配置");
         if (path == null) return;
-        try
+        string json = JsonSerializer.Serialize(new Json()
         {
-            await _databaseService.ImportStationFrom7D(path);
-            await _databaseService.SaveData();
-            RefreshStations();
+            Stations = [GenerateStation(SelectedStation.Name, WaitingAreas, TrainStops, Platforms) ],
+            TrainNumbers = []
         }
-        catch (Exception e)
-        {
-            await _dialogService.ShowMessageAsync("导入失败", "文件格式错误或被占用。\n" + e.Message);
-        }
+        , JsonContext.Default.Json);
+        await File.WriteAllTextAsync(path, json);
     }
     #endregion
 

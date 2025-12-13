@@ -1,30 +1,33 @@
+![home](https://github.com/user-attachments/assets/a48d32df-a2ca-4b67-ad92-4cb7011d901f)
+
+<div align="center">
+  
+# <image src="https://docs.crsim.tech/images/CRSimIcon.png" height="30" width="30"/> CRSim · 车站信息显示模拟软件
+
 <p align="center">
   <img src="https://img.shields.io/github/stars/denglihong2007/CRSim?style=for-the-badge" alt="stars"/>
   <img src="https://img.shields.io/github/forks/denglihong2007/CRSim?style=for-the-badge" alt="forks"/>
   <img src="https://img.shields.io/github/license/denglihong2007/CRSim?style=for-the-badge" alt="license"/>
   <img src="https://img.shields.io/github/downloads/denglihong2007/CRSim/total?style=for-the-badge" alt="downloads"/>
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/C%23-100%25-239120?style=for-the-badge&logo=c-sharp&logoColor=white"/>
 </p>
 
-<h1 align="center">🚄 CRSim · 国铁信息显示模拟软件</h1>
-
-<p align="center">
-  <b>一款用于模拟中国铁路系统信息显示的软件</b>
-</p>
+  <a href="https://apps.microsoft.com/detail/9n4xhrrmph8v?referrer=appbadge&mode=direct">
+    <img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
+  </a>
+</div>
 
 ## ✨ 主要特性
 
-- 仿真国铁各类信息显示屏（如引导屏、12306界面等）
-- 多站点（北京西、上海、成都东、哈尔滨）真实界面还原
-- 支持地铁屏、机场屏、廊桥屏、站台屏、检票口屏等模拟
+- 仿真车站各类信息显示屏（大屏、检票口屏、站台屏、地铁屏）
+- 车站站台占用示意图PDF生成
+- 售票网站仿真模拟
+- 插件扩展支持
 
 ## 🚀 安装与启动
 
 1. **推荐**  
-   前往 [官方网站](https://crsim.tech) 一键下载安装，享受自动更新体验
+   前往 [微软商店](https://apps.microsoft.com/detail/9n4xhrrmph8v?) 一键下载安装
 
 2. **手动（镜像源）**  
    前往 [镜像源](https://crsim.com.cn) 下载解压运行，感谢由`@wxl0430`提供的镜像源支持
@@ -48,9 +51,9 @@
 
 ![Alt](https://repobeats.axiom.co/api/embed/0034f13affbb9d94bf9bbb3838467c4ecc94fb25.svg "Repobeats analytics image")
 
-## 📚 相关链接
+## 相关链接
 
-- 官方网站：[https://crsim.tech](https://crsim.tech)
+- [官方网站](https://crsim.tech)
 - [CRSim-Web 官网开源仓库](https://github.com/denglihong2007/CRSim-Web)
 - [CRSim-doc 操作文档仓库](https://github.com/denglihong2007/CRSim-doc)
 

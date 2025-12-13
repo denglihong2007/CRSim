@@ -2,7 +2,7 @@ namespace CRSim.Views;
 
 public sealed partial class PlatformDiagramPage : Page
 {
-    public PlatformDiagramPageViewModel ViewModel { get; } = App.AppHost.Services.GetService<PlatformDiagramPageViewModel>();
+    public PlatformDiagramPageViewModel ViewModel { get; } = App.GetService<PlatformDiagramPageViewModel>();
 
     public PlatformDiagramPage()
     {
@@ -12,6 +12,6 @@ public sealed partial class PlatformDiagramPage : Page
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        App.AppHost.Services.GetService<IDialogService>().XamlRoot = this.XamlRoot;
+        App.GetService<IDialogService>().XamlRoot = this.XamlRoot;
     }
 }
