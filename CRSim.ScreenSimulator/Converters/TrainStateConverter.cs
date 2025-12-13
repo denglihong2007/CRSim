@@ -30,18 +30,26 @@ namespace CRSim.ScreenSimulator.Converters
             // 到达模式或关键数据缺失
             if (DisplayMode == "Arrive" || (values.Length > 1 && values[1] == null))
             {
-                
+
+
                 if (values[0] is DateTime arriveTime){
-                    if (values[2] is TimeSpan state){
-                        // arriveTime += TimeSpan.FromMinutes(state.TotalMinutes);
-                        if (now >= arriveTime){
-                            if (state.TotalMinutes > 0)
-                                return string.Format(ArrivedLateText, ToHourMinuteString(state));
-                            return ArrivedText;
-                        }else{
-                            if (state.TotalMinutes > 0)
-                                return string.Format(ArrivingLateText, ToHourMinuteString(state));
-                            return ArrivingText;
+                    if (values.Length > 1)
+                    {
+                        if (values[2] is TimeSpan state)
+                        {
+                            // arriveTime += TimeSpan.FromMinutes(state.TotalMinutes);
+                            if (now >= arriveTime)
+                            {
+                                if (state.TotalMinutes > 0)
+                                    return string.Format(ArrivedLateText, ToHourMinuteString(state));
+                                return ArrivedText;
+                            }
+                            else
+                            {
+                                if (state.TotalMinutes > 0)
+                                    return string.Format(ArrivingLateText, ToHourMinuteString(state));
+                                return ArrivingText;
+                            }
                         }
                     }
                     return now >= arriveTime? ArrivedText : ArrivingText;
