@@ -1,7 +1,8 @@
 {
   "profiles": {
     "CRSim (Package)": {
-      "commandName": "MsixPackage"
+      "commandName": "MsixPackage",
+      "commandLineArgs": "-debug"
     },
     "CRSim (Unpackaged)": {
       "commandName": "Project",

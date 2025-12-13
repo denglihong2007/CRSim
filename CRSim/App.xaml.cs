@@ -1,8 +1,4 @@
-﻿using CRSim.PlatformDiagram;
-using CRSim.WebsiteSimulator;
-using System.Diagnostics;
-
-namespace CRSim
+﻿namespace CRSim
 {
     public partial class App : Application
     {
@@ -59,7 +55,6 @@ namespace CRSim
                     services.AddSingleton<StyleManager>();
                     services.AddSingleton<MainWindow>();
                     services.AddSingleton<StartWindow>();
-                    services.AddSingleton<Generator>();
                     services.AddTransient<Simulator>();
                     services.AddTransient<DashboardPageViewModel>();
                     services.AddTransient<StationManagementPageViewModel>();
