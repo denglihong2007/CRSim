@@ -76,11 +76,6 @@ jobs:
         run: |
           dotnet nuget add source --username denglihong2007 --password $env:GHPKG_KEY --store-password-in-clear-text --name github "https://nuget.pkg.github.com/denglihong2007/index.json"
 
-      - name: Restore and Build
-        run: |
-          dotnet restore CRSim.sln
-          dotnet build CRSim.sln --configuration Release --no-restore --runtime win-x64
-
       - name: Generate changelog
         uses: orhun/git-cliff-action@v4
         with:
@@ -92,8 +87,8 @@ jobs:
 
       - name: Publish
         run: |
+          dotnet restore CRSim.sln
           dotnet publish -c Release -p:PublishProfile=win-x64.pubxml -o out
-
 
       - name: Create Zip Package
         shell: pwsh
