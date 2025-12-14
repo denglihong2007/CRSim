@@ -1,8 +1,6 @@
 ﻿using CRSim.Core.Abstractions;
 using CRSim.Core.Models;
 using CRSim.Core.Utils;
-using System;
-using System.IO;
 using System.Text.Json;
 
 namespace CRSim.Core.Services
@@ -24,10 +22,14 @@ namespace CRSim.Core.Services
 
             _settings.ApiName = _settings.Api.Name;
 
-            var options = new JsonSerializerOptions { WriteIndented = true };
             string jsonString = JsonSerializer.Serialize(_settings, options);
             File.WriteAllText(_settingsFilePath, jsonString);
         }
+
+        private readonly JsonSerializerOptions options = new()
+        {
+            WriteIndented = true,
+        };
 
         public void LoadSettings()
         {
@@ -47,7 +49,6 @@ namespace CRSim.Core.Services
             }
             catch (JsonException)
             {
-                // Handle the case where the json is corrupted, load default settings
                 _settings = new Settings();
                 SaveSettings();
             }
