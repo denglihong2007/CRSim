@@ -16,7 +16,13 @@ jobs:
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '10.x'
+
+      - name: Add GitHub Package Source
+        env:
+          GHPKG_KEY: ${{ secrets.GHPKG_KEY }}
+        run: |
+          dotnet nuget add source --username denglihong2007 --password $env:GHPKG_KEY --store-password-in-clear-text --name github "https://nuget.pkg.github.com/denglihong2007/index.json"
 
       - name: Restore dependencies
         run: dotnet restore CRSim.sln
