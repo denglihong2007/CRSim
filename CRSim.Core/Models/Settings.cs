@@ -1,5 +1,6 @@
 ﻿using CRSim.Core.Abstractions;
 using CRSim.Core.Services;
+using System.Text.Json.Serialization;
 
 namespace CRSim.Core.Models
 {
@@ -20,7 +21,9 @@ namespace CRSim.Core.Models
         public TimeSpan StopDisplayFromArrivalDuration { get; set; } = TimeSpan.FromMinutes(10);
 
         public TimeSpan StopCheckInAdvanceDuration { get; set; } = TimeSpan.FromMinutes(2);
+        [JsonIgnore]
         public IApi Api { get; set; } = new ApiFactory().CreateApi("镜像站");
+        public string ApiName { get; set; } = "镜像站";
         public int MaxPages { get; set; } = 3;
         public int SwitchPageSeconds { get; set; } = 20;
         public string UserKey { get; set; } = "";
