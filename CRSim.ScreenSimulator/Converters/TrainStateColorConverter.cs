@@ -20,6 +20,7 @@ namespace CRSim.ScreenSimulator.Converters
         public SolidColorBrush ArrivedText { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush ArrivingText { get; set; } = new(Colors.White);
         public SolidColorBrush ArrivingLateText { get; set; } = new(Colors.Red);
+        public SolidColorBrush ArrivingEarlyText { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush WaitingColor { get; set; } = new(Colors.White);
         public SolidColorBrush CheckInColor { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush StopCheckInColor { get; set; } = new(Colors.Red);
@@ -38,6 +39,7 @@ namespace CRSim.ScreenSimulator.Converters
                 if (values[0] is DateTime arriveTime){
                     if (values.Length > 1 && values[1] is TimeSpan state){
                         if (state.TotalMinutes > 0) return ArrivingLateText;
+                        if (state.TotalMinutes < 0) return ArrivingEarlyText;
                         return now >= arriveTime ? ArrivedText : ArrivingText;
                     }
                     return now >= arriveTime? ArrivedText : ArrivingText;

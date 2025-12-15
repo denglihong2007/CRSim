@@ -15,6 +15,8 @@ namespace CRSim.ScreenSimulator.Converters
         public string ArrivingText { get; set; } = "正点";
         public string ArrivedLateText { get; set; } = "晚点{0}到达";
         public string ArrivingLateText { get; set; } = "预计晚点{0}";
+        public string ArrivedEarlyText { get; set; } = "早点{0}到达";
+        public string ArrivingEarlyText { get; set; } = "预计早点{0}";
         public string WaitingText { get; set; } = "候车";
         public string CheckInText { get; set; } = "正在检票";
         public string StopCheckInText { get; set; } = "停止检票";
@@ -42,12 +44,16 @@ namespace CRSim.ScreenSimulator.Converters
                             {
                                 if (state.TotalMinutes > 0)
                                     return string.Format(ArrivedLateText, ToHourMinuteString(state));
+                                if (state.TotalMinutes < 0)
+                                    return string.Format(ArrivedEarlyText, ToHourMinuteString(state.Negate()));
                                 return ArrivedText;
                             }
                             else
                             {
                                 if (state.TotalMinutes > 0)
                                     return string.Format(ArrivingLateText, ToHourMinuteString(state));
+                                if (state.TotalMinutes < 0)
+                                    return string.Format(ArrivingEarlyText, ToHourMinuteString(state.Negate()));
                                 return ArrivingText;
                             }
                         }
