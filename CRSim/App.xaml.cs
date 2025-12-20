@@ -12,6 +12,7 @@
         public App()
         {
             InitializeComponent();
+            this.UnhandledException += App_DispatcherUnhandledException;
         }
 
         public static T GetService<T>()
@@ -112,6 +113,13 @@
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Debug console started.\n");
             Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        private void App_DispatcherUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+        {
+            var dialog = new ErrorDialog(e.Exception.ToString());
+            dialog.Activate();
+            e.Handled = true;
         }
     }
 }
