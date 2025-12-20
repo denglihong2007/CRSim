@@ -1,16 +1,17 @@
-﻿using CRSim.Core.Abstractions;
-using CRSim.Core.Models;
+using CRSim.Core.Abstractions;
+using CRSim.Core.Services;
 using System.Windows.Threading;
 
 namespace CRSim.ScreenSimulator.Abstractions
 {
     public interface IScreenViewModel
     {
-        ITimeService TimeService { get; }
-        Dispatcher UIDispatcher { get; set; }
-        void LoadData(Station station, TicketCheck? ticketCheck, string platform);
-        string? Text { get; set; }
-        Uri Video { get; set; }
-        int Location { get; set; }
+        public TimeService TimeService { get; }
+        public Dispatcher UIDispatcher { get; set; }
+        public string Text { get; set; }
+        public int Location { get; set; }
+        public string Video { get; set; }
+
+        public void LoadData(string station, string ticketCheck, string platformName);
     }
 }
