@@ -13,19 +13,29 @@ namespace CRSim.Core.Converters
             if (reader.TokenType == JsonTokenType.String)
             {
                 string timeString = reader.GetString();
-                if (TimeSpan.TryParseExact(timeString, TimeFormat, null, System.Globalization.TimeSpanStyles.None, out TimeSpan result))
+                if (string.IsNullOrEmpty(timeString)) return null;
+                bool isNegative = timeString.StartsWith('-');
+                string absoluteValue = isNegative ? timeString[1..] : timeString;
+                if (TimeSpan.TryParseExact(absoluteValue, TimeFormat, null, out TimeSpan result))
                 {
-                    return result;
+                    return isNegative ? -result : result;
                 }
             }
-            return null; // 处理 null 值
+            return null;
         }
 
         public override void Write(Utf8JsonWriter writer, TimeSpan? value, JsonSerializerOptions options)
         {
             if (value.HasValue)
             {
-                writer.WriteStringValue(value.Value.ToString(TimeFormat));
+                if (value.Value < TimeSpan.Zero)
+                {
+                    writer.WriteStringValue("-" + value.Value.Duration().ToString(TimeFormat));
+                }
+                else
+                {
+                    writer.WriteStringValue(value.Value.ToString(TimeFormat));
+                }
             }
             else
             {
