@@ -16,10 +16,11 @@ namespace CRSim.ScreenSimulator.Converters
 
         public string DisplayMode { get; set; } = "Normal";
 
-        public List<SolidColorBrush> WaitingColorList { get; set; } = new();
+        public List<SolidColorBrush> WaitingColorList { get; set; } = [];
         public SolidColorBrush ArrivedText { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush ArrivingText { get; set; } = new(Colors.White);
         public SolidColorBrush ArrivingLateText { get; set; } = new(Colors.Red);
+        public SolidColorBrush ArrivingEarlyText { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush WaitingColor { get; set; } = new(Colors.White);
         public SolidColorBrush CheckInColor { get; set; } = new(Colors.LightGreen);
         public SolidColorBrush StopCheckInColor { get; set; } = new(Colors.Red);
@@ -38,6 +39,7 @@ namespace CRSim.ScreenSimulator.Converters
                 if (values[0] is DateTime arriveTime){
                     if (values.Length > 1 && values[1] is TimeSpan state){
                         if (state.TotalMinutes > 0) return ArrivingLateText;
+                        if (state.TotalMinutes < 0) return ArrivingEarlyText;
                         return now >= arriveTime ? ArrivedText : ArrivingText;
                     }
                     return now >= arriveTime? ArrivedText : ArrivingText;
@@ -83,23 +85,14 @@ namespace CRSim.ScreenSimulator.Converters
                     return WaitingColorList[rowNumber % WaitingColorList.Count];
                 return WaitingColor; // 正点
             }
-            else
+            else if (status > TimeSpan.Zero)
             {
                 return StopCheckInColor; // 晚点
             }
-        }
-        public static string ToHourMinuteString(TimeSpan ts)
-        {
-            int totalHours = (int)ts.TotalHours; // 可以超过24
-            int minutes = ts.Minutes;
-
-            if (totalHours > 0 && minutes > 0)
-                return $"{totalHours}小时{minutes}分钟";
-            if (totalHours > 0)
-                return $"{totalHours}小时";
-            if (minutes > 0)
-                return $"{minutes}分钟";
-            return "0分钟"; // 特殊情况，完全为0
+            else
+            {
+                return CheckInColor; // 早点
+            }
         }
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
     }

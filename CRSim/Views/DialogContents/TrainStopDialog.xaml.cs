@@ -104,7 +104,7 @@ public sealed partial class TrainStopDialog : Page
             !string.IsNullOrWhiteSpace(DepartureTextBox.Text) &&
             int.TryParse(LengthTextBox.Text, out int i) && i > 0 &&
             PlatformComboBox.SelectedItem != null &&
-            int.TryParse(StatusTextBox.Text, out int m) && m >= 0;
+            int.TryParse(StatusTextBox.Text, out int m);
         _onValidityChanged?.Invoke(isValid);
     }
 

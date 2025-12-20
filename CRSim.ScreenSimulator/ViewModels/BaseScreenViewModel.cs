@@ -129,16 +129,16 @@ namespace CRSim.ScreenSimulator.ViewModels
                         continue;
                     }
 
-                    DateTime? AdjustTime(TimeSpan? time) =>
-                        time.HasValue ? (today.Add(time.Value).Add(trainNumber.Status.Value) > now ? today.Add(time.Value) : today.Add(time.Value).AddDays(1)) : null;
+                    DateTime? AdjustTime(TimeSpan? time, TimeSpan? status) =>
+                        time.HasValue ? (today.Add(time.Value).Add(status.Value) > now ? today.Add(time.Value) : today.Add(time.Value).AddDays(1)) : null;
 
                     TrainInfo.Add(new TrainInfo
                     {
                         TrainNumber = trainNumber.Number,
                         Terminal = trainNumber.Terminal,
                         Origin = trainNumber.Origin,
-                        ArrivalTime = AdjustTime(trainNumber.ArrivalTime),
-                        DepartureTime = AdjustTime(trainNumber.DepartureTime),
+                        ArrivalTime = AdjustTime(trainNumber.ArrivalTime,trainNumber.Status),
+                        DepartureTime = trainNumber.Status > TimeSpan.Zero ? AdjustTime(trainNumber.DepartureTime, trainNumber.Status) : AdjustTime(trainNumber.DepartureTime, TimeSpan.Zero),
                         TicketChecks = trainNumber.TicketCheckIds is null ? [] : [.. station.WaitingAreas
                             .SelectMany(w => w.TicketChecks)
                             .Where(tc => trainNumber.TicketCheckIds.Contains(tc.Id))
