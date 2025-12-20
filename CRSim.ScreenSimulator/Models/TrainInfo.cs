@@ -22,7 +22,7 @@
         {
             get
             {
-                return State is null ? departureTime : departureTime + State;
+                return State is null || State < TimeSpan.Zero ? departureTime : departureTime + State;
             }
             set
             {

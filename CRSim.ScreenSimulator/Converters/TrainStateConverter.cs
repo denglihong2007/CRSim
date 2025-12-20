@@ -86,6 +86,8 @@ namespace CRSim.ScreenSimulator.Converters
                 {
                     if (state.TotalMinutes > 0)
                         return $"晚点约{ToHourMinuteString(state)}"; // 晚点
+                    if (state.TotalMinutes < 0)
+                        return $"早点约{ToHourMinuteString(state.Negate())}"; // 早点
                     return WaitingText; // 正点
                 }
             }
