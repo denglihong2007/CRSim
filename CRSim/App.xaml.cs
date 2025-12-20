@@ -1,6 +1,3 @@
-using CRSim.ScreenSimulator.Views;
-using System.Windows.Threading;
-
 ﻿namespace CRSim
 {
     public partial class App : Application
@@ -15,7 +12,7 @@ using System.Windows.Threading;
         public App()
         {
             InitializeComponent();
-            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+            this.UnhandledException += App_DispatcherUnhandledException;
         }
 
         public static T GetService<T>()
@@ -118,10 +115,10 @@ using System.Windows.Threading;
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        private void App_DispatcherUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
         {
             var dialog = new ErrorDialog(e.Exception.ToString());
-            dialog.ShowDialog();
+            dialog.Activate();
             e.Handled = true;
         }
     }

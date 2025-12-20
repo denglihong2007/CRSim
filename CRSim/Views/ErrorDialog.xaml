@@ -1,0 +1,30 @@
+﻿<Window x:Class="CRSim.Views.ErrorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="错误信息">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Style="{StaticResource BodyLargeStrongTextBlockStyle}" Text="CRSim发生了未经处理的异常"/>
+        <TextBlock Grid.Row="1" Margin="0,8,0,0" Style="{StaticResource BodyTextBlockStyle}" Text="您可以点击“关闭“忽略此错误。若此错误由CRSim本体产生，也可以点击“报告问题”前往Github提交issue，请注意这可能附带诊断信息。"/>
+        <ScrollViewer Grid.Row="2" Margin="0,8,0,0">
+            <TextBox x:Name="ErrorMessage" IsReadOnly="True" TextWrapping="Wrap"
+                     AcceptsReturn="True" FontFamily="Consolas" FontSize="12"/>
+        </ScrollViewer>
+        <StackPanel Grid.Row="3" Margin="0,8,0,0" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button x:Name="CopyButton" Click="CopyButton_Click">
+                <FontIcon Glyph="&#xE8C8;" FontSize="16"/>
+            </Button>
+            <Button x:Name="ReportButton" Content="报告问题" Style="{StaticResource AccentButtonStyle}" Click="ReportButton_Click"/>
+            <Button x:Name="CloseButton" Content="关闭" Click="CloseButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
+
