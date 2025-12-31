@@ -83,4 +83,7 @@ public partial class PluginInfo : ObservableRecipient
 
     [ObservableProperty]
     private StyleInfo? styleInfo;
+
+    [ObservableProperty]
+    private Json? data;
 }
