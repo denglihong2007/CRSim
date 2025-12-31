@@ -1,4 +1,5 @@
-﻿using CRSim.Core.Models.Plugin;
+﻿using CRSim.Core.Models;
+using CRSim.Core.Models.Plugin;
 using System.Collections.ObjectModel;
 
 namespace CRSim.Core.Abstractions;
@@ -28,4 +29,5 @@ public interface IPluginService
     Task InstallPluginLocalAsync(string filePath);
     Task PackPluginAsync(PluginInfo plugin, string filePath);
     Task LoadOnlinePluginsAsync();
+    List<(string, Station)> GetStationData();
 }

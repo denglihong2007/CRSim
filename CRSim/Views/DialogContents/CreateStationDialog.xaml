@@ -11,6 +11,9 @@
         <RadioButton x:Name="Blank" GroupName="options" Content="新建空白车站" Margin="0,0,0,4" IsChecked="True" Checked="Validate"/>
         <TextBox x:Name="textBoxBlank" IsEnabled="{x:Bind ToBoolean(Blank.IsChecked), Mode=OneWay}" 
                  PlaceholderText="车站名" Margin="0,0,0,8" TextChanged="Validate"/>
+        <RadioButton x:Name="Plugin" GroupName="options" Content="从插件资源导入" Margin="0,0,0,4" Checked="Validate"/>
+        <ComboBox x:Name="comboBoxPlugin" IsEnabled="{x:Bind ToBoolean(Plugin.IsChecked), Mode=OneWay}" HorizontalAlignment="Stretch"
+                 PlaceholderText="车站" Margin="0,0,0,8" SelectionChanged="Validate" ItemsSource="{x:Bind StationRecords}" DisplayMemberPath="Name" SelectedValuePath="Station"/>
         <RadioButton x:Name="btnFile" GroupName="options" Content="从车站文件导入" Margin="0,0,0,4" Checked="Validate"/>
         <ContentControl IsEnabled="{x:Bind ToBoolean(btnFile.IsChecked), Mode=OneWay}" HorizontalContentAlignment="Stretch">
             <Grid Margin="0,0,0,8">

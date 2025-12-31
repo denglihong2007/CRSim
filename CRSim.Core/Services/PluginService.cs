@@ -65,6 +65,7 @@ public class PluginService(INetworkService networkService, ISettingsService sett
                 PluginFolderPath = Path.GetFullPath(pluginDir),
                 RealIconPath = Path.Combine(Path.GetFullPath(pluginDir), "icon.png"),
                 StyleInfo = manifest.Type == "ScreenStyle" ? JsonSerializer.Deserialize(File.ReadAllText(Path.Combine(Path.GetFullPath(pluginDir), StyleInfoFileName)),JsonContextWithCamelCase.Default.StyleInfo) : null,
+                Data = manifest.Type == "StationData" ? JsonSerializer.Deserialize(File.ReadAllText(Path.Combine(Path.GetFullPath(pluginDir), manifest.EntranceAssembly)), JsonContext.Default.Json) : null,
             };
             if (info.IsUninstalling)
             {
@@ -77,8 +78,15 @@ public class PluginService(INetworkService networkService, ISettingsService sett
             }
             IPluginService.LoadedPluginsInternal.Add(info);
         }
+        foreach (var info in IPluginService.LoadedPluginsInternal.Where(x => x.Manifest.Type == "StationData"))
+        {
+            if (info.LoadStatus != PluginLoadStatus.Disabled)
+            {
+                info.LoadStatus = PluginLoadStatus.Loaded;
+            }
+        }
 
-        foreach (var info in IPluginService.LoadedPluginsInternal)
+        foreach (var info in IPluginService.LoadedPluginsInternal.Where(x => x.Manifest.Type == "ScreenStyle"))
         {
             if(info.LoadStatus == PluginLoadStatus.Disabled) 
             {
@@ -88,7 +96,7 @@ public class PluginService(INetworkService networkService, ISettingsService sett
             var pluginDir = info.PluginFolderPath;
             try
             {
-                Console.WriteLine("尝试加载插件: " + manifest.Id);
+                Console.WriteLine("尝试加载插件DLL: " + manifest.Id);
                 var fullPath = Path.GetFullPath(Path.Combine(pluginDir, manifest.EntranceAssembly));
                 var loadContext = new PluginLoadContext(fullPath);
                 var assembly = loadContext.LoadFromAssemblyPath(fullPath);
@@ -111,11 +119,11 @@ public class PluginService(INetworkService networkService, ISettingsService sett
                 services.AddSingleton(typeof(PluginBase), entranceObj);
                 services.AddSingleton(entrance, entranceObj);
                 info.LoadStatus = PluginLoadStatus.Loaded;
-                Console.WriteLine($"加载插件成功: {pluginDir} ({manifest.Version})");
+                Console.WriteLine($"加载插件DLL成功: {pluginDir} ({manifest.Version})");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"加载插件失败: {ex}");
+                Console.WriteLine($"加载插件DLL失败: {ex}");
                 info.Exception = ex;
                 info.LoadStatus = PluginLoadStatus.Error;
             }
@@ -221,7 +229,14 @@ public class PluginService(INetworkService networkService, ISettingsService sett
         IPluginService.LoadedPluginsInternal.Add(info);
         await Task.CompletedTask;
     }
-
+    public List<(string, Station)> GetStationData()
+    {
+        var result = IPluginService.LoadedPluginsInternal
+            .Where(p => p.Manifest.Type == "StationData" && p.Data is not null)
+            .SelectMany(p => p.Data.Stations.Select(s => (p.Manifest.Name, s)))
+            .ToList();
+        return result;
+    }
     public async Task PackPluginAsync(PluginInfo plugin, string filePath)
     {
         var pluginDir = plugin.PluginFolderPath;

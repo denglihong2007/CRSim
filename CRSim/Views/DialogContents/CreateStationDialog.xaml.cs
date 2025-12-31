@@ -4,9 +4,16 @@ public sealed partial class CreateStationDialog : Page
 
     private readonly IDialogService _dialogService = App.GetService<IDialogService>();
 
+    private readonly IPluginService _pluginService = App.GetService<IPluginService>();
+
     private Station? _parsedStation = null;
 
-    public Station? GeneratedStation => ToBoolean(Blank.IsChecked) ? new Station
+    private record StationRecord(string Name, Station Station);
+
+    private List<StationRecord> StationRecords { get; }
+
+    public Station? GeneratedStation => ToBoolean(Plugin.IsChecked) ? (Station)comboBoxPlugin.SelectedValue :
+        ToBoolean(Blank.IsChecked) ? new Station
     {
         Name = textBoxBlank.Text,
         Platforms = [],
@@ -23,11 +30,15 @@ public sealed partial class CreateStationDialog : Page
 
     private void Validate(object sender, object e)
     {
-        if (textBoxBlank == null) return;
+        if (textBoxBlank == null) return;//检查窗体初始化
         bool isValid;
         if (ToBoolean(Blank.IsChecked)) 
         {
             isValid = !string.IsNullOrWhiteSpace(textBoxBlank.Text);
+        }
+        else if(ToBoolean(Plugin.IsChecked))
+        {
+            isValid = comboBoxPlugin.SelectedValue is not null;
         }
         else
         {
@@ -38,6 +49,7 @@ public sealed partial class CreateStationDialog : Page
 
     public CreateStationDialog(Action<bool> onValidityChanged)
     {
+        StationRecords = _pluginService.GetStationData().Select(x => new StationRecord($"{x.Item1}-{x.Item2.Name}",x.Item2)).ToList();
         _onValidityChanged = onValidityChanged;
         InitializeComponent();
     }
