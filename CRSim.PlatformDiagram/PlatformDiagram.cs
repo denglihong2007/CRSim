@@ -120,24 +120,42 @@ namespace CRSim.PlatformDiagram
                 }
             }
 
+            // 1. 初始化字典（保持不变）
             Dictionary<string, float> platformHeights = station.TrainStops
                 .Select(x => x.Platform)
                 .Where(p => p != null)
                 .Distinct()
                 .ToDictionary(p => p!, p => 0f);
+
+            // 2. 绘制底线（保持不变）
             canvas.MoveTo(xBase, yBottom).LineTo(xEnd - TimelineExtLength, yBottom).Stroke();
+
+            // 3. 遍历所有站台，按索引分配高度
             for (int i = 0; i < platformCount; i++)
             {
-                string name = station.Platforms[i].Name;
-                if (double.TryParse(name, out double platformNumber))
+                var platform = station.Platforms[i];
+                string name = platform.Name;
+
+                // 计算当前站台的 Y 坐标高度
+                // 逻辑：i 越大（后面的站台），高度越高
+                float currentY = yBottom + (platformCount - i - 1) * PlatformHeight;
+
+                // 直接存入字典，不再判断是否为数字
+                if (platformHeights.ContainsKey(name))
                 {
-                    platformHeights[name] = yBottom + (platformCount - i - 1f) * PlatformHeight;
+                    platformHeights[name] = currentY;
                 }
+
+                // 绘制站台分隔线
                 canvas.SetLineWidth(1f);
-                canvas.MoveTo(xBase, yBottom + (platformCount - i) * PlatformHeight)
-                      .LineTo(xEnd - TimelineExtLength, yBottom + (platformCount - i) * PlatformHeight)
+                canvas.MoveTo(xBase, currentY)
+                      .LineTo(xEnd - TimelineExtLength, currentY)
                       .Stroke();
             }
+            canvas.SetLineWidth(1f);
+            canvas.MoveTo(xBase, yBottom + platformCount * PlatformHeight)
+                  .LineTo(xEnd - TimelineExtLength, yBottom + platformCount * PlatformHeight)
+                  .Stroke();
             #endregion
 
             #region 列车
