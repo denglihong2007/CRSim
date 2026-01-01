@@ -1,7 +1,5 @@
-﻿using CRSim.Core.Models;
+﻿using CRSim.Views.DialogContents;
 using Microsoft.Win32;
-using Windows.Storage;
-using Windows.Storage.Pickers;
 
 namespace CRSim.Services
 {
@@ -272,6 +270,29 @@ namespace CRSim.Services
             {
                 var inputDialog = dialog.Content as CreateStationDialog;
                 return inputDialog.GeneratedStation;
+            }
+            return null;
+        }
+
+        public async Task<List<TrainColor>?> EditTrainColorsAsync(List<TrainColor> trainColors)
+        {
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "编辑颜色配置",
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                IsPrimaryButtonEnabled = false
+            };
+            var trainColorsDialog = new TrainColorsDialog(trainColors, isValid => dialog.IsPrimaryButtonEnabled = isValid);
+            dialog.Content = trainColorsDialog;
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var inputDialog = dialog.Content as TrainColorsDialog;
+                return [.. inputDialog.TrainColors];
             }
             return null;
         }

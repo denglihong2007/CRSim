@@ -14,6 +14,7 @@
         Task<TrainStop?> GetInputTrainStopAsync(List<WaitingArea> waitingAreas, List<string> platforms);
         Task<TrainStop?> EditInputTrainStopAsync(List<WaitingArea> waitingAreas, List<string> platforms, TrainStop trainStop);
         Task<List<Platform>?> GetInputPlatformAsync();
+        Task<List<TrainColor>?> EditTrainColorsAsync(List<TrainColor> trainColors);
         XamlRoot? XamlRoot { get; set; }
     }
 }

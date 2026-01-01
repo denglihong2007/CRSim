@@ -85,6 +85,12 @@
                         </controls:SettingsExpander.Items>
                     </controls:SettingsExpander>
                 </StackPanel>
+                <TextBlock Text="站台占用图" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
+                <StackPanel Spacing="4" Margin="0,0,0,24">
+                    <controls:SettingsCard Header="编辑颜色配置" Description="以车次号前缀识别车次颜色" HeaderIcon="{winui:FontIcon Glyph=&#xE790;}">
+                        <Button Style="{StaticResource AccentButtonStyle}" Content="编辑" Command="{x:Bind ViewModel.EditTrainColorsCommand}"/>
+                    </controls:SettingsCard>
+                </StackPanel>
                 <TextBlock Text="备份与恢复" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
                 <StackPanel Spacing="4" Margin="0,0,0,24">
                     <controls:SettingsCard Header="导入数据文件" Description="从本地文件加载数据" HeaderIcon="{winui:FontIcon Glyph=&#xE8B6;}">

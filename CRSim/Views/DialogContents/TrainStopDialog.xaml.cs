@@ -1,6 +1,4 @@
-﻿using CRSim.Core.Models;
-
-namespace CRSim.Views;
+﻿namespace CRSim.Views.DialogContents;
 public sealed partial class TrainStopDialog : Page
 {
     public TrainStop GeneratedTrainStop;

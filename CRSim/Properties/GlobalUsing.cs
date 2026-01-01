@@ -28,6 +28,7 @@ global using CRSim.PlatformDiagram;
 global using CRSim.WebsiteSimulator;
 global using CRSim.Core.Utils;
 global using CRSim.Core.Models;
+global using CRSim.Core.Models.PlatformDiagram;
 global using CRSim.Core.Services;
 global using CRSim.Core.Abstractions;
 

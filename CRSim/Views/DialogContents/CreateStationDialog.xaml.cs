@@ -1,4 +1,4 @@
-namespace CRSim.Views;
+namespace CRSim.Views.DialogContents;
 public sealed partial class CreateStationDialog : Page
 {
 

@@ -1,10 +1,4 @@
-﻿using Downloader;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.IO.Packaging;
-using System.Reflection;
-using System.Security.Policy;
-using Windows.System;
+﻿using Windows.System;
 
 namespace CRSim.ViewModels
 {
@@ -62,6 +56,10 @@ namespace CRSim.ViewModels
 
         [ObservableProperty]
         public partial bool ReopenUnclosedScreensOnLoad { get; set; }
+
+        [ObservableProperty]
+        public partial List<TrainColor> TrainColors { get; set; }
+
         #endregion
         public SettingsPageViewModel(ISettingsService settingsService, IDatabaseService databaseService, IDialogService dialogService, INetworkService networkService)
         {
@@ -69,10 +67,8 @@ namespace CRSim.ViewModels
             _databaseService = databaseService;
             _dialogService = dialogService;
             _networkService = networkService;
-            var version = Assembly.GetExecutingAssembly().GetName().Version;
-            AppVersion = $"Version {version}";
+            AppVersion = $"Version {App.AppVersion}";
             LoadSettings();
-
         }
 
         private void LoadSettings()
@@ -89,6 +85,7 @@ namespace CRSim.ViewModels
             UserKey = _settings.UserKey;
             LoadTodayOnly = _settings.LoadTodayOnly;
             ReopenUnclosedScreensOnLoad = _settings.ReopenUnclosedScreensOnLoad;
+            TrainColors = _settings.TrainColors;
         }
 
         [RelayCommand]
@@ -105,6 +102,7 @@ namespace CRSim.ViewModels
             _settings.LoadTodayOnly = LoadTodayOnly;
             _settings.ReopenUnclosedScreensOnLoad = ReopenUnclosedScreensOnLoad;
             _settings.Api = Api;
+            _settings.TrainColors = TrainColors;
             _settingsService.SaveSettings();
         }
         private static void UpdateSettings(string input, bool allowNegative, Action<int> updateAction)
@@ -154,6 +152,15 @@ namespace CRSim.ViewModels
             if (string.IsNullOrWhiteSpace(path)) return;
             _databaseService.ImportData(path);
             await _databaseService.SaveData();
+        }
+        [RelayCommand]
+        public async Task EditTrainColors()
+        {
+            var trainColors = await _dialogService.EditTrainColorsAsync(TrainColors);
+            if (trainColors is not null)
+            {
+                TrainColors = trainColors;
+            }
         }
     }
 }

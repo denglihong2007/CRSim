@@ -22,6 +22,7 @@
                    Style="{StaticResource TitleTextBlockStyle}"/>
         <ScrollViewer Grid.Row="1" Padding="0,0,36,0">
             <StackPanel>
+                <InfoBar Severity="Informational" IsOpen="True" Title="使用技巧" Message="您可以在“设置”配置车次颜色！" Margin="0,0,0,12"/>
                 <TextBlock Text="参数配置" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
                 <StackPanel Spacing="4" Orientation="Vertical" Margin="0,0,0,24">
                     <controls:SettingsCard Header="车站" Description="选择目标车站。" HeaderIcon="{winui:FontIcon Glyph=&#xE825;}">
