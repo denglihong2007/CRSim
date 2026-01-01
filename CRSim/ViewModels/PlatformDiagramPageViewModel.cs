@@ -3,6 +3,8 @@
 public partial class PlatformDiagramPageViewModel(IDialogService _dialogService, IDatabaseService _databaseService) : ObservableObject
 {
     public string PageTitle = "生成站台占用图";
+    private readonly ISettingsService _settingsService = App.GetService<ISettingsService>();
+
     public Station? SelectedStation;
     public List<Station> Stations => _databaseService.GetAllStations();
 
@@ -35,7 +37,7 @@ public partial class PlatformDiagramPageViewModel(IDialogService _dialogService,
         }
         var path = _dialogService.SaveFile(".pdf", $"{SelectedStation.Name}站台占用图");
         if(string.IsNullOrEmpty(path) || SelectedStation == null) return;
-        await Task.Run(() => Generator.Generate(SelectedStation, path,PageWidth));
+        await Task.Run(() => Generator.Generate(SelectedStation, path,PageWidth, _settingsService.GetSettings().TrainColors));
     }
 
     public static bool CheckStation(Station station,out string detail)

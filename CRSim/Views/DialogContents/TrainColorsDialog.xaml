@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="CRSim.Views.DialogContents.TrainColorsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"     
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:local="using:CRSim.Views.DialogContents"
+    xmlns:converters="using:CRSim.Converters"
+    xmlns:models="using:CRSim.Core.Models.PlatformDiagram"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <converters:DrawingToUIColorConverter x:Key="DrawingToUIColorConverter"/>
+    </Page.Resources>
+    <StackPanel 
+        VerticalAlignment="Stretch" 
+        HorizontalAlignment="Stretch">
+        <CommandBar
+            DefaultLabelPosition="Right"
+            Margin="0,0,0,8" 
+            HorizontalAlignment="Right">
+            <AppBarButton 
+                Icon="Add"
+                Label="添加"
+                Click="Add"/>
+            <AppBarButton 
+                Icon="Clear"
+                Label="删除"
+                Click="Delete"/>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton 
+                    Label="恢复默认设置"
+                    Click="Reset"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+        <ScrollViewer MaxHeight="350">
+            <GridView
+                x:Name="TrainColorsGrid"
+                ItemsSource="{x:Bind TrainColors,Mode=OneWay}" 
+                SelectionMode="Single"
+                FlowDirection="LeftToRight">
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="models:TrainColor">
+                        <Grid Padding="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                Grid.Column="0"
+                                Width="100"
+                                Text="{x:Bind Prefix,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                Margin="0,0,8,0"
+                                TextChanged="Validate"/>
+                            <controls:ColorPickerButton
+                                Grid.Column="2"
+                                SelectedColor="{x:Bind Color,Mode=TwoWay,Converter={StaticResource DrawingToUIColorConverter}}"/>
+                        </Grid>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+        </ScrollViewer>
+    </StackPanel>
+</Page>

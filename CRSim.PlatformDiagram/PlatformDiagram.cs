@@ -1,5 +1,6 @@
-// Trigger CI build
+using CRSim.Core.Abstractions;
 using CRSim.Core.Models;
+using CRSim.Core.Models.PlatformDiagram;
 using iText.IO.Font;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
@@ -15,7 +16,7 @@ namespace CRSim.PlatformDiagram
 {
     public class Generator
     {
-        public static void Generate(Station station, string savePath, float pageWidth)
+        public static void Generate(Station station, string savePath, float pageWidth,List<TrainColor> trainColors)
         {
             float Padding = 40;
             float HeaderHeight = 16;
@@ -168,27 +169,14 @@ namespace CRSim.PlatformDiagram
                 TimeSpan arrival = (TimeSpan)(train.ArrivalTime ?? train.DepartureTime - fixedDuration);
                 TimeSpan departure = (TimeSpan)(train.DepartureTime ?? train.ArrivalTime + fixedDuration);
 
-                var trainColors = new Dictionary<string, string>
-                {
-                    { "G", "FF00BE" }, // pink
-                    { "D", "004C99" }, // deep blue
-                    { "C", "009999" }, // cyan
-                    { "T", "0000FF" }, // blue
-                    { "Z", "804000" }, // brown
-                    { "K", "FF0000" }, // red
-                    { "Y", "FF0000" }, // red
-                    { "L", "008000" }, // dark green
-                    { "default", "008000" } // dark green
-                };
-                string firstChar = train.Number[..1].ToUpper();
-                string colorHex = trainColors.TryGetValue(firstChar, out string? value) ? value : trainColors["default"];
-                var color = new DeviceRgb(
-                    Convert.ToInt32(colorHex[..2], 16),
-                    Convert.ToInt32(colorHex.Substring(2, 2), 16),
-                    Convert.ToInt32(colorHex.Substring(4, 2), 16)
-                );
-                canvas.SetFillColor(color);
-                canvas.SetStrokeColor(color);
+                var matchedColor = trainColors
+                    .Where(tc => train.Number.StartsWith(tc.Prefix))
+                    .OrderByDescending(tc => tc.Prefix.Length)
+                    .FirstOrDefault();
+                var color = matchedColor?.Color ?? trainColors.FirstOrDefault(x => x.Prefix == "默认").Color;
+                Color itextColor = new DeviceRgb(color.R, color.G, color.B);
+                canvas.SetFillColor(itextColor);
+                canvas.SetStrokeColor(itextColor);
 
                 // 检查是否跨零点
                 if (departure < arrival)

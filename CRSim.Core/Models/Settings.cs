@@ -1,5 +1,8 @@
 ﻿using CRSim.Core.Abstractions;
+using CRSim.Core.Converters;
+using CRSim.Core.Models.PlatformDiagram;
 using CRSim.Core.Services;
+using System.Drawing;
 using System.Text.Json.Serialization;
 
 namespace CRSim.Core.Models
@@ -29,5 +32,18 @@ namespace CRSim.Core.Models
         public string UserKey { get; set; } = "";
         public bool LoadTodayOnly { get; set; } = false;
         public bool ReopenUnclosedScreensOnLoad { get; set; } = true;
+
+        public List<TrainColor> TrainColors { get; set; } =
+        [
+            new TrainColor { Prefix = "G", Color = Color.Magenta },
+            new TrainColor { Prefix = "D", Color = Color.SteelBlue },
+            new TrainColor { Prefix = "C", Color = Color.Teal },
+            new TrainColor { Prefix = "T", Color = Color.Blue },
+            new TrainColor { Prefix = "Z", Color = Color.SaddleBrown },
+            new TrainColor { Prefix = "K", Color = Color.Red },
+            new TrainColor { Prefix = "Y", Color = Color.Red },
+            new TrainColor { Prefix = "L", Color = Color.Green },
+            new TrainColor { Prefix = "默认", Color = Color.Green }
+        ];
     }
 }

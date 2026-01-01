@@ -1,4 +1,4 @@
-namespace CRSim.Views;
+namespace CRSim.Views.DialogContents;
 public sealed partial class TextDialog : Page
 {
     private string _text { get; set; }
