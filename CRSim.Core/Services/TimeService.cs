@@ -35,7 +35,7 @@ namespace CRSim.Core.Services
         {
             _settings = settingsService.GetSettings();
 
-            _oneSecondTimer = new(1000);
+            _oneSecondTimer = new(_settings.RefreshIntervalSeconds * 1000);
             _oneSecondTimer.Elapsed += OnOneSecondElapsed;
 
             _twentySecondsTimer = new(_settings.SwitchPageSeconds * 1000);

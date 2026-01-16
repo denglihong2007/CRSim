@@ -56,6 +56,9 @@
                 </StackPanel>
                 <TextBlock Text="引导屏模拟" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
                 <StackPanel Spacing="4" Margin="0,0,0,24">
+                    <controls:SettingsCard Header="数据刷新频率" Description="频率越小，数据刷新越及时，性能消耗越高，建议设为1" HeaderIcon="{winui:FontIcon Glyph=&#xE72C;}">
+                        <TextBox MaxWidth="72" Text="{x:Bind ViewModel.RefreshIntervalSeconds, Mode=TwoWay}"/>
+                    </controls:SettingsCard>
                     <controls:SettingsCard Header="只加载当日车次" Description="不显示明日车次" HeaderIcon="{winui:FontIcon Glyph=&#xEC92;}">
                         <ToggleSwitch IsOn="{x:Bind ViewModel.LoadTodayOnly, Mode=TwoWay}"/>
                     </controls:SettingsCard>
