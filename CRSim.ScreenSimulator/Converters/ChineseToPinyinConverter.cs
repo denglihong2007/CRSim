@@ -1,6 +1,4 @@
-﻿using Microsoft.International.Converters.PinYinConverter;
-using System.Globalization;
-using System.Text;
+﻿using System.Globalization;
 using System.Windows.Data;
 
 namespace CRSim.ScreenSimulator.Converters
@@ -10,34 +8,10 @@ namespace CRSim.ScreenSimulator.Converters
         public bool Upper { get; set; } = false;
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) return string.Empty;
-            string chineseText = value.ToString();
+            if (value is not string chineseText) return string.Empty;
             if (string.IsNullOrWhiteSpace(chineseText))
                 return string.Empty;
-
-            var sb = new StringBuilder();
-            foreach (char c in chineseText)
-            {
-                if (ChineseChar.IsValidChar(c))
-                {
-                    var chineseChar = new ChineseChar(c);
-                    var pinyins = chineseChar.Pinyins;
-                    if (pinyins != null && pinyins.Count > 0)
-                    {
-                        var pinyin = pinyins[0][..^1];
-                        sb.Append(pinyin);
-                    }
-                    else
-                    {
-                        sb.Append(c);
-                    }
-                }
-                else
-                {
-                    sb.Append(c);
-                }
-            }
-            var result = sb.ToString().ToLower();
+            var result = Core.Converters.ChineseToPinyinConverter.ConvertToPinyin(chineseText.Replace(" ", ""));
             return Upper ? result.ToUpper() : char.ToUpper(result[0], culture) + result[1..];
         }
 

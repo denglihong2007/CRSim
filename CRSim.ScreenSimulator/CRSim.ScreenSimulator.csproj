@@ -19,7 +19,6 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
-		<PackageReference Include="PinYinConverterCore" Version="1.0.2" />
 		<PackageReference Include="PP.Wpf" Version="1.0.8" />
 	</ItemGroup>
   <ItemGroup>
