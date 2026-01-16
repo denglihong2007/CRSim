@@ -10,7 +10,7 @@
   <Identity
     Name="53D4FFDC.CRSim"
     Publisher="CN=A0D23678-D7D4-4933-B369-1877DD38719C"
-    Version="3.2.0.1" />
+    Version="3.2.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="947762ab-9c52-4d97-843d-eeea6b5d81ce" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
