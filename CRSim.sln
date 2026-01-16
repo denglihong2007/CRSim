@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRSim.ScreenSimulator", "CR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRSim.PlatformDiagram", "CRSim.PlatformDiagram\CRSim.PlatformDiagram.csproj", "{895EE8B3-1A15-4CA8-9AFE-246585732AA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRSim.PluginSdk", "CRSim.PluginSdk\CRSim.PluginSdk.csproj", "{ADDF238A-3710-F48F-9561-E6F33C8F0EE5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -35,6 +37,10 @@ Global
 		{895EE8B3-1A15-4CA8-9AFE-246585732AA5}.Debug|x64.Build.0 = Debug|x64
 		{895EE8B3-1A15-4CA8-9AFE-246585732AA5}.Release|x64.ActiveCfg = Release|x64
 		{895EE8B3-1A15-4CA8-9AFE-246585732AA5}.Release|x64.Build.0 = Release|x64
+		{ADDF238A-3710-F48F-9561-E6F33C8F0EE5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ADDF238A-3710-F48F-9561-E6F33C8F0EE5}.Debug|x64.Build.0 = Debug|Any CPU
+		{ADDF238A-3710-F48F-9561-E6F33C8F0EE5}.Release|x64.ActiveCfg = Release|Any CPU
+		{ADDF238A-3710-F48F-9561-E6F33C8F0EE5}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

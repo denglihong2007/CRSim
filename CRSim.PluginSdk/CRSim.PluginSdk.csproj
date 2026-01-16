@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Platforms>x64;AnyCPU</Platforms>
+		<PackageId>CRSim.PluginSdk</PackageId>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>CRSim Plugin SDK</Title>
+	</PropertyGroup>
+
+	<PropertyGroup>
+	  <Description>用于开发应用 CRSim 插件的 SDK。</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\CRSim.Core\CRSim.Core.csproj" />
+		<ProjectReference Include="..\CRSim.ScreenSimulator\CRSim.ScreenSimulator.csproj" />
+	</ItemGroup>
+	
+</Project>
