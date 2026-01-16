@@ -37,7 +37,7 @@
                    Style="{StaticResource TitleTextBlockStyle}"/>
         <ScrollViewer Grid.Row="1" Padding="0,0,36,0">
             <StackPanel>
-                <TextBlock Text="用户设置" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
+                <TextBlock Text="通用" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
                 <StackPanel Spacing="4" Margin="0,0,0,24">
                     <controls:SettingsCard Header="密钥" Description="用于解锁特定功能" HeaderIcon="{winui:FontIcon Glyph=&#xE8D7;}">
                         <TextBox Width="168" Text="{x:Bind ViewModel.UserKey, Mode=TwoWay}"/>
@@ -50,6 +50,9 @@
                         <Button Style="{StaticResource AccentButtonStyle}" Content="检查更新" Command="{x:Bind ViewModel.CheckUpdateCommand}" />
                     </controls:SettingsCard>
                     <ProgressBar Visibility="{x:Bind ViewModel.UpdateProgress, Mode=OneWay, Converter={StaticResource IntToVisibilityConverter}, ConverterParameter=false}" Value="{x:Bind ViewModel.UpdateProgress, Mode=OneWay}"/>
+                    <controls:SettingsCard Header="编辑颜色配置" Description="站台占用图、引导屏模拟车次颜色偏好" HeaderIcon="{winui:FontIcon Glyph=&#xE790;}">
+                        <Button Style="{StaticResource AccentButtonStyle}" Content="编辑" Command="{x:Bind ViewModel.EditTrainColorsCommand}"/>
+                    </controls:SettingsCard>
                 </StackPanel>
                 <TextBlock Text="引导屏模拟" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
                 <StackPanel Spacing="4" Margin="0,0,0,24">
@@ -84,12 +87,6 @@
                             </controls:SettingsCard>
                         </controls:SettingsExpander.Items>
                     </controls:SettingsExpander>
-                </StackPanel>
-                <TextBlock Text="站台占用图" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
-                <StackPanel Spacing="4" Margin="0,0,0,24">
-                    <controls:SettingsCard Header="编辑颜色配置" Description="以车次号前缀识别车次颜色" HeaderIcon="{winui:FontIcon Glyph=&#xE790;}">
-                        <Button Style="{StaticResource AccentButtonStyle}" Content="编辑" Command="{x:Bind ViewModel.EditTrainColorsCommand}"/>
-                    </controls:SettingsCard>
                 </StackPanel>
                 <TextBlock Text="备份与恢复" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
                 <StackPanel Spacing="4" Margin="0,0,0,24">
