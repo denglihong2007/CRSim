@@ -46,7 +46,7 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.251219" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.251219" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.251219" />
-    <PackageReference Include="CRSim.WebsiteSimulator" Version="3.2.0" />
+    <PackageReference Include="CRSim.WebsiteSimulator" Version="3.2.1" />
     <PackageReference Include="EPPlus" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
