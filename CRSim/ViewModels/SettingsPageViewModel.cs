@@ -60,6 +60,8 @@ namespace CRSim.ViewModels
         [ObservableProperty]
         public partial List<TrainColor> TrainColors { get; set; }
 
+        [ObservableProperty]
+        public partial string RefreshIntervalSeconds { get; set; }
         #endregion
         public SettingsPageViewModel(ISettingsService settingsService, IDatabaseService databaseService, IDialogService dialogService, INetworkService networkService)
         {
@@ -82,6 +84,7 @@ namespace CRSim.ViewModels
             Api = Apis.First(x => x.Name == _settings.Api.Name);
             MaxPages = _settings.MaxPages.ToString();
             SwitchPageSeconds = _settings.SwitchPageSeconds.ToString();
+            RefreshIntervalSeconds = _settings.RefreshIntervalSeconds.ToString();
             UserKey = _settings.UserKey;
             LoadTodayOnly = _settings.LoadTodayOnly;
             ReopenUnclosedScreensOnLoad = _settings.ReopenUnclosedScreensOnLoad;
@@ -98,6 +101,7 @@ namespace CRSim.ViewModels
             UpdateSettings(StopCheckInAdvanceDuration, false, value => _settings.StopCheckInAdvanceDuration = TimeSpan.FromMinutes(value));
             UpdateSettings(MaxPages, false, value => _settings.MaxPages = value);
             UpdateSettings(SwitchPageSeconds, false, value => _settings.SwitchPageSeconds = value);
+            UpdateSettings(RefreshIntervalSeconds, false, value => _settings.RefreshIntervalSeconds = value);
             _settings.UserKey = UserKey;
             _settings.LoadTodayOnly = LoadTodayOnly;
             _settings.ReopenUnclosedScreensOnLoad = ReopenUnclosedScreensOnLoad;

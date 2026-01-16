@@ -32,7 +32,7 @@ namespace CRSim.Core.Models
         public string UserKey { get; set; } = "";
         public bool LoadTodayOnly { get; set; } = false;
         public bool ReopenUnclosedScreensOnLoad { get; set; } = true;
-
+        public int RefreshIntervalSeconds { get; set; } = 1;
         public List<TrainColor> TrainColors { get; set; } =
         [
             new TrainColor { Prefix = "G", Color = Color.Magenta },
