@@ -69,14 +69,18 @@
                 <TextBlock Text="分" VerticalAlignment="Center"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel Grid.Column="1" Orientation="Vertical">
-            <TextBlock Text="检票口" Margin="0,0,0,12"/>
-            <Border Style="{StaticResource ListViewBorder}">
-                <ScrollViewer VerticalScrollBarVisibility="Visible" MaxHeight="300">
-                    <TreeView SelectionMode="Multiple" Name="WaitingAreasList" Width="120" SelectionChanged="Validate"
+        <Grid Grid.Column="1" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="检票口" Margin="0,0,0,8" Grid.Row="0"/>
+            <Border Style="{StaticResource ListViewBorder}" VerticalAlignment="Stretch" Grid.Row="1">
+                <ScrollViewer VerticalScrollBarVisibility="Visible" MaxHeight="383">
+                    <TreeView SelectionMode="Multiple" Name="WaitingAreasList" Width="120" SelectionChanged="Validate" Loaded="WaitingAreasList_Loaded"
                               ItemsSource="{x:Bind WaitingAreas, Mode=OneWay}" ItemTemplateSelector="{StaticResource TreeViewTemplateSelector}" />
                 </ScrollViewer>
             </Border>
-        </StackPanel>
+        </Grid>
     </Grid>
 </Page>

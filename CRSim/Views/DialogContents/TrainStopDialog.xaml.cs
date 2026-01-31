@@ -1,4 +1,6 @@
-﻿namespace CRSim.Views.DialogContents;
+﻿using System.Text.RegularExpressions;
+
+namespace CRSim.Views.DialogContents;
 public sealed partial class TrainStopDialog : Page
 {
     public TrainStop GeneratedTrainStop;
@@ -11,6 +13,8 @@ public sealed partial class TrainStopDialog : Page
 
     private readonly Action<bool> _onValidityChanged;
 
+    private TrainStop originalTrainStop = new TrainStop();
+
     public TrainStopDialog(List<WaitingArea> waitingAreas, List<string> platforms, Action<bool> onValidityChanged)
     {
         WaitingAreas = waitingAreas;
@@ -20,7 +24,7 @@ public sealed partial class TrainStopDialog : Page
         }
         InitializeComponent();
         _onValidityChanged = onValidityChanged;
-        Validate(null, null);
+        Validate(this, EventArgs.Empty);
     }
     public TrainStopDialog(List<WaitingArea> waitingAreas, List<string> platforms, TrainStop trainStop, Action<bool> onValidityChanged)
     {
@@ -67,15 +71,7 @@ public sealed partial class TrainStopDialog : Page
         {
             StatusTextBox.Text = trainStop.Status.Value.TotalMinutes.ToString();
         }
-        if (trainStop.TicketCheckIds != null)
-        {
-            foreach (var id in trainStop.TicketCheckIds)
-            {
-                //WaitingAreasList.SelectedItems.Add(waitingAreas.SelectMany(x => x.TicketChecks).FirstOrDefault(x => x.Id == id));
-            }
-        }
-
-        Validate(null, null);
+        originalTrainStop = trainStop;
     }
     private static bool ValidateTime(string input, int maxValue)
     {
@@ -108,19 +104,19 @@ public sealed partial class TrainStopDialog : Page
 
     private void StartHour_TextChanged(object sender, TextChangedEventArgs e)
     {
-        Validate(null, null);
+        Validate(this, EventArgs.Empty);
         if (StartHour.Text.Length == 2) StartMinute.Focus(FocusState.Programmatic);
     }
 
     private void StartMinute_TextChanged(object sender, TextChangedEventArgs e)
     {
-        Validate(null, null);
+        Validate(this, EventArgs.Empty);
         if (StartMinute.Text.Length == 2) EndHour.Focus(FocusState.Programmatic);
     }
 
     private void EndHour_TextChanged(object sender, TextChangedEventArgs e)
     {
-        Validate(null, null);
+        Validate(this, EventArgs.Empty);
         if (EndHour.Text.Length == 2) EndMinute.Focus(FocusState.Programmatic);
     }
     public void GenerateTrainStop()
@@ -172,7 +168,35 @@ public sealed partial class TrainStopDialog : Page
                     WaitingAreasList.IsEnabled = false;
                     break;
             }
-            Validate(null, null);
+            Validate(this, EventArgs.Empty);
         }
+    }
+
+    private void WaitingAreasList_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (originalTrainStop.TicketCheckIds != null)
+        {
+            WaitingAreasList.SelectedItems.Clear();
+            foreach (var area in WaitingAreas)
+            {
+                var matchedChecks = area.TicketChecks
+                                        .Where(tc => originalTrainStop.TicketCheckIds.Contains(tc.Id))
+                                        .ToList();
+
+                if (matchedChecks.Count != 0)
+                {
+                    if (matchedChecks.Count == area.TicketChecks.Count)
+                    {
+                        WaitingAreasList.SelectedItems.Add(area);
+                    }
+                    foreach (var check in matchedChecks)
+                    {
+                        WaitingAreasList.SelectedItems.Add(check);
+                    }
+                }
+            }
+            Validate(this, EventArgs.Empty);
+        }
+
     }
 }
