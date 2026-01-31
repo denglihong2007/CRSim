@@ -2,8 +2,8 @@
 {
     public class InfoItem
     {
-        public string IconGlyph { get; set; }
-        public string Title { get; set; }
-        public string Detail { get; set; }
+        public required string IconGlyph { get; set; }
+        public required string Title { get; set; }
+        public required string Detail { get; set; }
     }
 }

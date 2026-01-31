@@ -71,6 +71,7 @@ public partial class PluginManagementPageViewModel : ObservableObject
     [RelayCommand]
     public void UninstallPlugin()
     {
+        if (SelectedPlugin == null) return;
         SelectedPlugin.IsUninstalling = true;
         OnPropertyChanged(nameof(SelectedPlugin));
     }
@@ -78,6 +79,7 @@ public partial class PluginManagementPageViewModel : ObservableObject
     [RelayCommand]
     public void CancelUninstallPlugin()
     {
+        if (SelectedPlugin == null) return;
         SelectedPlugin.IsUninstalling = false;
         OnPropertyChanged(nameof(SelectedPlugin));
     }

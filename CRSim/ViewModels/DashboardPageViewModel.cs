@@ -16,7 +16,7 @@ public partial class DashboardPageViewModel : ObservableObject
     private async void InitializeAsync()
     {
         var updateInfo = await _networkService.GetUpdateAsync(_settingsService.GetSettings().Api.UpdateApi);
-        if (updateInfo is not null && updateInfo.Name != Assembly.GetExecutingAssembly().GetName().Version.ToString())
+        if (updateInfo is not null && updateInfo.Name != App.AppVersion.ToString())
         {
             UpdateMessage = $"有新版本 {updateInfo.Name} 可用，请前往“设置”下载安装更新！";
         }
