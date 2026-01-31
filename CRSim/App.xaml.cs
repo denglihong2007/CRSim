@@ -4,7 +4,7 @@
     {
         public IHost AppHost { get; private set; }
 
-        public static MainWindow MainWindow;
+        public static MainWindow MainWindow { get; set; }
         public static string AppVersion { get; set; }
 
         private Mutex mutex;
@@ -28,7 +28,10 @@
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
-            AppVersion = Assembly.GetAssembly(typeof(App)).GetName().Version.ToString();
+            AppVersion = Assembly.GetAssembly(typeof(App))
+                ?.GetName()
+                ?.Version
+                ?.ToString() ?? "未知"; 
             mutex = new Mutex(true, "CRSim", out bool isNewInstance);
             if (!isNewInstance)
             {
@@ -96,12 +99,9 @@
             }
         }
 
-        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
-        private static extern bool AllocConsole();
-
         public static void LaunchDebugConsole()
         {
-            AllocConsole();
+            NativeMethods.AllocConsole();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(@"
         ___ _____________________

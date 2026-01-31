@@ -31,6 +31,7 @@ public partial class PlatformDiagramPageViewModel(IDialogService _dialogService,
     [RelayCommand]
     public async Task Generate()
     {
+        if(SelectedStation is null) return;
         if(!CheckStation(SelectedStation,out string detail))
         {
             await _dialogService.ShowTextAsync("警告", detail);

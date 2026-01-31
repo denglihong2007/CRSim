@@ -33,7 +33,8 @@ public partial class StationManagementPageViewModel : ObservableObject
     public ObservableCollection<Platform> Platforms { get; private set; } = [];
 
     public ObservableCollection<TrainStop> TrainStops { get; private set; } = [];
-    public ObservableCollection<TrainStop> FilteredTrainStops =>[.. TrainStops.Where(x => x.Number.ToUpper().Contains(SearchTrainNumberText.ToUpper()))];
+    public ObservableCollection<TrainStop> FilteredTrainStops =>
+        [.. TrainStops.Where(x => x.Number.Contains(SearchTrainNumberText, StringComparison.OrdinalIgnoreCase))];
 
     private readonly IDatabaseService _databaseService = App.GetService<IDatabaseService>();
 
@@ -597,7 +598,7 @@ public partial class StationManagementPageViewModel : ObservableObject
                     {
                         "停运" => null,
                         "正点" => TimeSpan.Zero,
-                        var t when t.StartsWith("-") && TimeSpan.TryParseExact(t.Substring(1), @"hh\:mm", null, out var ts)
+                        var t when t.StartsWith('-') && TimeSpan.TryParseExact(t[1..], @"hh\:mm", null, out var ts)
                             => -ts,
                         var t when TimeSpan.TryParseExact(t, @"hh\:mm", null, out var ts)
                             => ts,
@@ -636,7 +637,7 @@ public partial class StationManagementPageViewModel : ObservableObject
             worksheet.Cells[i + 2, 2].Value = TrainStops[i].Length;
             worksheet.Cells[i + 2, 3].Value = TrainStops[i].ArrivalTime?.ToString(@"hh\:mm") ?? string.Empty;
             worksheet.Cells[i + 2, 4].Value = TrainStops[i].DepartureTime?.ToString(@"hh\:mm") ?? string.Empty;
-            worksheet.Cells[i + 2, 5].Value = (string)converter.Convert(TrainStops[i].TicketCheckIds, null, null, null);
+            worksheet.Cells[i + 2, 5].Value = (string)converter.Convert(TrainStops[i].TicketCheckIds, null, null, string.Empty);
             worksheet.Cells[i + 2, 6].Value = TrainStops[i].Platform;
             worksheet.Cells[i + 2, 7].Value = TrainStops[i].Landmark;
             worksheet.Cells[i + 2, 8].Value = TrainStops[i].Origin;

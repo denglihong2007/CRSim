@@ -75,8 +75,10 @@ namespace CRSim.Services
 
         public string? GetFile(string[] extensions)
         {
-            var dlg = new OpenFileDialog();
-            dlg.Multiselect = false;
+            var dlg = new OpenFileDialog
+            {
+                Multiselect = false
+            };
 
             var filters = extensions
                 .Select(ext =>
@@ -97,7 +99,6 @@ namespace CRSim.Services
 
         public async Task<TrainStop?> GetInputTrainNumberStopAsync()
         {
-            bool isButtonEnabled = false;
             ContentDialog dialog = new()
             {
                 XamlRoot = XamlRoot,
@@ -118,13 +119,15 @@ namespace CRSim.Services
             if (result == ContentDialogResult.Primary)
             {
                 var inputDialog = dialog.Content as TrainNumberStopDialog;
-                return inputDialog.GeneratedTrainStop;
+                if (inputDialog is not null)
+                {
+                    return inputDialog.GeneratedTrainStop;
+                }
             }
             return null;
         }
         public async Task<TrainStop?> EditTrainNumberStopAsync(TrainStop trainStop)
         {
-            bool isButtonEnabled = false;
             ContentDialog dialog = new()
             {
                 XamlRoot = XamlRoot,
@@ -152,7 +155,6 @@ namespace CRSim.Services
 
         public async Task<TrainStop?> GetInputTrainStopAsync(List<WaitingArea> waitingAreas, List<string> platforms)
         {
-            bool isButtonEnabled = false;
             ContentDialog dialog = new()
             {
                 XamlRoot = XamlRoot,
@@ -180,7 +182,6 @@ namespace CRSim.Services
 
         public async Task<TrainStop?> EditInputTrainStopAsync(List<WaitingArea> waitingAreas, List<string> platforms, TrainStop trainStop)
         {
-            bool isButtonEnabled = false;
             ContentDialog dialog = new()
             {
                 XamlRoot = XamlRoot,
@@ -201,7 +202,10 @@ namespace CRSim.Services
             if (result == ContentDialogResult.Primary)
             {
                 var inputDialog = dialog.Content as TrainStopDialog;
-                return inputDialog.GeneratedTrainStop;
+                if (inputDialog is not null)
+                {
+                    return inputDialog.GeneratedTrainStop;
+                }
             }
             return null;
         }
@@ -246,7 +250,10 @@ namespace CRSim.Services
             if (result == ContentDialogResult.Primary)
             {
                 var inputDialog = dialog.Content as PlatformDialog;
-                return inputDialog.GeneratedPlatforms;
+                if (inputDialog is not null)
+                {
+                    return inputDialog.GeneratedPlatforms;
+                }
             }
             return null;
         }
@@ -269,7 +276,10 @@ namespace CRSim.Services
             if (result == ContentDialogResult.Primary)
             {
                 var inputDialog = dialog.Content as CreateStationDialog;
-                return inputDialog.GeneratedStation;
+                if (inputDialog is not null)
+                {
+                    return inputDialog.GeneratedStation;
+                }
             }
             return null;
         }
@@ -292,7 +302,10 @@ namespace CRSim.Services
             if (result == ContentDialogResult.Primary)
             {
                 var inputDialog = dialog.Content as TrainColorsDialog;
-                return [.. inputDialog.TrainColors];
+                if (inputDialog is not null)
+                {
+                    return [.. inputDialog.TrainColors];
+                }
             }
             return null;
         }
