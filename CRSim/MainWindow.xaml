@@ -60,6 +60,14 @@
                         <FontIcon Glyph="&#xECA5;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem 
+                        Content="轨记" 
+                        Tapped="OpenExternalLink_Tapped"
+                        SelectsOnInvoked="False">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE70B;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
             <Frame x:Name="contentFrame"/>
         </NavigationView>
