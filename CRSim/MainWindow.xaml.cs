@@ -43,5 +43,10 @@ public sealed partial class MainWindow : Window
                 }
             }
         }
+
+        private async void OpenExternalLink_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("https://www.raillog.top"));
+        }
     }
 }
