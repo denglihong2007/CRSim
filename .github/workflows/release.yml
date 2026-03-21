@@ -87,7 +87,7 @@ jobs:
 
       - name: Publish
         run: |
-          dotnet restore CRSim.sln
+          dotnet restore CRSim.slnx
           dotnet publish -c Release -p:PublishProfile=win-x64.pubxml -o out
 
       - name: Create Zip Package
