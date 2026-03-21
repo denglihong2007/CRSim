@@ -24,7 +24,7 @@
                 <InfoBar Severity="Warning" IsOpen="True" Title="声明" Message="该模拟页面内涉及的任何数据（包括但不限于列车时刻、票额票价、旅客列车开行方案等）均为用户自行设置，与任何一家铁路运输企业的真实生产数据都没有相关性。本软件中“中国铁道科学研究院集团有限公司”、“铁旅科技有限公司”等字样皆为虚构，与现实并无关联。如果该系统侵犯到您的权益，请立即联系电子邮件 support@mstscn.com 告知作者，作者将会在第一时间删除相关内容。" Margin="0,4"/>
                 <InfoBar Severity="Informational" IsOpen="True" Title="注意" Message="本功能需要设置用户密钥后才可使用。" Margin="0,0,0,12">
                     <InfoBar.ActionButton>
-                        <HyperlinkButton Content="了解更多" NavigateUri="https://docs.crsim.tech/app/key" />
+                        <HyperlinkButton Content="了解更多" NavigateUri="https://docs.crsim.raillog.top/app/key" />
                     </InfoBar.ActionButton>
                 </InfoBar>
                 <TextBlock Text="操作" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Margin="0,0,0,12"/>
