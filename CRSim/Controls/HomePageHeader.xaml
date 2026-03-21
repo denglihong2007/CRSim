@@ -108,7 +108,7 @@
                         <local:Tile
                             Title="官方网站"
                             Description="访问我们的官网（部分地区可能访问缓慢）。"
-                            Link="https://crsim.tech/">
+                            Link="https://home.crsim.raillog.top/">
                             <local:Tile.Source>
                                 <Image Source="/Assets/CRSimIcon.png" />
                             </local:Tile.Source>
@@ -142,7 +142,7 @@
                         <local:Tile
                             Title="使用教程"
                             Description="一个优雅的食用或者开发教程。"
-                            Link="https://docs.crsim.tech/">
+                            Link="https://docs.crsim.raillog.top/">
                             <local:Tile.Source>
                                 <Image Source="/Assets/HomeHeaderTiles/Header-docs.png" />
                             </local:Tile.Source>
