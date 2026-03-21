@@ -1,0 +1,19 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="CRSim.Core/CRSim.Core.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="CRSim.PlatformDiagram/CRSim.PlatformDiagram.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="CRSim.PluginSdk/CRSim.PluginSdk.csproj" />
+  <Project Path="CRSim.ScreenSimulator/CRSim.ScreenSimulator.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="CRSim/CRSim.csproj">
+    <Platform Project="x64" />
+    <Deploy />
+  </Project>
+</Solution>
