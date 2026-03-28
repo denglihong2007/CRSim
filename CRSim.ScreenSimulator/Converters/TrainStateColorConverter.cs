@@ -38,6 +38,7 @@ namespace CRSim.ScreenSimulator.Converters
             {
                 if (values[0] is DateTime arriveTime){
                     if (values.Length > 1 && values[1] is TimeSpan state){
+                        if (TrainStatus.IsDelayUnknown(state)) return StopCheckInColor;
                         if (state.TotalMinutes > 0) return ArrivingLateText;
                         if (state.TotalMinutes < 0) return ArrivingEarlyText;
                         return now >= arriveTime ? ArrivedText : ArrivingText;
@@ -49,6 +50,10 @@ namespace CRSim.ScreenSimulator.Converters
 
             // 列车停运
             if (values[2] is null)
+                return StopCheckInColor;
+
+            // 晚点未定
+            if (values[2] is TimeSpan unknownState && TrainStatus.IsDelayUnknown(unknownState))
                 return StopCheckInColor;
 
             // 正点/晚点判断

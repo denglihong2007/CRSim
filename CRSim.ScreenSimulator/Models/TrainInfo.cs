@@ -1,4 +1,6 @@
-﻿namespace CRSim.ScreenSimulator.Models
+using CRSim.Core.Models;
+
+namespace CRSim.ScreenSimulator.Models
 {
     public class TrainInfo
     {
@@ -9,11 +11,11 @@
         private DateTime? departureTime { get; set; }
         public DateTime? ArrivalTime
         {
-            get 
+            get
             {
-                return State is null ? arrivalTime : arrivalTime + State;
-            } 
-            set 
+                return State is null || TrainStatus.IsDelayUnknown(State) ? arrivalTime : arrivalTime + State;
+            }
+            set
             {
                 arrivalTime = value;
             }
@@ -22,7 +24,7 @@
         {
             get
             {
-                return State is null || State < TimeSpan.Zero ? departureTime : departureTime + State;
+                return State is null || State < TimeSpan.Zero || TrainStatus.IsDelayUnknown(State) ? departureTime : departureTime + State;
             }
             set
             {

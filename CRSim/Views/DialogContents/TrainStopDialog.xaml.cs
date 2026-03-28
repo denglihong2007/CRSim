@@ -1,5 +1,3 @@
-﻿using System.Text.RegularExpressions;
-
 namespace CRSim.Views.DialogContents;
 public sealed partial class TrainStopDialog : Page
 {
@@ -24,6 +22,8 @@ public sealed partial class TrainStopDialog : Page
         }
         InitializeComponent();
         _onValidityChanged = onValidityChanged;
+        StatusComboBox.SelectedIndex = 0;
+        UpdateStatusInputState();
         Validate(this, EventArgs.Empty);
     }
     public TrainStopDialog(List<WaitingArea> waitingAreas, List<string> platforms, TrainStop trainStop, Action<bool> onValidityChanged)
@@ -63,14 +63,35 @@ public sealed partial class TrainStopDialog : Page
             EndMinute.IsEnabled = false;
             StationKindPanelRadioButtons.SelectedIndex = 2;
         }
+
         if (trainStop.Status is null)
         {
-            SuspendToggleSwitch.IsOn = true;
+            StatusComboBox.SelectedItem = "停运";
+            StatusMinutesTextBox.Text = "0";
+        }
+        else if (TrainStatus.IsDelayUnknown(trainStop.Status))
+        {
+            StatusComboBox.SelectedItem = "晚点未定";
+            StatusMinutesTextBox.Text = "0";
+        }
+        else if (trainStop.Status.Value > TimeSpan.Zero)
+        {
+            StatusComboBox.SelectedItem = "晚点";
+            StatusMinutesTextBox.Text = Math.Abs((int)Math.Round(trainStop.Status.Value.TotalMinutes)).ToString();
+        }
+        else if (trainStop.Status.Value < TimeSpan.Zero)
+        {
+            StatusComboBox.SelectedItem = "早点";
+            StatusMinutesTextBox.Text = Math.Abs((int)Math.Round(trainStop.Status.Value.TotalMinutes)).ToString();
         }
         else
         {
-            StatusTextBox.Text = trainStop.Status.Value.TotalMinutes.ToString();
+            StatusComboBox.SelectedItem = "正点";
+            StatusMinutesTextBox.Text = "0";
         }
+
+        UpdateStatusInputState();
+        Validate(this, EventArgs.Empty);
         originalTrainStop = trainStop;
     }
     private static bool ValidateTime(string input, int maxValue)
@@ -81,6 +102,13 @@ public sealed partial class TrainStopDialog : Page
         }
         return false;
     }
+
+    private bool IsEarlyOrLateSelected()
+    {
+        if (StatusComboBox?.SelectedItem is not string status) return false;
+        return status == "早点" || status == "晚点";
+    }
+
     private void Validate(object sender, object e)
     {
         if (StartHour is null) return;
@@ -89,6 +117,11 @@ public sealed partial class TrainStopDialog : Page
             (!StartMinute.IsEnabled || ValidateTime(StartMinute.Text, 60)) &&
             (!EndHour.IsEnabled || ValidateTime(EndHour.Text, 24)) &&
             (!EndMinute.IsEnabled || ValidateTime(EndMinute.Text, 60));
+
+        bool isStatusValid =
+            !IsEarlyOrLateSelected() ||
+            (int.TryParse(StatusMinutesTextBox.Text, out int minutes) && minutes > 0);
+
         bool isValid =
             (!WaitingAreasList.IsEnabled ||
             WaitingAreasList.SelectedItems?.Count != 0) &&
@@ -98,7 +131,8 @@ public sealed partial class TrainStopDialog : Page
             !string.IsNullOrWhiteSpace(DepartureTextBox.Text) &&
             int.TryParse(LengthTextBox.Text, out int i) && i > 0 &&
             PlatformComboBox.SelectedItem != null &&
-            int.TryParse(StatusTextBox.Text, out int m);
+            StatusComboBox.SelectedItem != null &&
+            isStatusValid;
         _onValidityChanged?.Invoke(isValid);
     }
 
@@ -119,8 +153,25 @@ public sealed partial class TrainStopDialog : Page
         Validate(this, EventArgs.Empty);
         if (EndHour.Text.Length == 2) EndMinute.Focus(FocusState.Programmatic);
     }
+
+    private void StatusComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        UpdateStatusInputState();
+        Validate(this, EventArgs.Empty);
+    }
+
     public void GenerateTrainStop()
     {
+        var selectedStatus = StatusComboBox.SelectedItem as string ?? "正点";
+        TimeSpan? statusValue = selectedStatus switch
+        {
+            "停运" => null,
+            "晚点未定" => TrainStatus.DelayUnknown,
+            "晚点" => TimeSpan.FromMinutes(int.Parse(StatusMinutesTextBox.Text)),
+            "早点" => -TimeSpan.FromMinutes(int.Parse(StatusMinutesTextBox.Text)),
+            _ => TimeSpan.Zero
+        };
+
         GeneratedTrainStop = new TrainStop
         {
             Number = NumberTextBox.Text,
@@ -134,8 +185,14 @@ public sealed partial class TrainStopDialog : Page
             Platform = (string)PlatformComboBox.SelectedItem,
             Length = int.Parse(LengthTextBox.Text),
             Landmark = (string)LandmarkComboBox.SelectedItem == "无" ? null : (string)LandmarkComboBox.SelectedItem,
-            Status = SuspendToggleSwitch.IsOn ? null : TimeSpan.FromMinutes(int.Parse(StatusTextBox.Text))
+            Status = statusValue
         };
+    }
+
+    private void UpdateStatusInputState()
+    {
+        if (StatusMinutesTextBox is null || StatusComboBox is null) return;
+        StatusMinutesTextBox.IsEnabled = IsEarlyOrLateSelected();
     }
 
     private void StationKindPanelRadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
