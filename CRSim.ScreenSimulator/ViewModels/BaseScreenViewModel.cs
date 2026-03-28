@@ -196,22 +196,27 @@ namespace CRSim.ScreenSimulator.ViewModels
                 {
                     var now = TimeService.GetDateTimeNow();
                     var today = now.Date;
+                    var scheduleOffset = TrainStatus.GetScheduleOffset(trainNumber.Status);
 
-                    if (_settings.LoadTodayOnly && today.Add((trainNumber.DepartureTime ?? trainNumber.ArrivalTime)!.Value).Add(trainNumber.Status.Value) < now)
+                    if (_settings.LoadTodayOnly && today.Add((trainNumber.DepartureTime ?? trainNumber.ArrivalTime)!.Value).Add(scheduleOffset) < now)
                     {
                         continue;
                     }
 
-                    DateTime? AdjustTime(TimeSpan? time, TimeSpan? status) =>
-                        time.HasValue ? (today.Add(time.Value).Add(status.Value) > now ? today.Add(time.Value) : today.Add(time.Value).AddDays(1)) : null;
+                    DateTime? AdjustTime(TimeSpan? time, TimeSpan status) =>
+                        time.HasValue ? (today.Add(time.Value).Add(status) > now ? today.Add(time.Value) : today.Add(time.Value).AddDays(1)) : null;
+
+                    var departureOffset = trainNumber.Status is TimeSpan knownStatus && knownStatus > TimeSpan.Zero && !TrainStatus.IsDelayUnknown(knownStatus)
+                        ? knownStatus
+                        : TimeSpan.Zero;
 
                     TrainInfo.Add(new TrainInfo
                     {
                         TrainNumber = trainNumber.Number,
                         Terminal = trainNumber.Terminal,
                         Origin = trainNumber.Origin,
-                        ArrivalTime = AdjustTime(trainNumber.ArrivalTime, trainNumber.Status),
-                        DepartureTime = trainNumber.Status > TimeSpan.Zero ? AdjustTime(trainNumber.DepartureTime, trainNumber.Status) : AdjustTime(trainNumber.DepartureTime, TimeSpan.Zero),
+                        ArrivalTime = AdjustTime(trainNumber.ArrivalTime, scheduleOffset),
+                        DepartureTime = AdjustTime(trainNumber.DepartureTime, departureOffset),
                         TicketChecks = trainNumber.TicketCheckIds is null ? [] : [.. station.WaitingAreas
                             .SelectMany(w => w.TicketChecks)
                             .Where(tc => trainNumber.TicketCheckIds.Contains(tc.Id))

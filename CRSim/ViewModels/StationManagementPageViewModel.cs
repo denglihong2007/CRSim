@@ -597,6 +597,7 @@ public partial class StationManagementPageViewModel : ObservableObject
                     Status = worksheet.Cells[row, 10].Text switch
                     {
                         "停运" => null,
+                        "晚点未定" => TrainStatus.DelayUnknown,
                         "正点" => TimeSpan.Zero,
                         var t when t.StartsWith('-') && TimeSpan.TryParseExact(t[1..], @"hh\:mm", null, out var ts)
                             => -ts,
@@ -645,6 +646,7 @@ public partial class StationManagementPageViewModel : ObservableObject
             worksheet.Cells[i + 2, 10].Value = TrainStops[i].Status switch
             {
                 null => "停运",
+                var ts when TrainStatus.IsDelayUnknown(ts) => "晚点未定",
                 var ts when ts == TimeSpan.Zero => "正点",
                 var ts when ts < TimeSpan.Zero => $"-{ts.Value.Duration():hh\\:mm}",
                 var ts => ts.Value.ToString(@"hh\:mm")

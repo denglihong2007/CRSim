@@ -21,6 +21,7 @@ namespace CRSim.ScreenSimulator.Converters
         public string CheckInText { get; set; } = "正在检票";
         public string StopCheckInText { get; set; } = "停止检票";
         public string SuspendText { get; set; } = "列车停运";
+        public string DelayUnknownText { get; set; } = "晚点未定";
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             _settings ??= StyleManager.ServiceProvider
@@ -39,6 +40,8 @@ namespace CRSim.ScreenSimulator.Converters
                     {
                         if (values[2] is TimeSpan state)
                         {
+                            if (TrainStatus.IsDelayUnknown(state))
+                                return DelayUnknownText;
                             // arriveTime += TimeSpan.FromMinutes(state.TotalMinutes);
                             if (now >= arriveTime)
                             {
@@ -66,6 +69,10 @@ namespace CRSim.ScreenSimulator.Converters
             // 停运列车
             if (values[2] is null)
                 return SuspendText;
+
+            // 晚点未定
+            if (values[2] is TimeSpan unknownState && TrainStatus.IsDelayUnknown(unknownState))
+                return DelayUnknownText;
 
             // 有出发时间
             if (values[1] is DateTime departureTime && departureTime != DateTime.MinValue)

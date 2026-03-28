@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Data;
+using CRSim.Core.Models;
+using Microsoft.UI.Xaml.Data;
 using System.Globalization;
 
 namespace CRSim.Converters
@@ -10,10 +11,15 @@ namespace CRSim.Converters
         public string Culture { get; set; } = "zh-CN";
         public string NullString { get; set; } = string.Empty;
         public string ZeroString { get; set; } = string.Empty;
+        public string UnknownString { get; set; } = string.Empty;
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value is TimeSpan timeSpan)
             {
+                if (TrainStatus.IsDelayUnknown(timeSpan))
+                {
+                    return UnknownString;
+                }
                 if (timeSpan == TimeSpan.Zero)
                 {
                     return ZeroString;
